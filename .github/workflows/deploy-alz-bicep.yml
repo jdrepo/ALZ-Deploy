@@ -8,6 +8,7 @@ on:
     #  - ".github/workflows/deploy-alz.yml"
   workflow_dispatch: {}
 env:
+  alzBicepRelease: "0.19.4"
   ManagementGroupPrefix: "alz-bicep"
   ManagementGroupSuffix: "-prod"
   TopLevelManagementGroupDisplayName: "ALZ-Bicep-Prod"
@@ -42,4 +43,5 @@ jobs:
         with:
           repository: Azure/ALZ-Bicep
           path: alz-bicep
+          ref: ${{ env.alzBicepRelease }}
 
