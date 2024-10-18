@@ -1,0 +1,35 @@
+name: ALZ Bicep deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+    #paths:
+    #  - ".github/workflows/deploy-alz.yml"
+  workflow_dispatch: {}
+env:
+  ManagementGroupPrefix: "alz-bicep"
+  ManagementGroupSuffix: "-prod"
+  TopLevelManagementGroupDisplayName: "ALZ-Bicep-Prod"
+  Location: "germanywestcentral"
+  LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
+  IdentitySubId: ${{ secrets.IDENTITY_SUB_ID }}
+  LoggingResourceGroupName: "rg-alz-bicep-prod-logging-001"
+  MgmtSubId: ${{ secrets.MGMT_SUB_ID }}
+  ConnectivitySubId: ${{ secrets.CONNECTIVITY_SUB_ID }}
+  HubNetworkResourceGroupName: "rg-alz-bicep-prod-hub-networking-001"
+  RoleAssignmentManagementGroupId: "alz-bicep-platform-prod"
+  DefenderForCloudEmailSecurityContact: ${{ secrets.CONNECTIVITY_SUB_ID }}
+  SpokeNetworkSubId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  SpokeNetworkResourceGroupName: "Spoke_Networking_POC"
+  runNumber: ${{ github.run_number }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Run lint job
+
