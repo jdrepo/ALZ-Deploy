@@ -8,7 +8,7 @@ on:
     #  - ".github/workflows/deploy-alz.yml"
   workflow_dispatch: {}
 env:
-  alzBicepRelease: "0.19.4"
+  alzBicepRelease: "v0.19.4"
   ManagementGroupPrefix: "alz-bicep"
   ManagementGroupSuffix: "-prod"
   TopLevelManagementGroupDisplayName: "ALZ-Bicep-Prod"
