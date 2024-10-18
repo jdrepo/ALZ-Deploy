@@ -32,4 +32,14 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     name: Run lint job
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: main
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: alz-bicep
 
