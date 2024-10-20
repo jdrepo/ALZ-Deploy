@@ -55,4 +55,13 @@ module modLoggingResourceGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/reso
   }
 }
 
+module modLoggingResources '../../ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep' = {
+  scope: resourceGroup(parLoggingSubscriptionId,parLoggingResourceGroupName)
+  name: 'loggingResourceGroup-${deployment().name}'
+  params: {
+    parLogAnalyticsWorkspaceLocation: deployment().location
+    parAutomationAccountLocation: deployment().location
+  }
+}
+
 
