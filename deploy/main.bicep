@@ -13,7 +13,7 @@ param parTopLevelManagementGroupSuffix string = ''
 @minLength(2)
 param parTopLevelManagementGroupDisplayName string = 'Azure Landing Zones'
 
-module modManagementGroup '../../alz-bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep' = {
+module modManagementGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep' = {
   scope: tenant()
   name: 'mg-deployment-${deployment().name}'
   params: {
@@ -23,7 +23,7 @@ module modManagementGroup '../../alz-bicep/infra-as-code/bicep/modules/managemen
   }
 }
 
-module modCustomPolicyDefinitions '../../alz-bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep' = {
+module modCustomPolicyDefinitions '../../ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep' = {
   scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
   name: 'customPolicyDefinitions-${deployment().name}'
   params: {
@@ -31,7 +31,7 @@ module modCustomPolicyDefinitions '../../alz-bicep/infra-as-code/bicep/modules/p
   }
 }
 
-module modCustomRoleDefinitions '../../ALz-bicep/infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep' = {
+module modCustomRoleDefinitions '../../ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep' = {
   scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
   name: 'customRoleDefinitions-${deployment().name}'
   params: {
