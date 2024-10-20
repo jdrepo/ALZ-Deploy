@@ -63,6 +63,7 @@ jobs:
           # az bicep build --file infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
   validate:
     runs-on: ubuntu-latest
+    needs: [lint]
     name: Run validation job
     steps:
       - name: Checkout Repo
