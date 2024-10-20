@@ -23,7 +23,7 @@ module modManagementGroup '../../alz-bicep/infra-as-code/bicep/modules/managemen
   }
 }
 
-module modCustomPolicyDefinitions '../../ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep' = {
+module modCustomPolicyDefinitions '../../alz-bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep' = {
   scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
   name: 'customPolicyDefinitions-${deployment().name}'
   params: {
