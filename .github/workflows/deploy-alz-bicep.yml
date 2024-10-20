@@ -121,5 +121,35 @@ jobs:
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [preview]
+    name: Run deploy job
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: main
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # - name: Preview Deployment
+      #   id: preview
+      #   shell: bash
+      #   run: |
+      #     az deployment tenant create --template-file ./main/deploy/main.bicep \
+      #     --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
+      #     --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
+      #     --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
+      #     --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
 
 
