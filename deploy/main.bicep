@@ -30,3 +30,13 @@ module modCustomPolicyDefinitions '../../alz-bicep/infra-as-code/bicep/modules/p
     parTargetManagementGroupId: '${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}'
   }
 }
+
+module modCustomRoleDefinitions '../../ALz-bicep/infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep' = {
+  scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
+  name: 'customRoleDefinitions-${deployment().name}'
+  params: {
+    parAssignableScopeManagementGroupId: '${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}'
+  }
+}
+
+
