@@ -13,8 +13,8 @@ env:
   ManagementGroupSuffix: "-prod"
   TopLevelManagementGroupDisplayName: "ALZ-Bicep-Prod"
   Location: "germanywestcentral"
-  #LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
-  LoggingSubId: "6df8b678-c437-42a8-bb01-f88df1188e8e"
+  LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
+  #LoggingSubId: "6df8b678-c437-42a8-bb01-f88df1188e8e"
   IdentitySubId: ${{ secrets.IDENTITY_SUB_ID }}
   LoggingResourceGroupName: "rg-alz-bicep-prod-logging-001"
   MgmtSubId: ${{ secrets.MGMT_SUB_ID }}
@@ -123,7 +123,7 @@ jobs:
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
-          --parameters parLoggingSubscriptionId="${{ env.LoggingSubId }}" \
+          --parameters parLoggingSubscriptionId=${{ env.LoggingSubId }} \
           --parameters parLoggingResourceGroupName="${{ env.LoggingResourceGroupName }}" \
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
   deploy:
