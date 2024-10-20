@@ -90,6 +90,7 @@ jobs:
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
+          --parameters parLoggingSubscriptionId="${{ env.LoggingSubId }}" \
           --parameters parLoggingResourceGroupName="${{ env.LoggingResourceGroupName }}" \
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
   preview:
@@ -121,6 +122,7 @@ jobs:
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
+          --parameters parLoggingSubscriptionId="${{ env.LoggingSubId }}" \
           --parameters parLoggingResourceGroupName="${{ env.LoggingResourceGroupName }}" \
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
   deploy:
