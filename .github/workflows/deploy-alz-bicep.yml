@@ -92,6 +92,7 @@ jobs:
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
   preview:
     runs-on: ubuntu-latest
+    needs: [validate]
     name: Run preview job
     steps:
       - name: Checkout Repo
