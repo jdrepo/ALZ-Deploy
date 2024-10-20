@@ -90,6 +90,7 @@ jobs:
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
+          --parameters parLoggingResourceGroupName="${{ env.LoggingResourceGroupName }}" \
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
   preview:
     runs-on: ubuntu-latest
@@ -120,6 +121,7 @@ jobs:
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
+          --parameters parLoggingResourceGroupName="${{ env.LoggingResourceGroupName }}" \
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
   deploy:
     runs-on: ubuntu-latest

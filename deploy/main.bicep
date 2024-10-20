@@ -13,6 +13,13 @@ param parTopLevelManagementGroupSuffix string = ''
 @minLength(2)
 param parTopLevelManagementGroupDisplayName string = 'Azure Landing Zones'
 
+@sys.description('Subscription Id for Platform logging resources.')
+param parLoggingSubscriptionId string = ''
+
+@sys.description('Resource group name for Platform logging resources.')
+param parLoggingResourceGroupName string = 'alz-logging-001'
+
+
 module modManagementGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep' = {
   scope: tenant()
   name: 'mg-deployment-${deployment().name}'
@@ -36,6 +43,15 @@ module modCustomRoleDefinitions '../../ALZ-Bicep/infra-as-code/bicep/modules/cus
   name: 'customRoleDefinitions-${deployment().name}'
   params: {
     parAssignableScopeManagementGroupId: '${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}'
+  }
+}
+
+module modLoggingResourceGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep' = {
+  scope: subscription(parLoggingSubscriptionId)
+  name: 'loggingResourceGroup-${deployment().name}'
+  params: {
+    parLocation: deployment().location
+    parResourceGroupName: parLoggingResourceGroupName
   }
 }
 
