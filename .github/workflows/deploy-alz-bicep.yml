@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Azure/ALZ-Bicep
-          path: alz-bicep
+          path: ALZ-Bicep
           ref: ${{ env.alzBicepRelease }}
       - name: Azure Login with OIDC
         uses: azure/login@v2
@@ -52,7 +52,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Run bicep linter
         run: |
-          az bicep build --file alz-bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep
+          az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep
           # az bicep build --file infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
           # az bicep build --file infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
           # az bicep build --file infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
