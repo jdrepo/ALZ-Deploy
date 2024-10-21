@@ -25,6 +25,11 @@ param parConnectivitySubscriptionId string = ''
 @sys.description('Resource group name for Platform connectivity resources.')
 param parHubNetworkResourceGroupName string = 'alz-hub-networking-001'
 
+@sys.description('Subscription Id for Platform management resources.')
+param parMgmtSubscriptionId string = ''
+
+@sys.description('Subscription Id for Platform identity resources.')
+param parIdentitySubscriptionId string = ''
 
 module modManagementGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep' = {
   scope: tenant()
@@ -109,6 +114,24 @@ module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/
       'privatelink.wvd.microsoft.com'
     ]
     parLocation: deployment().location
+  }
+}
+
+module modSubPlacement '../../ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep' = {
+  scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
+  name: 'subPlacement-${deployment().name}'
+  params: {
+    parTopLevelManagementGroupPrefix: parTopLevelManagementGroupPrefix
+    parTopLevelManagementGroupSuffix: parTopLevelManagementGroupSuffix
+    parPlatformIdentityMgSubs: [
+      parIdentitySubscriptionId
+    ]
+    parPlatformConnectivityMgSubs: [
+      parConnectivitySubscriptionId
+    ]
+    parPlatformMgSubs: [
+      parMgmtSubscriptionId
+    ]
   }
 }
 
