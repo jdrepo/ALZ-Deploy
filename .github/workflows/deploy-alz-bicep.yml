@@ -132,6 +132,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [preview]
+    environment: deploy
     name: Run deploy job
     steps:
       - name: Checkout Repo
