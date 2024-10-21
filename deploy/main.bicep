@@ -64,4 +64,13 @@ module modLoggingResources '../../ALZ-Bicep/infra-as-code/bicep/modules/logging/
   }
 }
 
+module modMgDiagSettings '../../ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep' = {
+  scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
+  name: 'mgDiagSettings-${deployment().name}'
+  params: {
+    parLogAnalyticsWorkspaceResourceId: modLoggingResources.outputs.outLogAnalyticsWorkspaceId
+    parTopLevelManagementGroupPrefix: parTopLevelManagementGroupPrefix
+    parTopLevelManagementGroupSuffix: parTopLevelManagementGroupSuffix
+  }
+}
 
