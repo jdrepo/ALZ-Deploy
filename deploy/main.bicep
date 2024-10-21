@@ -19,6 +19,12 @@ param parLoggingSubscriptionId string = ''
 @sys.description('Resource group name for Platform logging resources.')
 param parLoggingResourceGroupName string = 'alz-logging-001'
 
+@sys.description('Subscription Id for Platform connectivity resources.')
+param parConnectivitySubscriptionId string = ''
+
+@sys.description('Resource group name for Platform connectivity resources.')
+param parHubNetworkResourceGroupName string = 'alz-hub-networking-001'
+
 
 module modManagementGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep' = {
   scope: tenant()
@@ -74,3 +80,11 @@ module modMgDiagSettings '../../ALZ-Bicep/infra-as-code/bicep/orchestration/mgDi
   }
 }
 
+module modHubNetworkResourceGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep' = {
+  scope: subscription(parConnectivitySubscriptionId)
+  name: 'hubNetworkResourceGroup-${deployment().name}'
+  params: {
+    parLocation: deployment().location
+    parResourceGroupName: parHubNetworkResourceGroupName
+  }
+}
