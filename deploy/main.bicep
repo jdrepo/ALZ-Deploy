@@ -88,3 +88,27 @@ module modHubNetworkResourceGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/r
     parResourceGroupName: parHubNetworkResourceGroupName
   }
 }
+
+module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep' = {
+  scope: resourceGroup(parConnectivitySubscriptionId,parHubNetworkResourceGroupName)
+  name: 'hubNetwork-${deployment().name}'
+  params: {
+    parCompanyPrefix: parTopLevelManagementGroupPrefix
+    parHubNetworkName: '${parTopLevelManagementGroupPrefix}-hub-${deployment().location}'
+    parAzBastionEnabled: false
+    parDdosEnabled: false
+    parAzFirewallName: '${parTopLevelManagementGroupPrefix}-azfw-${deployment().location}'
+    parAzFirewallPoliciesName: '${parTopLevelManagementGroupPrefix}-azfwpolicy-${deployment().location}'
+    parHubRouteTableName: '${parTopLevelManagementGroupPrefix}-hub-routetable-${deployment().location}'
+    parVpnGatewayEnabled: false
+    parExpressRouteGatewayEnabled: false
+    parPrivateDnsZoneAutoMergeAzureBackupZone: true
+    parPrivateDnsZonesEnabled: true
+    parPrivateDnsZones: [
+      'privatelink.file.core.windows.net'
+      'privatelink.wvd.microsoft.com'
+    ]
+    parLocation: deployment().location
+  }
+}
+
