@@ -194,8 +194,8 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Get logging resources - Validation
-        id: get_logging_resources_validation
+      - name: Get existing resources - Validation
+        id: get_resources_validation
         uses: azure/cli@v2
         with:
           azcliversion: latest
@@ -206,28 +206,32 @@ jobs:
             dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
             dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-mdfcsql-dcr --query id )
             userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-logging-mi --query id)
+            az account set -s "${{ env.ConnectivitySubId }}"
+            privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
             echo "$logAnalyticsWorkspaceResourceId"
             echo "$dataCollectionRuleVMInsightsId"
             echo "$dataCollectionRuleChangeTrackingResourceId"
             echo "$dataCollectionRuleMDFCSQLId"
             echo "$userAssignedManagedIdentityId"
+            echo "$privateDnsResourceGroupId"
             echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
             echo "dataCollectionRuleVMInsightsId=$dataCollectionRuleVMInsightsId" >> "$GITHUB_OUTPUT"
             echo "dataCollectionRuleChangeTrackingResourceId=$dataCollectionRuleChangeTrackingResourceId" >> "$GITHUB_OUTPUT"
             echo "dataCollectionRuleMDFCSQLId=$dataCollectionRuleMDFCSQLId" >> "$GITHUB_OUTPUT"
             echo "userAssignedManagedIdentityId=$userAssignedManagedIdentityId" >> $GITHUB_OUTPUT
-      # - name: Validate Deployment 
-      #   id: validate
-      #   shell: bash
-      #   run: |
-      #     az deployment mg validate --template-file ./main/deploy/defaultPolicyAssignment.bicep \
-      #     --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
-      #     --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
-      #     --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
-      #     --parameters parLogAnalyticsWorkspaceResourceId="/subscriptions/${{ env.LoggingSubId }}/resourcegroups/${{ env.LoggingResourceGroupName }}/providers/microsoft"
-      #     --parameters parDataCollectionRuleVMInsightsResourceId=
-      #     --parameters parDataCollectionRuleChangeTrackingResourceId=
-      #     --parameters parDataCollectionRuleMDFCSQLResourceId=
-      #     --parameters parUserAssignedManagedIdentityResourceId=
-      #     --parameters parPrivateDnsResourceGroupId=
+            echo "privateDnsResourceGroupId=$privateDnsResourceGroupId" >> "$GITHUB_OUTPUT" 
+      - name: Validate Deployment 
+        id: validate
+        shell: bash
+        run: |
+          az deployment mg validate --template-file ./main/deploy/defaultPolicyAssignment.bicep \
+          --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
+          --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
+          --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
+          --parameters parLogAnalyticsWorkspaceResourceId="/subscriptions/${{ env.LoggingSubId }}/resourcegroups/${{ env.LoggingResourceGroupName }}/providers/microsoft"
+          --parameters parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources_validation.outputs.logAnalyticsWorkspaceResourceId}}
+          --parameters parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources_validation.outputs.dataCollectionRuleChangeTrackingResourceId}}
+          --parameters parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_resources_validation.outputs.dataCollectionRuleMDFCSQLId}}
+          --parameters parUserAssignedManagedIdentityResourceId=${{ steps.get_resources_validation.outputs.userAssignedManagedIdentityId}}
+          --parameters parPrivateDnsResourceGroupId=${{ steps.get_resources_validation.outputs.privateDnsResourceGroupId}}
 
