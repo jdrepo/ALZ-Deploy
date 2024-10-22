@@ -31,8 +31,7 @@ param parMgmtSubscriptionId string = ''
 @sys.description('Subscription Id for Platform identity resources.')
 param parIdentitySubscriptionId string = ''
 
-@description('Email address for Microsoft Defender for Cloud alerts.')
-param parMsDefenderForCloudEmailSecurityContact string = 'security_contact@replace_me.com'
+
 
 module modManagementGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep' = {
   scope: tenant()
@@ -138,21 +137,25 @@ module modSubPlacement '../../ALZ-Bicep/infra-as-code/bicep/orchestration/subPla
   }
 }
 
-module modDefaultPolicyAssignment '../../ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep' = {
-  scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
-  name: 'subDefaultPolicyAssignment-${deployment().name}'
-  params: {
-    parTopLevelManagementGroupSuffix: parTopLevelManagementGroupSuffix
-    parTopLevelManagementGroupPrefix: parTopLevelManagementGroupPrefix
-    parDdosEnabled: false
-    parLogAnalyticsWorkSpaceAndAutomationAccountLocation: deployment().location
-    parLogAnalyticsWorkspaceResourceId: modLoggingResources.outputs.outLogAnalyticsWorkspaceId
-    parDataCollectionRuleVMInsightsResourceId: modLoggingResources.outputs.outDataCollectionRuleVMInsightsId
-    parDataCollectionRuleChangeTrackingResourceId: modLoggingResources.outputs.outDataCollectionRuleChangeTrackingId
-    parDataCollectionRuleMDFCSQLResourceId: modLoggingResources.outputs.outDataCollectionRuleMDFCSQLId
-    parUserAssignedManagedIdentityResourceId: modLoggingResources.outputs.outUserAssignedManagedIdentityId
-    parMsDefenderForCloudEmailSecurityContact: parMsDefenderForCloudEmailSecurityContact
-    parPrivateDnsResourceGroupId: modHubNetworkResourceGroup.outputs.outResourceGroupId
-    parTelemetryOptOut: true
-  }
-}
+output outUserAssignedManagedIdentityId string = modLoggingResources.outputs.outUserAssignedManagedIdentityId
+output outUserAssignedManagedIdentityPrincipalId string = modLoggingResources.outputs.outUserAssignedManagedIdentityPrincipalId
+
+output outDataCollectionRuleVMInsightsName string = modLoggingResources.outputs.outDataCollectionRuleVMInsightsName
+output outDataCollectionRuleVMInsightsId string = modLoggingResources.outputs.outDataCollectionRuleVMInsightsId
+
+output outDataCollectionRuleChangeTrackingName string = modLoggingResources.outputs.outDataCollectionRuleChangeTrackingName
+output outDataCollectionRuleChangeTrackingId string = modLoggingResources.outputs.outDataCollectionRuleChangeTrackingId
+
+output outDataCollectionRuleMDFCSQLName string = modLoggingResources.outputs.outDataCollectionRuleMDFCSQLName
+output outDataCollectionRuleMDFCSQLId string = modLoggingResources.outputs.outDataCollectionRuleMDFCSQLId
+
+output outLogAnalyticsWorkspaceName string = modLoggingResources.outputs.outLogAnalyticsWorkspaceName
+output outLogAnalyticsWorkspaceId string = modLoggingResources.outputs.outLogAnalyticsWorkspaceId
+output outLogAnalyticsCustomerId string = modLoggingResources.outputs.outLogAnalyticsCustomerId
+output outLogAnalyticsSolutions array = modLoggingResources.outputs.outLogAnalyticsSolutions
+
+output outAutomationAccountName string = modLoggingResources.outputs.outAutomationAccountName
+output outAutomationAccountId string = modLoggingResources.outputs.outAutomationAccountId
+
+output outHubNetworkResourceGroupName string = modHubNetworkResourceGroup.outputs.outResourceGroupName
+output outHubNetworkResourceGroupId string = modHubNetworkResourceGroup.outputs.outResourceGroupId
