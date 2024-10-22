@@ -31,6 +31,9 @@ param parMgmtSubscriptionId string = ''
 @sys.description('Subscription Id for Platform identity resources.')
 param parIdentitySubscriptionId string = ''
 
+@description('Email address for Microsoft Defender for Cloud alerts.')
+param parMsDefenderForCloudEmailSecurityContact string = 'security_contact@replace_me.com'
+
 module modManagementGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep' = {
   scope: tenant()
   name: 'mg-deployment-${deployment().name}'
@@ -135,3 +138,21 @@ module modSubPlacement '../../ALZ-Bicep/infra-as-code/bicep/orchestration/subPla
   }
 }
 
+module modDefaultPolicyAssignment '../../ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep' = {
+  scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
+  name: 'subDefaultPolicyAssignment-${deployment().name}'
+  params: {
+    parTopLevelManagementGroupSuffix: parTopLevelManagementGroupSuffix
+    parTopLevelManagementGroupPrefix: parTopLevelManagementGroupPrefix
+    parDdosEnabled: false
+    parLogAnalyticsWorkSpaceAndAutomationAccountLocation: deployment().location
+    parLogAnalyticsWorkspaceResourceId: modLoggingResources.outputs.outLogAnalyticsWorkspaceId
+    parDataCollectionRuleVMInsightsResourceId: modLoggingResources.outputs.outDataCollectionRuleVMInsightsId
+    parDataCollectionRuleChangeTrackingResourceId: modLoggingResources.outputs.outDataCollectionRuleChangeTrackingId
+    parDataCollectionRuleMDFCSQLResourceId: modLoggingResources.outputs.outDataCollectionRuleMDFCSQLId
+    parUserAssignedManagedIdentityResourceId: modLoggingResources.outputs.outUserAssignedManagedIdentityId
+    parMsDefenderForCloudEmailSecurityContact: parMsDefenderForCloudEmailSecurityContact
+    parPrivateDnsResourceGroupId: modHubNetworkResourceGroup.outputs.outResourceGroupId
+    
+  }
+}
