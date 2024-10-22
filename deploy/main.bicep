@@ -112,6 +112,7 @@ module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/
     parHubNetworkName: '${parTopLevelManagementGroupPrefix}-hub-${deployment().location}'
     parAzBastionEnabled: false
     parDdosEnabled: false
+    parAzFirewallEnabled: false
     parAzFirewallName: '${parTopLevelManagementGroupPrefix}-azfw-${deployment().location}'
     parAzFirewallPoliciesName: '${parTopLevelManagementGroupPrefix}-azfwpolicy-${deployment().location}'
     parHubRouteTableName: '${parTopLevelManagementGroupPrefix}-hub-routetable-${deployment().location}'
