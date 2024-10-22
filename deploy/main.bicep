@@ -143,7 +143,7 @@ module modSubPlacement '../../ALZ-Bicep/infra-as-code/bicep/orchestration/subPla
     parPlatformConnectivityMgSubs: [
       parConnectivitySubscriptionId
     ]
-    parPlatformMgSubs: [
+    parPlatformManagementMgSubs: [
       parMgmtSubscriptionId
     ]
   }
