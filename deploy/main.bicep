@@ -153,6 +153,6 @@ module modDefaultPolicyAssignment '../../ALZ-Bicep/infra-as-code/bicep/modules/p
     parUserAssignedManagedIdentityResourceId: modLoggingResources.outputs.outUserAssignedManagedIdentityId
     parMsDefenderForCloudEmailSecurityContact: parMsDefenderForCloudEmailSecurityContact
     parPrivateDnsResourceGroupId: modHubNetworkResourceGroup.outputs.outResourceGroupId
-    
+    parTelemetryOptOut: true
   }
 }
