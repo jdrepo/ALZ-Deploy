@@ -31,6 +31,8 @@ param parMgmtSubscriptionId string = ''
 @sys.description('Subscription Id for Platform identity resources.')
 param parIdentitySubscriptionId string = ''
 
+@description('Email address for Microsoft Defender for Cloud alerts.')
+param parMsDefenderForCloudEmailSecurityContact string = 'security_contact@replace_me.com'
 
 
 module modManagementGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep' = {
