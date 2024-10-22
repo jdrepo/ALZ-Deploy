@@ -49,7 +49,7 @@ module modCustomPolicyDefinitions '../../ALZ-Bicep/infra-as-code/bicep/modules/p
   scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
   name: 'customPolicyDefinitions-${deployment().name}'
   params: {
-    parTargetManagementGroupId: modManagementGroup.outputs.outTopLevelManagementGroupId
+    parTargetManagementGroupId: modManagementGroup.outputs.outTopLevelManagementGroupName
   }
 }
 
@@ -57,7 +57,7 @@ module modCustomRoleDefinitions '../../ALZ-Bicep/infra-as-code/bicep/modules/cus
   scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
   name: 'customRoleDefinitions-${deployment().name}'
   params: {
-    parAssignableScopeManagementGroupId: modManagementGroup.outputs.outTopLevelManagementGroupId
+    parAssignableScopeManagementGroupId: modManagementGroup.outputs.outTopLevelManagementGroupName
   }
 }
 
