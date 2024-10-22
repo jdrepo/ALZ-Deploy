@@ -205,7 +205,7 @@ jobs:
             dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-vmi-dcr --query id )
             dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
             dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-mdfcsql-dcr --query id )
-            userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-umi-identity --query id)
+            userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-logging-mi --query id)
             echo "$logAnalyticsWorkspaceResourceId"
             echo "$dataCollectionRuleVMInsightsId"
             echo "$dataCollectionRuleChangeTrackingResourceId"
