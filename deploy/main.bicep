@@ -49,7 +49,7 @@ module modCustomPolicyDefinitions '../../ALZ-Bicep/infra-as-code/bicep/modules/p
   scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
   name: 'customPolicyDefinitions-${deployment().name}'
   params: {
-    parTargetManagementGroupId: '${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}'
+    parTargetManagementGroupId: modManagementGroup.outputs.outTopLevelManagementGroupId
   }
 }
 
@@ -57,7 +57,7 @@ module modCustomRoleDefinitions '../../ALZ-Bicep/infra-as-code/bicep/modules/cus
   scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
   name: 'customRoleDefinitions-${deployment().name}'
   params: {
-    parAssignableScopeManagementGroupId: '${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}'
+    parAssignableScopeManagementGroupId: modManagementGroup.outputs.outTopLevelManagementGroupId
   }
 }
 
@@ -73,6 +73,9 @@ module modLoggingResourceGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/reso
 module modLoggingResources '../../ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep' = {
   scope: resourceGroup(parLoggingSubscriptionId,parLoggingResourceGroupName)
   name: 'loggingResourceGroup-${deployment().name}'
+  dependsOn: [
+    modLoggingResourceGroup
+  ]
   params: {
     parLogAnalyticsWorkspaceLocation: deployment().location
     parAutomationAccountLocation: deployment().location
@@ -82,6 +85,9 @@ module modLoggingResources '../../ALZ-Bicep/infra-as-code/bicep/modules/logging/
 module modMgDiagSettings '../../ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep' = {
   scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
   name: 'mgDiagSettings-${deployment().name}'
+  dependsOn: [
+    modManagementGroup
+  ]
   params: {
     parLogAnalyticsWorkspaceResourceId: modLoggingResources.outputs.outLogAnalyticsWorkspaceId
     parTopLevelManagementGroupPrefix: parTopLevelManagementGroupPrefix
@@ -123,6 +129,9 @@ module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/
 
 module modSubPlacement '../../ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep' = {
   scope: managementGroup('${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}')
+  dependsOn: [
+    modManagementGroup
+  ]
   name: 'subPlacement-${deployment().name}'
   params: {
     parTopLevelManagementGroupPrefix: parTopLevelManagementGroupPrefix
