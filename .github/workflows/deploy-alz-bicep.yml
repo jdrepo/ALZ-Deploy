@@ -227,7 +227,7 @@ jobs:
         id: validate
         shell: bash
         run: |
-          az deployment mg validate --template-file ./main/deploy/defaultPolicyAssignment.bicep \
+          az deployment mg validate --template-file ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep \
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
@@ -290,7 +290,7 @@ jobs:
         id: preview
         shell: bash
         run: |
-          az deployment mg what-if --template-file ./main/deploy/defaultPolicyAssignment.bicep \
+          az deployment mg what-if --template-file ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep \
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
@@ -353,7 +353,7 @@ jobs:
   #       id: deploy
   #       shell: bash
   #       run: |
-  #         az deployment mg what-if --template-file ./main/deploy/defaultPolicyAssignment.bicep \
+  #         az deployment mg what-if ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep \
   #         --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           # --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           # --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
