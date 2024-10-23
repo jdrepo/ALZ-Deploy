@@ -29,25 +29,7 @@ env:
   SpokeNetworkSubId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   SpokeNetworkResourceGroupName: "Spoke_Networking_POC"
   runNumber: ${{ github.run_number }}
-  vpnGatewayConfig: |
-    { name: 'alz-bicep-Vpn-Gateway' \
-    gatewayType: 'Vpn' \
-    sku: 'VpnGw1' \
-    vpnType: 'RouteBased' \
-    generation: 'Generation1' \
-    enableBgp: false \
-    activeActive: false \
-    enableBgpRouteTranslationForNat: false \
-    enableDnsForwarding: false \
-    bgpPeeringAddress: '' \
-    bgpsettings: { \
-      asn: 65515 \
-      bgpPeeringAddress: '' \
-      peerWeight: 5 \
-    } \
-    vpnClientConfiguration: {} \
-    }
-
+  
 permissions:
   id-token: write
   contents: read
