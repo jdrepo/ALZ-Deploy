@@ -30,6 +30,7 @@ env:
   SpokeNetworkResourceGroupName: "Spoke_Networking_POC"
   runNumber: ${{ github.run_number }}
   repo1: ${{vars.REPO1}}
+  vpn: ${{vars.VPNGATEWAYCONFIG}}
 
 permissions:
   id-token: write
