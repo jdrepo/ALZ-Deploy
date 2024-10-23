@@ -29,7 +29,8 @@ env:
   SpokeNetworkSubId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   SpokeNetworkResourceGroupName: "Spoke_Networking_POC"
   runNumber: ${{ github.run_number }}
-  
+  repo1: ${{vars.REPO1}}
+
 permissions:
   id-token: write
   contents: read
