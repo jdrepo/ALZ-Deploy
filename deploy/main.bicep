@@ -139,6 +139,9 @@ module modHubNetworkResourceGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/r
 module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep' = {
   scope: resourceGroup(parConnectivitySubscriptionId,parHubNetworkResourceGroupName)
   name: 'hubNetwork-${deployment().name}'
+  dependsOn: [
+    modHubNetworkResourceGroup
+  ]
   params: {
     parCompanyPrefix: parTopLevelManagementGroupPrefix
     parHubNetworkName: '${parTopLevelManagementGroupPrefix}-hub-${deployment().location}'
