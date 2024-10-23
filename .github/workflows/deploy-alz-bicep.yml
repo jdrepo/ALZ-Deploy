@@ -95,6 +95,7 @@ jobs:
         shell: bash
         run: |
           az deployment tenant validate --template-file ./main/deploy/main.bicep \
+          --parameters ./main/deploy/hubNetworking.parameters.json \
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
@@ -139,6 +140,7 @@ jobs:
         shell: bash
         run: |
           az deployment tenant what-if --template-file ./main/deploy/main.bicep \
+          --parameters ./main/deploy/hubNetworking.parameters.json \
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
@@ -265,8 +267,7 @@ jobs:
           --parameters parUserAssignedManagedIdentityResourceId=${{ steps.get_resources_validation.outputs.userAssignedManagedIdentityId}} \
           --parameters parPrivateDnsResourceGroupId=${{ steps.get_resources_validation.outputs.privateDnsResourceGroupId}} \
           --location ${{ env.Location }} \
-          --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
-          --parameters ./main/deploy/hubNetworking.parameters.json
+          --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
 
   preview_defaultpolicy:
     runs-on: ubuntu-latest
@@ -331,7 +332,6 @@ jobs:
           --parameters parPrivateDnsResourceGroupId=${{ steps.get_resources_preview.outputs.privateDnsResourceGroupId}} \
           --location ${{ env.Location }} \
           --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
-          --parameters ./main/deploy/hubNetworking.parameters.json
 
   deploy_defaultpolicy:
     runs-on: ubuntu-latest
