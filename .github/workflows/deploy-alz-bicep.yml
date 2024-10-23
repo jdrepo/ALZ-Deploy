@@ -14,12 +14,13 @@ env:
   TopLevelManagementGroupDisplayName: "ALZ-Bicep-Canary01"
   Location: "germanywestcentral"
   LoggingResourceGroupName: "rg-alz-bicep-canary01-logging-001"
+  logAnalyticsWorkspaceName: "alz-log-analytics" 
+  dataCollectionRuleVMInsightsName: "alz-ama-vmi-dcr"
+  dataCollectionRuleChangeTrackingName: "alz-ama-ct-dcr"
+  dataCollectionRuleMDFCSQLName: "alz-ama-mdfcsql-dcr"
+  userAssignedManagedIdentityName: "alz-logging-mi"
   HubNetworkResourceGroupName: "rg-alz-bicep-canary01-hub-networking-001"
-  logAnalyticsWorkspaceName: "alz-log-analytics" #
-  dataCollectionRuleVMInsightsName: "alz-ama-vmi-dcr" #
-  dataCollectionRuleChangeTrackingName: "alz-ama-ct-dcr" #
-  dataCollectionRuleMDFCSQLName: "alz-ama-mdfcsql-dcr" #
-  userAssignedManagedIdentityName: "alz-logging-mi" #
+  vpnGatewayEnabled: true
   LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
   IdentitySubId: ${{ secrets.IDENTITY_SUB_ID }}
   MgmtSubId: ${{ secrets.MGMT_SUB_ID }}
@@ -29,8 +30,6 @@ env:
   SpokeNetworkSubId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   SpokeNetworkResourceGroupName: "Spoke_Networking_POC"
   runNumber: ${{ github.run_number }}
-  repo1: ${{vars.REPO1}}
-  vpn: ${{vars.VPNGATEWAYCONFIG}}
 
 permissions:
   id-token: write
@@ -108,6 +107,7 @@ jobs:
           --parameters parUserAssignedManagedIdentityName="${{ env.userAssignedManagedIdentityName}}" \
           --parameters parConnectivitySubscriptionId=${{ env.ConnectivitySubId }} \
           --parameters parHubNetworkResourceGroupName="${{ env.HubNetworkResourceGroupName }}" \
+          --parameters parVpnGatewayEnabled=${{ env.vpnGatewayEnabled}} \
           --parameters parMgmtSubscriptionId=${{ env.MgmtSubId}} \
           --parameters parIdentitySubscriptionId=${{ env.IdentitySubId}} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
@@ -151,6 +151,7 @@ jobs:
           --parameters parUserAssignedManagedIdentityName="${{ env.userAssignedManagedIdentityName}}" \
           --parameters parConnectivitySubscriptionId=${{ env.ConnectivitySubId }} \
           --parameters parHubNetworkResourceGroupName="${{ env.HubNetworkResourceGroupName}}" \
+          --parameters parVpnGatewayEnabled=${{ env.vpnGatewayEnabled}} \
           --parameters parMgmtSubscriptionId=${{ env.MgmtSubId}} \
           --parameters parIdentitySubscriptionId=${{ env.IdentitySubId}} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
@@ -195,6 +196,7 @@ jobs:
           --parameters parUserAssignedManagedIdentityName="${{ env.userAssignedManagedIdentityName}}" \
           --parameters parConnectivitySubscriptionId=${{ env.ConnectivitySubId }} \
           --parameters parHubNetworkResourceGroupName="${{ env.HubNetworkResourceGroupName}}" \
+          --parameters parVpnGatewayEnabled=${{ env.vpnGatewayEnabled}} \
           --parameters parMgmtSubscriptionId=${{ env.MgmtSubId}} \
           --parameters parIdentitySubscriptionId=${{ env.IdentitySubId}} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \

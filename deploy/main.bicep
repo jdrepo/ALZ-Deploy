@@ -40,6 +40,30 @@ param parConnectivitySubscriptionId string = ''
 @sys.description('Resource group name for Platform connectivity resources.')
 param parHubNetworkResourceGroupName string = 'alz-hub-networking-001'
 
+@sys.description('Switch to enable/disable VPN virtual network gateway deployment.')
+param parVpnGatewayEnabled bool = false
+
+//ASN must be 65515 if deploying VPN & ER for co-existence to work: https://docs.microsoft.com/en-us/azure/expressroute/expressroute-howto-coexist-resource-manager#limits-and-limitations
+@sys.description('Configuration for VPN virtual network gateway to be deployed.')
+param parVpnGatewayConfig object = {
+  name: '${parTopLevelManagementGroupPrefix}-Vpn-Gateway'
+  gatewayType: 'Vpn'
+  sku: 'VpnGw1'
+  vpnType: 'RouteBased'
+  generation: 'Generation1'
+  enableBgp: false
+  activeActive: false
+  enableBgpRouteTranslationForNat: false
+  enableDnsForwarding: false
+  bgpPeeringAddress: ''
+  bgpsettings: {
+    asn: 65515
+    bgpPeeringAddress: ''
+    peerWeight: 5
+  }
+  vpnClientConfiguration: {}
+}
+
 @sys.description('Subscription Id for Platform management resources.')
 param parMgmtSubscriptionId string = ''
 
@@ -151,7 +175,8 @@ module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/
     parAzFirewallName: '${parTopLevelManagementGroupPrefix}-azfw-${deployment().location}'
     parAzFirewallPoliciesName: '${parTopLevelManagementGroupPrefix}-azfwpolicy-${deployment().location}'
     parHubRouteTableName: '${parTopLevelManagementGroupPrefix}-hub-routetable-${deployment().location}'
-    parVpnGatewayEnabled: false
+    parVpnGatewayEnabled: parVpnGatewayEnabled
+    parVpnGatewayConfig: parVpnGatewayConfig
     parExpressRouteGatewayEnabled: false
     parPrivateDnsZoneAutoMergeAzureBackupZone: true
     parPrivateDnsZonesEnabled: true
