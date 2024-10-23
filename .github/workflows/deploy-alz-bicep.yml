@@ -29,6 +29,25 @@ env:
   SpokeNetworkSubId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   SpokeNetworkResourceGroupName: "Spoke_Networking_POC"
   runNumber: ${{ github.run_number }}
+  vpnGatewayConfig: |
+    {
+    name: '${parCompanyPrefix}-Vpn-Gateway'
+    gatewayType: 'Vpn'
+    sku: 'VpnGw1'
+    vpnType: 'RouteBased'
+    generation: 'Generation1'
+    enableBgp: false
+    activeActive: false
+    enableBgpRouteTranslationForNat: false
+    enableDnsForwarding: false
+    bgpPeeringAddress: ''
+    bgpsettings: {
+      asn: 65515
+      bgpPeeringAddress: ''
+      peerWeight: 5
+    }
+    vpnClientConfiguration: {}
+    }
 
 permissions:
   id-token: write
@@ -49,6 +68,8 @@ jobs:
           repository: Azure/ALZ-Bicep
           path: ALZ-Bicep
           ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
       - name: Azure Login with OIDC
         uses: azure/login@v2
         with:
