@@ -231,8 +231,8 @@ jobs:
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
-          --parameters parLogAnalyticsWorkspaceResourceId="/subscriptions/${{ env.LoggingSubId }}/resourcegroups/${{ env.LoggingResourceGroupName }}/providers/microsoft" \
-          --parameters parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources_validation.outputs.logAnalyticsWorkspaceResourceId}} \
+          --parameters parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources_validation.outputs.logAnalyticsWorkspaceResourceId}} \
+          --parameters parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources_validation.outputs.dataCollectionRuleVMInsightsId}} \
           --parameters parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources_validation.outputs.dataCollectionRuleChangeTrackingResourceId}} \
           --parameters parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_resources_validation.outputs.dataCollectionRuleMDFCSQLId}} \
           --parameters parUserAssignedManagedIdentityResourceId=${{ steps.get_resources_validation.outputs.userAssignedManagedIdentityId}} \
@@ -294,8 +294,8 @@ jobs:
           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
-          --parameters parLogAnalyticsWorkspaceResourceId="/subscriptions/${{ env.LoggingSubId }}/resourcegroups/${{ env.LoggingResourceGroupName }}/providers/microsoft" \
-          --parameters parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources_preview.outputs.logAnalyticsWorkspaceResourceId}} \
+          --parameters parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources_preview.outputs.logAnalyticsWorkspaceResourceId}} \
+          --parameters parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources_preview.outputs.dataCollectionRuleVMInsightsId}} \
           --parameters parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources_preview.outputs.dataCollectionRuleChangeTrackingResourceId}} \
           --parameters parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_resources_preview.outputs.dataCollectionRuleMDFCSQLId}} \
           --parameters parUserAssignedManagedIdentityResourceId=${{ steps.get_resources_preview.outputs.userAssignedManagedIdentityId}} \
@@ -355,13 +355,13 @@ jobs:
   #       run: |
   #         az deployment mg what-if --template-file ./main/deploy/defaultPolicyAssignment.bicep \
   #         --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
-  #         --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
-  #         --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
-  #         --parameters parLogAnalyticsWorkspaceResourceId="/subscriptions/${{ env.LoggingSubId }}/resourcegroups/${{ env.LoggingResourceGroupName }}/providers/microsoft" \
-  #         --parameters parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources_deploy.outputs.logAnalyticsWorkspaceResourceId}} \
-  #         --parameters parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources_deploy.outputs.dataCollectionRuleChangeTrackingResourceId}} \
-  #         --parameters parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_resources_deploy.outputs.dataCollectionRuleMDFCSQLId}} \
-  #         --parameters parUserAssignedManagedIdentityResourceId=${{ steps.get_resources_deploy.outputs.userAssignedManagedIdentityId}} \
-  #         --parameters parPrivateDnsResourceGroupId=${{ steps.get_resources_deploy.outputs.privateDnsResourceGroupId}} \
-  #         --location ${{ env.Location }} \
-  #         --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          # --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
+          # --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
+          # --parameters parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources_deploy.outputs.logAnalyticsWorkspaceResourceId}} \
+          # --parameters parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources_deploy.outputs.dataCollectionRuleVMInsightsId}} \
+          # --parameters parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources_deploy.outputs.dataCollectionRuleChangeTrackingResourceId}} \
+          # --parameters parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_resources_deploy.outputs.dataCollectionRuleMDFCSQLId}} \
+          # --parameters parUserAssignedManagedIdentityResourceId=${{ steps.get_resources_deploy.outputs.userAssignedManagedIdentityId}} \
+          # --parameters parPrivateDnsResourceGroupId=${{ steps.get_resources_deploy.outputs.privateDnsResourceGroupId}} \
+          # --location ${{ env.Location }} \
+          # --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
