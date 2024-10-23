@@ -6,7 +6,7 @@
       "value": {
         "name": "alz-Vpn-Gateway",
         "gatewayType": "Vpn",
-        "sku": "VpnGw1",
+        "sku": "Basic",
         "vpnType": "RouteBased",
         "generation": "Generation1",
         "enableBgp": false,
