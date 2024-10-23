@@ -19,6 +19,21 @@ param parLoggingSubscriptionId string = ''
 @sys.description('Resource group name for Platform logging resources.')
 param parLoggingResourceGroupName string = 'alz-logging-001'
 
+@sys.description('Log Analytics Workspace name.')
+param parLogAnalyticsWorkspaceName string = 'alz-log-analytics'
+
+@sys.description('VM Insights Data Collection Rule name for AMA integration.')
+param parDataCollectionRuleVMInsightsName string = 'alz-ama-vmi-dcr'
+
+@sys.description('Change Tracking Data Collection Rule name for AMA integration.')
+param parDataCollectionRuleChangeTrackingName string = 'alz-ama-ct-dcr'
+
+@sys.description('MDFC for SQL Data Collection Rule name for AMA integration.')
+param parDataCollectionRuleMDFCSQLName string = 'alz-ama-mdfcsql-dcr'
+
+@sys.description('Name of the User Assigned Managed Identity required for authenticating Azure Monitoring Agent to Azure.')
+param parUserAssignedManagedIdentityName string = 'alz-logging-mi'
+
 @sys.description('Subscription Id for Platform connectivity resources.')
 param parConnectivitySubscriptionId string = ''
 
@@ -34,6 +49,8 @@ param parIdentitySubscriptionId string = ''
 @description('Email address for Microsoft Defender for Cloud alerts.')
 param parMsDefenderForCloudEmailSecurityContact string = 'security_contact@replace_me.com'
 
+@description('Management Group Id for Role assignments.')
+param parRoleAssignmentManagementGroupId string = ''
 
 module modManagementGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep' = {
   scope: tenant()
@@ -79,6 +96,11 @@ module modLoggingResources '../../ALZ-Bicep/infra-as-code/bicep/modules/logging/
   params: {
     parLogAnalyticsWorkspaceLocation: deployment().location
     parAutomationAccountLocation: deployment().location
+    parLogAnalyticsWorkspaceName : parLogAnalyticsWorkspaceName
+    parDataCollectionRuleMDFCSQLName: parDataCollectionRuleMDFCSQLName
+    parDataCollectionRuleChangeTrackingName: parDataCollectionRuleChangeTrackingName
+    parDataCollectionRuleVMInsightsName: parDataCollectionRuleVMInsightsName
+    parUserAssignedManagedIdentityName: parUserAssignedManagedIdentityName
   }
 }
 
@@ -103,6 +125,16 @@ module modHubNetworkResourceGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/r
     parResourceGroupName: parHubNetworkResourceGroupName
   }
 }
+
+// module modRoleAssignmentMG '../../ALZ-Bicep/infra-as-code/bicep/modules/roleAssignments/roleAssignmentManagementGroup.bicep' = {
+//   scope: managementGroup(parRoleAssignmentManagementGroupId)
+//   name: 'roleAssignmentMG-${deployment().name}'
+//   params: {
+//     parAssigneeObjectId: 
+//     parAssigneePrincipalType: 
+//     parRoleDefinitionId: 
+//   }
+// }
 
 module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep' = {
   scope: resourceGroup(parConnectivitySubscriptionId,parHubNetworkResourceGroupName)

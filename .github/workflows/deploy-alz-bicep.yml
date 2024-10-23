@@ -10,20 +10,22 @@ on:
 env:
   alzBicepRelease: "v0.19.4"
   ManagementGroupPrefix: "alz-bicep"
-  ManagementGroupSuffix: "-prod"
-  TopLevelManagementGroupDisplayName: "ALZ-Bicep-Prod"
+  ManagementGroupSuffix: "-canary01"
+  TopLevelManagementGroupDisplayName: "ALZ-Bicep-Canary01"
   Location: "germanywestcentral"
-  LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
-  IdentitySubId: ${{ secrets.IDENTITY_SUB_ID }}
-  LoggingResourceGroupName: "rg-alz-bicep-prod-logging-001"
-  MgmtSubId: ${{ secrets.MGMT_SUB_ID }}
-  ConnectivitySubId: ${{ secrets.CONNECTIVITY_SUB_ID }}
-  HubNetworkResourceGroupName: "rg-alz-bicep-prod-hub-networking-001"
-  RoleAssignmentManagementGroupId: "alz-bicep-platform-prod"
-  DefenderForCloudEmailSecurityContact: ${{ secrets.DFC_EMAIL_SECURITY_CONTACT }}
+  LoggingResourceGroupName: "rg-alz-bicep-canary01-logging-001"
+  HubNetworkResourceGroupName: "rg-alz-bicep-canary01-hub-networking-001"
   logAnalyticsWorkspaceName: "alz-log-analytics" #
   dataCollectionRuleVMInsightsName: "alz-ama-vmi-dcr" #
-
+  dataCollectionRuleChangeTrackingName: "alz-ama-ct-dcr" #
+  dataCollectionRuleMDFCSQLName: "alz-ama-mdfcsql-dcr" #
+  userAssignedManagedIdentityName: "alz-logging-mi" #
+  LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
+  IdentitySubId: ${{ secrets.IDENTITY_SUB_ID }}
+  MgmtSubId: ${{ secrets.MGMT_SUB_ID }}
+  ConnectivitySubId: ${{ secrets.CONNECTIVITY_SUB_ID }}
+  DefenderForCloudEmailSecurityContact: ${{ secrets.DFC_EMAIL_SECURITY_CONTACT }}
+  RoleAssignmentManagementGroupId: "alz-bicep-platform-prod"
   SpokeNetworkSubId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   SpokeNetworkResourceGroupName: "Spoke_Networking_POC"
   runNumber: ${{ github.run_number }}
@@ -95,11 +97,17 @@ jobs:
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
           --parameters parLoggingSubscriptionId="${{ env.LoggingSubId }}" \
           --parameters parLoggingResourceGroupName="${{ env.LoggingResourceGroupName }}" \
+          --parameters parLogAnalyticsWorkspaceName="${{ env.logAnalyticsWorkspaceName}}" \
+          --parameters parDataCollectionRuleVMInsightsName="${{ env.dataCollectionRuleVMInsightsName}}" \
+          --parameters parDataCollectionRuleChangeTrackingName="${{ env.dataCollectionRuleChangeTrackingName}}" \
+          --parameters parDataCollectionRuleMDFCSQLName="${{ env.dataCollectionRuleMDFCSQLName}}" \
+          --parameters parUserAssignedManagedIdentityName="${{ env.userAssignedManagedIdentityName}}" \
           --parameters parConnectivitySubscriptionId=${{ env.ConnectivitySubId }} \
           --parameters parHubNetworkResourceGroupName="${{ env.HubNetworkResourceGroupName }}" \
           --parameters parMgmtSubscriptionId=${{ env.MgmtSubId}} \
           --parameters parIdentitySubscriptionId=${{ env.IdentitySubId}} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
+          --parameters parRoleAssignmentManagementGroupId=${{ env.RoleAssignmentManagementGroupId}} \
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
   preview_base:
     runs-on: ubuntu-latest
@@ -132,11 +140,17 @@ jobs:
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
           --parameters parLoggingSubscriptionId=${{ env.LoggingSubId }} \
           --parameters parLoggingResourceGroupName="${{ env.LoggingResourceGroupName }}" \
+          --parameters parLogAnalyticsWorkspaceName="${{ env.logAnalyticsWorkspaceName}}" \
+          --parameters parDataCollectionRuleVMInsightsName="${{ env.dataCollectionRuleVMInsightsName}}" \
+          --parameters parDataCollectionRuleChangeTrackingName="${{ env.dataCollectionRuleChangeTrackingName}}" \
+          --parameters parDataCollectionRuleMDFCSQLName="${{ env.dataCollectionRuleMDFCSQLName}}" \
+          --parameters parUserAssignedManagedIdentityName="${{ env.userAssignedManagedIdentityName}}" \
           --parameters parConnectivitySubscriptionId=${{ env.ConnectivitySubId }} \
           --parameters parHubNetworkResourceGroupName="${{ env.HubNetworkResourceGroupName}}" \
           --parameters parMgmtSubscriptionId=${{ env.MgmtSubId}} \
           --parameters parIdentitySubscriptionId=${{ env.IdentitySubId}} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
+          --parameters parRoleAssignmentManagementGroupId=${{ env.RoleAssignmentManagementGroupId}} \
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
   deploy_base:
     runs-on: ubuntu-latest
@@ -170,11 +184,17 @@ jobs:
           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
           --parameters parLoggingSubscriptionId=${{ env.LoggingSubId }} \
           --parameters parLoggingResourceGroupName="${{ env.LoggingResourceGroupName }}" \
+          --parameters parLogAnalyticsWorkspaceName="${{ env.logAnalyticsWorkspaceName}}" \
+          --parameters parDataCollectionRuleVMInsightsName="${{ env.dataCollectionRuleVMInsightsName}}" \
+          --parameters parDataCollectionRuleChangeTrackingName="${{ env.dataCollectionRuleChangeTrackingName}}" \
+          --parameters parDataCollectionRuleMDFCSQLName="${{ env.dataCollectionRuleMDFCSQLName}}" \
+          --parameters parUserAssignedManagedIdentityName="${{ env.userAssignedManagedIdentityName}}" \
           --parameters parConnectivitySubscriptionId=${{ env.ConnectivitySubId }} \
           --parameters parHubNetworkResourceGroupName="${{ env.HubNetworkResourceGroupName}}" \
           --parameters parMgmtSubscriptionId=${{ env.MgmtSubId}} \
           --parameters parIdentitySubscriptionId=${{ env.IdentitySubId}} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
+          --parameters parRoleAssignmentManagementGroupId=${{ env.RoleAssignmentManagementGroupId}} \
           --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
   validate_defaultpolicy:
     runs-on: ubuntu-latest
