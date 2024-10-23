@@ -201,7 +201,8 @@ jobs:
           --parameters parIdentitySubscriptionId=${{ env.IdentitySubId}} \
           --parameters parMsDefenderForCloudEmailSecurityContact=${{ env.DefenderForCloudEmailSecurityContact}} \
           --parameters parRoleAssignmentManagementGroupId=${{ env.RoleAssignmentManagementGroupId}} \
-          --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }}
+          --location ${{ env.Location }} --name alz-deployment-${{ env.runNumber }} \
+          --parameters ./main/deploy/hubNetworking.parameters.json
   validate_defaultpolicy:
     runs-on: ubuntu-latest
     needs: [deploy_base]
@@ -264,7 +265,9 @@ jobs:
           --parameters parUserAssignedManagedIdentityResourceId=${{ steps.get_resources_validation.outputs.userAssignedManagedIdentityId}} \
           --parameters parPrivateDnsResourceGroupId=${{ steps.get_resources_validation.outputs.privateDnsResourceGroupId}} \
           --location ${{ env.Location }} \
-          --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
+          --parameters ./main/deploy/hubNetworking.parameters.json
+
   preview_defaultpolicy:
     runs-on: ubuntu-latest
     needs: [validate_defaultpolicy]
@@ -327,7 +330,9 @@ jobs:
           --parameters parUserAssignedManagedIdentityResourceId=${{ steps.get_resources_preview.outputs.userAssignedManagedIdentityId}} \
           --parameters parPrivateDnsResourceGroupId=${{ steps.get_resources_preview.outputs.privateDnsResourceGroupId}} \
           --location ${{ env.Location }} \
-          --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
+          --parameters ./main/deploy/hubNetworking.parameters.json
+
   deploy_defaultpolicy:
     runs-on: ubuntu-latest
     needs: [preview_defaultpolicy]
