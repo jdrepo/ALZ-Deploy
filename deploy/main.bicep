@@ -64,6 +64,13 @@ param parVpnGatewayConfig object = {
   vpnClientConfiguration: {}
 }
 
+@sys.description('Public IP Address SKU.')
+@allowed([
+  'Basic'
+  'Standard'
+])
+param parPublicIpSku string = 'Standard'
+
 @sys.description('Subscription Id for Platform management resources.')
 param parMgmtSubscriptionId string = ''
 
@@ -176,6 +183,7 @@ module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/
     parAzFirewallPoliciesName: '${parTopLevelManagementGroupPrefix}-azfwpolicy-${deployment().location}'
     parHubRouteTableName: '${parTopLevelManagementGroupPrefix}-hub-routetable-${deployment().location}'
     parVpnGatewayEnabled: parVpnGatewayEnabled
+    parPublicIpSku: parPublicIpSku
     parVpnGatewayConfig: parVpnGatewayConfig
     parExpressRouteGatewayEnabled: false
     parPrivateDnsZoneAutoMergeAzureBackupZone: true

@@ -21,6 +21,9 @@
         },
         "vpnClientConfiguration": {}
       }
+    },
+    "parpublicIpSku": {
+      "value": "Basic"
     }
   }
 }
