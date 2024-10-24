@@ -71,6 +71,13 @@ param parVpnGatewayConfig object = {
 ])
 param parPublicIpSku string = 'Standard'
 
+@sys.description('Public IP Address Allocation.')
+@allowed([
+  'Static'
+  'Dynamic'
+])
+param parPublicIpAllocation string = 'Static'
+
 @sys.description('Subscription Id for Platform management resources.')
 param parMgmtSubscriptionId string = ''
 
@@ -167,7 +174,7 @@ module modHubNetworkResourceGroup '../../ALZ-Bicep/infra-as-code/bicep/modules/r
 //   }
 // }
 
-module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep' = {
+module modHubNetwork '../infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep' = {
   scope: resourceGroup(parConnectivitySubscriptionId,parHubNetworkResourceGroupName)
   name: 'hubNetwork-${deployment().name}'
   dependsOn: [
@@ -193,6 +200,7 @@ module modHubNetwork '../../ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/
       'privatelink.wvd.microsoft.com'
     ]
     parLocation: deployment().location
+    parPublicIpAllocation: parPublicIpAllocation
   }
 }
 
