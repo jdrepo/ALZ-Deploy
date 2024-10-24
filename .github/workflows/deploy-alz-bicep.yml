@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    #paths:
-    #  - ".github/workflows/deploy-alz.yml"
+    paths:
+     - ".github/workflows/deploy-alz-bicep.yml"
   workflow_dispatch: {}
 env:
   alzBicepRelease: "v0.19.4"
