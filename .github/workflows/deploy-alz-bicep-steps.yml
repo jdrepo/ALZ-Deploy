@@ -99,7 +99,7 @@ jobs:
             --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
             --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
             --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
-            --location ${{ env.Location }} --name create_mgs-${{ env.runNumber }}
+            --location ${{ env.Location }} --name deploy_mgs_validation-${{ env.runNumber }}
       - name: Deploy Management Groups - Preview
         id: deploy_mgs_preview
         shell: bash
@@ -108,7 +108,7 @@ jobs:
             --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
             --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
             --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
-            --location ${{ env.Location }} --name create_mgs-${{ env.runNumber }}
+            --location ${{ env.Location }} --name deploy_mgs_preview-${{ env.runNumber }}
   deploy_create_mgs:
     runs-on: ubuntu-latest
     needs: [lint,validate_preview_create_mgs]
@@ -141,7 +141,7 @@ jobs:
             --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
             --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
             --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
-            --location ${{ env.Location }} --name create_mgs-${{ env.runNumber }}
+            --location ${{ env.Location }} --name deploy_mgs_deployment-${{ env.runNumber }}
   validate_preview_custom_policy_defs:
     runs-on: ubuntu-latest
     needs: [lint,deploy_create_mgs]
@@ -174,7 +174,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
           parameters: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.all.json parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-          deploymentName: create_policy_defs_validation-${{ env.runNumber }}
+          deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
       - name: Deploy Custom Policy Definitions - Preview
@@ -186,7 +186,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
           parameters: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.all.json parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-          deploymentName: create_policy_defs_validation-${{ env.runNumber }}
+          deploymentName: deploy_custom_policy_defs_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
   deploy_custom_policy_defs:
@@ -222,7 +222,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
           parameters: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.all.json parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-          deploymentName: create_policy_defs_validation-${{ env.runNumber }}
+          deploymentName: deploy_custom_policy_defs_deploy-${{ env.runNumber }}
           failOnStdErr: false
 
 
