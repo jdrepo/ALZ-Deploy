@@ -20,7 +20,7 @@ env:
   dataCollectionRuleMDFCSQLName: "alz-ama-mdfcsql-dcr"
   userAssignedManagedIdentityName: "alz-logging-mi"
   HubNetworkResourceGroupName: "rg-alz-bicep-canary01-hub-networking-001"
-  vpnGatewayEnabled: true
+  vpnGatewayEnabled: false
   LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
   IdentitySubId: ${{ secrets.IDENTITY_SUB_ID }}
   MgmtSubId: ${{ secrets.MGMT_SUB_ID }}
