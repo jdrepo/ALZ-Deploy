@@ -137,13 +137,36 @@ jobs:
         id: deploy_mgs_deployment
         shell: bash
         run: |
-            az deployment tenant create --template-file infra-as-code/bicep/modules/managementGroups/managementGroups.bicep \
+            az deployment tenant create --template-file ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep \
             --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
             --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
             --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
             --location ${{ env.Location }} --name create_mgs-${{ env.runNumber }}
+  # validate_preview_custom_policy_defs:
+  #   runs-on: ubuntu-latest
+  #   needs: [lint]
+  #   name: Deploy Custom Policy Definitions - Validation and Preview
+  #   steps:
+  #     - name: Checkout Repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         path: main
+  #     - name: Checkout ALZ-Bicep Repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: Azure/ALZ-Bicep
+  #         path: ALZ-Bicep
+  #         ref: ${{ env.alzBicepRelease }}
+  #     - name: Show env
+  #       run: env | sort
+  #     - name: Azure Login with OIDC
+  #       uses: azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   #     - name: Deploy Custom Policy Definitions - Validation
-  #       id: create_policy_defs_validation
+  #       id: deploy_custom_policy_defs_validation
   #       uses: azure/arm-deploy@v2
   #       with:
   #         scope: managementgroup
@@ -154,6 +177,8 @@ jobs:
   #         deploymentName: create_policy_defs_validation-${{ env.runNumber }}
   #         failOnStdErr: false
   #         deploymentMode: Validate
+
+
   #     - name: Deploy Custom Role Definitions - Validation
   #       id: create_rbac_roles_validation
   #       uses: azure/arm-deploy@v2
