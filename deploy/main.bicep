@@ -46,7 +46,7 @@ param parVpnGatewayEnabled bool = false
 //ASN must be 65515 if deploying VPN & ER for co-existence to work: https://docs.microsoft.com/en-us/azure/expressroute/expressroute-howto-coexist-resource-manager#limits-and-limitations
 @sys.description('Configuration for VPN virtual network gateway to be deployed.')
 param parVpnGatewayConfig object = {
-  name: '${parTopLevelManagementGroupPrefix}-Vpn-Gateway'
+  name: '${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}-Vpn-Gateway'
   gatewayType: 'Vpn'
   sku: 'VpnGw1'
   vpnType: 'RouteBased'

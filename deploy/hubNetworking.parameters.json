@@ -4,9 +4,9 @@
   "parameters": {
     "parVpnGatewayConfig": {
       "value": {
-        "name": "alz-Vpn-Gateway",
+        "name": "alz-bicep-canary01-Vpn-Gateway",
         "gatewayType": "Vpn",
-        "sku": "Basic",
+        "sku": "VpnGw1",
         "vpnType": "RouteBased",
         "generation": "Generation1",
         "enableBgp": false,
@@ -23,7 +23,7 @@
       }
     },
     "parpublicIpSku": {
-      "value": "Basic"
+      "value": "Standard"
     }
   }
 }
