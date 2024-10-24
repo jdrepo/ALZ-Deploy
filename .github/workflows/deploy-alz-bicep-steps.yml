@@ -70,6 +70,7 @@ jobs:
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
   validate_preview_create_mgs:
     runs-on: ubuntu-latest
+    needs: [lint]
     name: Deploy Management Groups - Validation and Preview
     steps:
       - name: Checkout Repo
@@ -108,7 +109,31 @@ jobs:
             --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
             --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
             --location ${{ env.Location }} --name create_mgs-${{ env.runNumber }}
-
+  deploy_create_mgs:
+    runs-on: ubuntu-latest
+    needs: [lint,validate_preview_create_mgs]
+    name: Deploy Management Groups - Deployment
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 'v0.19.4'
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy Management Groups - Deployment
+        id: deploy_mgs_deployment
+        shell: bash
+        run: |
+            az deployment tenant create --template-file infra-as-code/bicep/modules/managementGroups/managementGroups.bicep \
+            --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
+            --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
+            --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
+            --location ${{ env.Location }} --name create_mgs-${{ env.runNumber }}
   #     - name: Deploy Custom Policy Definitions - Validation
   #       id: create_policy_defs_validation
   #       uses: azure/arm-deploy@v2
@@ -539,38 +564,7 @@ jobs:
   #         deploymentName: create_policy_assignments-${{ env.runNumber }}
   #         failOnStdErr: false
   #         additionalArguments: "--what-if"
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   #needs: [lint,validate,preview]
-  #   needs: [lint]
-  #   name: Run deployment job
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #         ref: 'v0.19.4'
-  #     - name: Azure Login with OIDC
-  #       uses: azure/login@v2
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #     - name: Azure CLI script
-  #       uses: azure/cli@v2
-  #       with:
-  #         azcliversion: latest
-  #         inlineScript: |
-  #           az account show
-  #     - name: Az CLI Deploy Management Groups - Deployment
-  #       id: create_mgs_deployment
-  #       shell: bash
-  #       run: |
-  #           az deployment tenant create --template-file infra-as-code/bicep/modules/managementGroups/managementGroups.bicep \
-  #           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
-  #           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
-  #           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
-  #           --location ${{ env.Location }} --name create_mgs-${{ env.runNumber }}
+  #
   #     - name: Deploy Custom Policy Definitions - Deployment
   #       id: create_policy_defs_deployment
   #       uses: azure/arm-deploy@v2
