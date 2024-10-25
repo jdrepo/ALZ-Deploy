@@ -254,7 +254,7 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/definitions/customRoleDefinitions.bicep
+          template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
           parameters: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -266,7 +266,7 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/definitions/customRoleDefinitions.bicep
+          template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
           parameters: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -302,36 +302,92 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/definitions/customRoleDefinitions.bicep
+          template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
           parameters: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
+  validate_preview_logging:
+    runs-on: ubuntu-latest
+    needs: [deploy__custom_role_definitions]
+    name: Deploy Logging - Validation and Preview
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: main
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy Logging RG - Validation
+        id: deploy_logging_validation_rg
+        uses: azure/arm-deploy@v2
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.LoggingSubId }}
+          region: ${{ env.Location }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          parameters: parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
+          deploymentName: create_logging_rg_validation-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+      - name: Deploy Logging Resources - Validation
+        id: deploy_logging_validation
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.LoggingSubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.LoggingResourceGroupName }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
+          parameters: >-
+            ALZ-Bicep/infra-as-code/bicep/modules/logging/parameters/logging.parameters.all.json
+            parLogAnalyticsWorkspaceLocation=${{env.Location}}
+            parAutomationAccountLocation=${{env.Location}}
+          deploymentName: create_logging-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+      - name: Deploy Logging RG - Preview
+        id: deploy_logging_preview_rg
+        uses: azure/arm-deploy@v2
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.LoggingSubId }}
+          region: ${{ env.Location }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          parameters: parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
+          deploymentName: create_logging_rg_validation-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"
+      - name: Deploy Logging Resources - Preview
+        id: deploy_logging_preview
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.LoggingSubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.LoggingResourceGroupName }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
+          parameters: >-
+            ALZ-Bicep/infra-as-code/bicep/modules/logging/parameters/logging.parameters.all.json
+            parLogAnalyticsWorkspaceLocation=${{env.Location}}
+            parAutomationAccountLocation=${{env.Location}}
+          deploymentName: create_logging-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"
 
-
-  #     - name: Deploy Custom Role Definitions - Validation
-  #       id: create_rbac_roles_validation
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
-  #         parameters: infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         deploymentName: create_rbac_roles-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
-  #     - name: Deploy Logging Resource Group - Validation
-  #       id: create_logging_rg_validation
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: subscription
-  #         subscriptionId: ${{ env.LoggingSubId }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-  #         parameters: parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
-  #         deploymentName: create_logging_rg-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
+ 
+  #     
   #     - name: Deploy Logging - Validation
   #       id: create_logging_validation
   #       uses: azure/arm-deploy@v2
