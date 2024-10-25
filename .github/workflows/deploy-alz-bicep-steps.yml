@@ -254,8 +254,8 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customRoleDefinitions.bicep
-          parameters: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/paramters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/definitions/customRoleDefinitions.bicep
+          parameters: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -266,8 +266,8 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customRoleDefinitions.bicep
-          parameters: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/paramters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/definitions/customRoleDefinitions.bicep
+          parameters: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -302,8 +302,8 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customRoleDefinitions.bicep
-          parameters: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/paramters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/definitions/customRoleDefinitions.bicep
+          parameters: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
 
