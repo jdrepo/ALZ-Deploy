@@ -271,7 +271,7 @@ jobs:
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
-  deploy__custom_role_definitions:
+  deploy_custom_role_definitions:
     runs-on: ubuntu-latest
     needs: [validate_preview_custom_role_definitions]
     environment: deploy  
@@ -308,7 +308,7 @@ jobs:
           failOnStdErr: false
   validate_preview_logging:
     runs-on: ubuntu-latest
-    needs: [deploy__custom_role_definitions]
+    needs: [deploy_custom_role_definitions]
     name: Deploy Logging - Validation and Preview
     steps:
       - name: Checkout Repo
@@ -359,7 +359,7 @@ jobs:
             parDataCollectionRuleChangeTrackingName=${{ env.dataCollectionRuleChangeTrackingName}}
             parDataCollectionRuleVMInsightsName=${{ env.dataCollectionRuleVMInsightsName}}
             parUserAssignedManagedIdentityName=${{ env.userAssignedManagedIdentityName}}
-          deploymentName: create_logging-${{ env.runNumber }}
+          deploymentName: create_logging-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
       - name: Deploy Logging RG - Preview
@@ -371,7 +371,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
           parameters: parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
-          deploymentName: create_logging_rg_validation-${{ env.runNumber }}
+          deploymentName: create_logging_rg_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
       - name: Deploy Logging Resources - Preview
@@ -392,7 +392,7 @@ jobs:
             parDataCollectionRuleChangeTrackingName=${{ env.dataCollectionRuleChangeTrackingName}}
             parDataCollectionRuleVMInsightsName=${{ env.dataCollectionRuleVMInsightsName}}
             parUserAssignedManagedIdentityName=${{ env.userAssignedManagedIdentityName}}
-          deploymentName: create_logging-${{ env.runNumber }}
+          deploymentName: create_logging-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
   deploy_logging:
@@ -428,7 +428,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
           parameters: parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
-          deploymentName: create_logging_rg_validation-${{ env.runNumber }}
+          deploymentName: create_logging_rg_deploy-${{ env.runNumber }}
           failOnStdErr: false
       - name: Deploy Logging Resources - Deployment
         id: deploy_logging_deployment
@@ -448,11 +448,11 @@ jobs:
             parDataCollectionRuleChangeTrackingName=${{ env.dataCollectionRuleChangeTrackingName}}
             parDataCollectionRuleVMInsightsName=${{ env.dataCollectionRuleVMInsightsName}}
             parUserAssignedManagedIdentityName=${{ env.userAssignedManagedIdentityName}}
-          deploymentName: create_logging-${{ env.runNumber }}
+          deploymentName: create_logging-deploy-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_mgDiagSettings:
     runs-on: ubuntu-latest
-    needs: [deploy__custom_role_definitions]
+    needs: [deploy_logging]
     name: Deploy MG Diag Settings - Validation and Preview
     steps:
       - name: Checkout Repo
@@ -486,11 +486,11 @@ jobs:
             parLogAnalyticsWorkspaceResourceId=${{ job.deploy_logging.outputs.outLogAnalyticsWorkspaceId}}
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-          deploymentName: create_logging-${{ env.runNumber }}
+          deploymentName: deploy_mgDiagSettings-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
       - name: Deploy MG Diag Settings - Preview
-        id: deploy_logging_preview_rg
+        id: deploy_mgDiagSettings_preview
         uses: azure/arm-deploy@v2
         with:
           scope: managementgroup
@@ -502,31 +502,10 @@ jobs:
             parLogAnalyticsWorkspaceResourceId=${{ job.deploy_logging.outputs.outLogAnalyticsWorkspaceId}}
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-              deploymentName: create_logging-${{ env.runNumber }}
-              failOnStdErr: false
-              additionalArguments: "--what-if"
-      - name:  Deploy MG Diag Settings - Preview
-        id: deploy_mgDiagSettings_preview
-        uses: azure/arm-deploy@v2
-        with:
-          scope: resourcegroup
-          subscriptionId: ${{ env.LoggingSubId }}
-          region: ${{ env.Location }}
-          resourceGroupName: ${{ env.LoggingResourceGroupName }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
-          parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/modules/logging/parameters/logging.parameters.all.json
-            parLogAnalyticsWorkspaceLocation=${{env.Location}}
-            parAutomationAccountLocation=${{env.Location}}
-            parLogAnalyticsWorkspaceName=${{ env.logAnalyticsWorkspaceName}}
-            parDataCollectionRuleMDFCSQLName=${{ env.dataCollectionRuleMDFCSQLName}}
-            parDataCollectionRuleChangeTrackingName=${{ env.dataCollectionRuleChangeTrackingName}}
-            parDataCollectionRuleVMInsightsName=${{ env.dataCollectionRuleVMInsightsName}}
-            parUserAssignedManagedIdentityName=${{ env.userAssignedManagedIdentityName}}
-          deploymentName: create_logging-${{ env.runNumber }}
+          deploymentName: deploy_mgDiagSettings-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
-  deploy__mgDiagSettings:
+  deploy_mgDiagSettings:
     runs-on: ubuntu-latest
     needs: [validate_preview_mgDiagSettings]
     environment: deploy
@@ -554,23 +533,76 @@ jobs:
         id: deploy_mgDiagSettings_deploy
         uses: azure/arm-deploy@v2
         with:
-          scope: resourcegroup
-          subscriptionId: ${{ env.LoggingSubId }}
+          scope: managementgroup
+          managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          resourceGroupName: ${{ env.LoggingResourceGroupName }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
+          template: ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/modules/logging/parameters/logging.parameters.all.json
-            parLogAnalyticsWorkspaceLocation=${{env.Location}}
-            parAutomationAccountLocation=${{env.Location}}
-            parLogAnalyticsWorkspaceName=${{ env.logAnalyticsWorkspaceName}}
-            parDataCollectionRuleMDFCSQLName=${{ env.dataCollectionRuleMDFCSQLName}}
-            parDataCollectionRuleChangeTrackingName=${{ env.dataCollectionRuleChangeTrackingName}}
-            parDataCollectionRuleVMInsightsName=${{ env.dataCollectionRuleVMInsightsName}}
-            parUserAssignedManagedIdentityName=${{ env.userAssignedManagedIdentityName}}
-          deploymentName: create_logging-${{ env.runNumber }}
+            ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.all.json
+            parLogAnalyticsWorkspaceResourceId=${{ job.deploy_logging.outputs.outLogAnalyticsWorkspaceId}}
+            parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
+            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
+          deploymentName: deploy_mgDiagSettings-deploy-${{ env.runNumber }}
           failOnStdErr: false
- 
+
+  # validate_preview_hubNetwork:
+  #   runs-on: ubuntu-latest
+  #   needs: [deploy_mgDiagSettings]
+  #   name: Deploy Hub Network - Validation and Preview
+  #   steps:
+  #     - name: Checkout Repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         path: main
+  #     - name: Checkout ALZ-Bicep Repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: Azure/ALZ-Bicep
+  #         path: ALZ-Bicep
+  #         ref: ${{ env.alzBicepRelease }}
+  #     - name: Show env
+  #       run: env | sort
+  #     - name: Azure Login with OIDC
+  #       uses: azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #     - name: Deploy HubNetwork RG - Validation
+  #       id: deploy_hubNetworkRg_validation
+  #       uses: azure/arm-deploy@v2
+  #       with:
+  #         scope: subscription
+  #         subscriptionId: ${{ env.ConnectivitySubId }}
+  #         region: ${{ env.Location }}
+  #         template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+  #         parameters: parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
+  #         deploymentName: create_logging_rg_validation-${{ env.runNumber }}
+  #         failOnStdErr: false
+  #         deploymentMode: Validate
+  #     - name: Deploy Logging Resources - Validation
+  #       id: deploy_logging_validation
+  #       uses: azure/arm-deploy@v2
+  #       with:
+  #         scope: resourcegroup
+  #         subscriptionId: ${{ env.LoggingSubId }}
+  #         region: ${{ env.Location }}
+  #         resourceGroupName: ${{ env.LoggingResourceGroupName }}
+  #         template: ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
+  #         parameters: >-
+  #           ALZ-Bicep/infra-as-code/bicep/modules/logging/parameters/logging.parameters.all.json
+  #           parLogAnalyticsWorkspaceLocation=${{env.Location}}
+  #           parAutomationAccountLocation=${{env.Location}}
+  #           parLogAnalyticsWorkspaceName=${{ env.logAnalyticsWorkspaceName}}
+  #           parDataCollectionRuleMDFCSQLName=${{ env.dataCollectionRuleMDFCSQLName}}
+  #           parDataCollectionRuleChangeTrackingName=${{ env.dataCollectionRuleChangeTrackingName}}
+  #           parDataCollectionRuleVMInsightsName=${{ env.dataCollectionRuleVMInsightsName}}
+  #           parUserAssignedManagedIdentityName=${{ env.userAssignedManagedIdentityName}}
+  #         deploymentName: create_logging-${{ env.runNumber }}
+  #         failOnStdErr: false
+  #         deploymentMode: Validate
+
+
   #     
   #     - name: Deploy Logging - Validation
   #       id: create_logging_validation
