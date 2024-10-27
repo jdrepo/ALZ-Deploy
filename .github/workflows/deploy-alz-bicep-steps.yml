@@ -564,63 +564,109 @@ jobs:
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_mgDiagSettings-deploy-${{ env.runNumber }}
           failOnStdErr: false
-
-  # validate_preview_hubNetwork:
-  #   runs-on: ubuntu-latest
-  #   needs: [deploy_mgDiagSettings]
-  #   name: Deploy Hub Network - Validation and Preview
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v4
-  #       with:
-  #         path: main
-  #     - name: Checkout ALZ-Bicep Repo
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: Azure/ALZ-Bicep
-  #         path: ALZ-Bicep
-  #         ref: ${{ env.alzBicepRelease }}
-  #     - name: Show env
-  #       run: env | sort
-  #     - name: Azure Login with OIDC
-  #       uses: azure/login@v2
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #     - name: Deploy HubNetwork RG - Validation
-  #       id: deploy_hubNetworkRg_validation
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: subscription
-  #         subscriptionId: ${{ env.ConnectivitySubId }}
-  #         region: ${{ env.Location }}
-  #         template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-  #         parameters: parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
-  #         deploymentName: create_logging_rg_validation-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
-  #     - name: Deploy Logging Resources - Validation
-  #       id: deploy_logging_validation
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: resourcegroup
-  #         subscriptionId: ${{ env.LoggingSubId }}
-  #         region: ${{ env.Location }}
-  #         resourceGroupName: ${{ env.LoggingResourceGroupName }}
-  #         template: ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
-  #         parameters: >-
-  #           ALZ-Bicep/infra-as-code/bicep/modules/logging/parameters/logging.parameters.all.json
-  #           parLogAnalyticsWorkspaceLocation=${{env.Location}}
-  #           parAutomationAccountLocation=${{env.Location}}
-  #           parLogAnalyticsWorkspaceName=${{ env.logAnalyticsWorkspaceName}}
-  #           parDataCollectionRuleMDFCSQLName=${{ env.dataCollectionRuleMDFCSQLName}}
-  #           parDataCollectionRuleChangeTrackingName=${{ env.dataCollectionRuleChangeTrackingName}}
-  #           parDataCollectionRuleVMInsightsName=${{ env.dataCollectionRuleVMInsightsName}}
-  #           parUserAssignedManagedIdentityName=${{ env.userAssignedManagedIdentityName}}
-  #         deploymentName: create_logging-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
+  validate_preview_hubNetwork:
+    runs-on: ubuntu-latest
+    needs: [deploy_mgDiagSettings]
+    name: Deploy Hub Network - Validation and Preview
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: main
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy HubNetwork RG - Validation
+        id: deploy_hubNetworkRg_validation
+        uses: azure/arm-deploy@v2
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          parameters: parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
+          deploymentName: deploy_hubNetworkRg_validation-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+      - name: Deploy Hub Network - Validation
+        id: deploy_hubNetwork_validation
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          parameters: >-
+            ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.all.json
+            parLocation=${{ env.Location }}
+            parCompanyPrefix=${{ env.ManagementGroupPrefix }}
+            parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
+            parAzBastionEnabled=false
+            parDdosEnabled=false
+            parAzFirewallEnabled=false
+            parAzFirewallName=${{ env.ManagementGroupPrefix }}-azfw-${{ env.Location }}
+            parAzFirewallPoliciesName=${{ env.ManagementGroupPrefix }}-azfwpolicy-${{ env.Location }}
+            parHubRouteTableName=${{ env.ManagementGroupPrefix }}-hub-routetable-${{ env.Location }}
+            parVpnGatewayEnabled=false
+            parExpressRouteGatewayEnabled=false
+            parPrivateDnsZoneAutoMergeAzureBackupZone=true
+            parPrivateDnsZonesEnabled=true
+            parPrivateDnsZones="['privatelink.file.core.windows.net', 'privatelink.wvd.microsoft.com']"
+          deploymentName: deploy_hubNetwork_validation-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+      - name: Deploy HubNetwork RG - Preview
+        id: deploy_hubNetworkRg_preview
+        uses: azure/arm-deploy@v2
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          parameters: parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
+          deploymentName: deploy_hubNetworkRg_validation-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"
+      - name: Deploy Hub Network - Preview
+        id: deploy_hubNetwork_preview
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          parameters: >-
+            ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.all.json
+            parLocation=${{ env.Location }}
+            parCompanyPrefix=${{ env.ManagementGroupPrefix }}
+            parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
+            parAzBastionEnabled=false
+            parDdosEnabled=false
+            parAzFirewallEnabled=false
+            parAzFirewallName=${{ env.ManagementGroupPrefix }}-azfw-${{ env.Location }}
+            parAzFirewallPoliciesName=${{ env.ManagementGroupPrefix }}-azfwpolicy-${{ env.Location }}
+            parHubRouteTableName=${{ env.ManagementGroupPrefix }}-hub-routetable-${{ env.Location }}
+            parVpnGatewayEnabled=false
+            parExpressRouteGatewayEnabled=false
+            parPrivateDnsZoneAutoMergeAzureBackupZone=true
+            parPrivateDnsZonesEnabled=true
+            parPrivateDnsZones="['privatelink.file.core.windows.net', 'privatelink.wvd.microsoft.com']"
+          deploymentName: deploy_hubNetwork_preview-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"
 
 
   #     
