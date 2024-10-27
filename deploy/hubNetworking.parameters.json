@@ -236,7 +236,7 @@
     },
     "parTags": {
       "value": {
-        "Environment": "Live"
+        "Environment": ""
       }
     },
     "parTelemetryOptOut": {
