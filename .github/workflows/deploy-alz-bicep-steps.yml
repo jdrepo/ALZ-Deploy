@@ -473,6 +473,16 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.MgmtSubId}}"
+            logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
+            echo "$logAnalyticsWorkspaceResourceId"
+            echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
       - name: Deploy MG Diag Settings - Validation
         id: deploy_mgDiagSettings_validation
         uses: azure/arm-deploy@v2
@@ -483,7 +493,7 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           parameters: >-
             ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.all.json
-            parLogAnalyticsWorkspaceResourceId=${{ job.deploy_logging.outputs.outLogAnalyticsWorkspaceId}}
+            parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_mgDiagSettings-validation-${{ env.runNumber }}
@@ -499,7 +509,7 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           parameters: >-
             ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.all.json
-            parLogAnalyticsWorkspaceResourceId=${{ job.deploy_logging.outputs.outLogAnalyticsWorkspaceId}}
+            parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_mgDiagSettings-preview-${{ env.runNumber }}
@@ -529,6 +539,16 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.MgmtSubId}}"
+            logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
+            echo "$logAnalyticsWorkspaceResourceId"
+            echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
       - name:  Deploy MG Diag Settings - Deploy
         id: deploy_mgDiagSettings_deploy
         uses: azure/arm-deploy@v2
@@ -539,7 +559,7 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           parameters: >-
             ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.all.json
-            parLogAnalyticsWorkspaceResourceId=${{ job.deploy_logging.outputs.outLogAnalyticsWorkspaceId}}
+            parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_mgDiagSettings-deploy-${{ env.runNumber }}
