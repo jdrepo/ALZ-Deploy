@@ -15,6 +15,7 @@ env:
   Location: "germanywestcentral"
   LoggingResourceGroupName: "rg-alz-bicep-canary01-logging-001"
   HubNetworkResourceGroupName: "rg-alz-bicep-canary01-hub-networking-001"
+  HubNetworkAddressPrefix: "10.10.0.0/16"
   logAnalyticsWorkspaceName: "alz-log-analytics" 
   dataCollectionRuleVMInsightsName: "alz-ama-vmi-dcr" 
   dataCollectionRuleChangeTrackingName: "alz-ama-ct-dcr" 
@@ -607,12 +608,13 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          template: ./main/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.all.json
+            ./main/deploy/hubNetworking.parameters.json
             parLocation=${{ env.Location }}
             parCompanyPrefix=${{ env.ManagementGroupPrefix }}
             parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
+            parHubNetworkAddressPrefix=${{ env.HubNetworkAddressPrefix }}
             parAzBastionEnabled=false
             parDdosEnabled=false
             parAzFirewallEnabled=false
@@ -647,9 +649,9 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          template: ./main/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.all.json
+            ./main/deploy/hubNetworking.parameters.json
             parLocation=${{ env.Location }}
             parCompanyPrefix=${{ env.ManagementGroupPrefix }}
             parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
