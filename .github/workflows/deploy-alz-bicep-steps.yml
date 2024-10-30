@@ -6,7 +6,14 @@ on:
       - main
     paths:
       - ".github/workflows/deploy-alz-bicep-steps.yml"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      environment:
+        default: "canary"
+        required: true
+        type: string 
+  
+
 env:
   alzBicepRelease: "v0.19.4"
   ManagementGroupPrefix: "alz-bicep"
@@ -109,11 +116,11 @@ jobs:
             --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
             --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
             --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
-            --location ${{ env.Location }} --name deploy_mgs_preview-${{ env.runNumber }}
+            --location ${{ env.Location }} --name deploy_mgs_preview-${{ env.runNumber }} 
   deploy_create_mgs:
     runs-on: ubuntu-latest
     needs: [lint,validate_preview_create_mgs]
-    environment: deploy
+    environment: ${{inputs.environment}}
     name: Deploy Management Groups - Deployment
     steps:
       - name: Checkout Repo
@@ -893,11 +900,11 @@ jobs:
             ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parDdosEnabled=false
-            parDdosProtectionPlanId=''
+            parDdosProtectionPlanId=""
             parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources.outputs.dataCollectionRuleVMInsightsId }}
-            parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.output.dataCollectionRuleChangeTrackingResourceId }}
+            parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.outputs.dataCollectionRuleChangeTrackingResourceId }}
             parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_resources.outputs.dataCollectionRuleMDFCSQLId }}
             parUserAssignedManagedIdentityResourceId=${{ steps.get_resources.outputs.userAssignedManagedIdentityId }}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
@@ -922,7 +929,7 @@ jobs:
             parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources.outputs.dataCollectionRuleVMInsightsId }}
-            parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.output.dataCollectionRuleChangeTrackingResourceId }}
+            parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.outputs.dataCollectionRuleChangeTrackingResourceId }}
             parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_resources.outputs.dataCollectionRuleMDFCSQLId }}
             parUserAssignedManagedIdentityResourceId=${{ steps.get_resources.outputs.userAssignedManagedIdentityId }}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
@@ -997,7 +1004,7 @@ jobs:
             parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources.outputs.dataCollectionRuleVMInsightsId }}
-            parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.output.dataCollectionRuleChangeTrackingResourceId }}
+            parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.outputs.dataCollectionRuleChangeTrackingResourceId }}
             parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_resources.outputs.dataCollectionRuleMDFCSQLId }}
             parUserAssignedManagedIdentityResourceId=${{ steps.get_resources.outputs.userAssignedManagedIdentityId }}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
