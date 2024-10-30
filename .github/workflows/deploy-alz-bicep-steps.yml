@@ -794,6 +794,7 @@ jobs:
   deploy_subPlacement:
     runs-on: ubuntu-latest
     needs: [validate_preview_subPlacement]
+    environment: Deploy
     name: Deploy Sub Placement - Deployment
     steps:
       - name: Checkout Repo
@@ -930,547 +931,82 @@ jobs:
             deploymentName: deploy_defPolAssign_preview-${{ env.runNumber }}
             failOnStdErr: false
           additionalArguments: "--what-if"
+  deploy_DefPol_Assignment:
+    runs-on: ubuntu-latest
+    needs: [validate_preview_DefPol_Assignment]
+    environment: deploy
+    name: Deploy Default Policy Assignment - Deployment
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: main
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.MgmtSubId}}"
+            logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
+            dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-vmi-dcr --query id )
+            dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
+            dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-mdfcsql-dcr --query id )
+            userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-logging-mi --query id)
+            az account set -s "${{ env.ConnectivitySubId }}"
+            privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
+            echo "$logAnalyticsWorkspaceResourceId"
+            echo "$dataCollectionRuleVMInsightsId"
+            echo "$dataCollectionRuleChangeTrackingResourceId"
+            echo "$dataCollectionRuleMDFCSQLId"
+            echo "$userAssignedManagedIdentityId"
+            echo "$privateDnsResourceGroupId"
+            echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
+            echo "dataCollectionRuleVMInsightsId=$dataCollectionRuleVMInsightsId" >> "$GITHUB_OUTPUT"
+            echo "dataCollectionRuleChangeTrackingResourceId=$dataCollectionRuleChangeTrackingResourceId" >> "$GITHUB_OUTPUT"
+            echo "dataCollectionRuleMDFCSQLId=$dataCollectionRuleMDFCSQLId" >> "$GITHUB_OUTPUT"
+            echo "userAssignedManagedIdentityId=$userAssignedManagedIdentityId" >> $GITHUB_OUTPUT
+            echo "privateDnsResourceGroupId=$privateDnsResourceGroupId" >> "$GITHUB_OUTPUT"
+      - name: Deploy Default Policy Assignment - Deployment
+        id: deploy_defPolAssignment_deployment
+        uses: azure/arm-deploy@v2
+        with:
+          scope: managementgroup
+          managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          region: ${{ env.Location }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep
+          parameters: >-
+            ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
+            parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
+            parDdosEnabled=false
+            parDdosProtectionPlanId=''
+            parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
+            parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
+            parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources.outputs.dataCollectionRuleVMInsightsId }}
+            parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.output.dataCollectionRuleChangeTrackingResourceId }}
+            parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_resources.outputs.dataCollectionRuleMDFCSQLId }}
+            parUserAssignedManagedIdentityResourceId=${{ steps.get_resources.outputs.userAssignedManagedIdentityId }}
+            parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
+            parPrivateDnsResourceGroupId=${{ steps.get_resources.outputs.privateDnsResourceGroupId }}
+            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
+          deploymentName: deploy_defPolAssign_deployment-${{ env.runNumber }}
+          failOnStdErr: false
+    
 
-      
-
-
-  #     
-  #     - name: Deploy Logging - Validation
-  #       id: create_logging_validation
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: resourcegroup
-  #         subscriptionId: ${{ env.LoggingSubId }}
-  #         region: ${{ env.Location }}
-  #         resourceGroupName: ${{ env.LoggingResourceGroupName }}
-  #         template: infra-as-code/bicep/modules/logging/logging.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/modules/logging/parameters/logging.parameters.all.json
-  #           parLogAnalyticsWorkspaceLocation=${{env.Location}}
-  #           parAutomationAccountLocation=${{env.Location}}
-  #         deploymentName: create_logging-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
-  #     - name: Get logging resources - Validation
-  #       id: get_logging_resources_validation
-  #       uses: azure/cli@v2
-  #       with:
-  #         azcliversion: latest
-  #         inlineScript: |
-  #           az account set -s "${{env.MgmtSubId}}"
-  #           logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
-  #           dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-vmi-dcr --query id )
-  #           dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
-  #           dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-mdfcsql-dcr --query id )
-  #           userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-umi-identity --query id)
-  #           echo "$logAnalyticsWorkspaceResourceId"
-  #           echo "$dataCollectionRuleVMInsightsId"
-  #           echo "$dataCollectionRuleChangeTrackingResourceId"
-  #           echo "$dataCollectionRuleMDFCSQLId"
-  #           echo "$userAssignedManagedIdentityId"
-  #           echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
-  #           echo "dataCollectionRuleVMInsightsId=$dataCollectionRuleVMInsightsId" >> "$GITHUB_OUTPUT"
-  #           echo "dataCollectionRuleChangeTrackingResourceId=$dataCollectionRuleChangeTrackingResourceId" >> "$GITHUB_OUTPUT"
-  #           echo "dataCollectionRuleMDFCSQLId=$dataCollectionRuleMDFCSQLId" >> "$GITHUB_OUTPUT"
-  #           echo "userAssignedManagedIdentityId=$userAssignedManagedIdentityId" >> $GITHUB_OUTPUT
-  #     - name: Show logging resources - Validation
-  #       id: show_logging_resources_validation
-  #       run: |
-  #         echo "logAnalyticsWorkspaceResourceId: ${{ steps.get_logging_resources_validation.outputs.logAnalyticsWorkspaceResourceId}}"
-  #         echo "dataCollectionRuleVMInsightsId: ${{ steps.get_logging_resources_validation.outputs.dataCollectionRuleVMInsightsId}}"
-  #         echo "dataCollectionRuleChangeTrackingResourceId: ${{ steps.get_logging_resources_validation.outputs.dataCollectionRuleChangeTrackingResourceId}}"
-  #         echo "dataCollectionRuleChangeTrackingResourceId: ${{ steps.get_logging_resources_validation.outputs.dataCollectionRuleChangeTrackingResourceId}}"
-  #         echo "userAssignedManagedIdentityId: ${{ steps.get_logging_resources_validation.outputs.userAssignedManagedIdentityId}}"
-  #     - name: Deploy MG Diag Settings - Validation
-  #       id: mg_diag_settings_validation
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: managementgroup
-  #         region: ${{ env.Location }}
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         template: infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.all.json
-  #           parLogAnalyticsWorkspaceResourceId=${{ steps.get_logging_resources_validation.outputs.logAnalyticsWorkspaceResourceId}}
-  #           parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-  #           parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-  #         deploymentName: mg_diag_settings-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
-  #     - name: Deploy Hub Networking Resource Group - Validation
-  #       id: create_hub_network_rg_validation
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: subscription
-  #         subscriptionId: ${{ env.ConnectivitySubId }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-  #         parameters: parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
-  #         deploymentName: create_hub_network_rg-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
-  #     - name: Deploy Hub Network - Validation
-  #       id: create_hub_network_validation
-  #       uses: azure/arm-deploy@v1
-  #       with:
-  #         scope: resourcegroup
-  #         subscriptionId: ${{ env.ConnectivitySubId }}
-  #         resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-  #         template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.all.json
-  #           parLocation=${{ env.Location }}
-  #           parCompanyPrefix=${{ env.ManagementGroupPrefix }}
-  #           parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
-  #           parAzBastionEnabled=false
-  #           parDdosEnabled=false
-  #           parAzFirewallEnabled=false
-  #           parAzFirewallName=${{ env.ManagementGroupPrefix }}-azfw-${{ env.Location }}
-  #           parAzFirewallPoliciesName=${{ env.ManagementGroupPrefix }}-azfwpolicy-${{ env.Location }}
-  #           parHubRouteTableName=${{ env.ManagementGroupPrefix }}-hub-routetable-${{ env.Location }}
-  #           parVpnGatewayEnabled=false
-  #           parExpressRouteGatewayEnabled=false
-  #           parPrivateDnsZoneAutoMergeAzureBackupZone=true
-  #           parPrivateDnsZonesEnabled=true
-  #           parPrivateDnsZones="['privatelink.file.core.windows.net', 'privatelink.wvd.microsoft.com']"
-  #         deploymentName: create_hub_network-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
-  #     - name: Get Hub network resources - Validation
-  #       id: get_hub_network_resources_validation
-  #       uses: azure/cli@v2
-  #       with:
-  #         azcliversion: latest
-  #         inlineScript: |
-  #           az account set -s "${{ env.ConnectivitySubId }}"
-  #           privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
-  #           echo "$privateDnsResourceGroupId"
-  #           echo "privateDnsResourceGroupId=$privateDnsResourceGroupId" >> "$GITHUB_OUTPUT"
-  #     - name: Show Hub network resources - Validation
-  #       id: show_hub_network_resources_validation
-  #       run: |
-  #         echo "privateDnsResourceGroupId: ${{ steps.get_hub_network_resources_validation.outputs.privateDnsResourceGroupId}}"
-  #     # - name: Deploy Role Assignment
-  #     #   id: create_role_assignment
-  #     #   uses: azure/arm-deploy@v1
-  #     #   with:
-  #     #     scope: managementgroup
-  #     #     managementGroupId: ${{ env.RoleAssignmentManagementGroupId }}
-  #     #     region: ${{ env.Location }}
-  #     #     template: infra-as-code/bicep/modules/roleAssignments/roleAssignmentManagementGroup.bicep
-  #     #     parameters: infra-as-code/bicep/modules/roleAssignments/parameters/roleAssignmentManagementGroup.servicePrincipal.parameters.all.json
-  #     #     deploymentName: create_role_assignment-${{ env.runNumber }}
-  #     #     failOnStdErr: false
-  #     - name: Deploy Subscription Placement - Validation
-  #       id: create_subscription_placement_validation
-  #       uses: azure/arm-deploy@v1
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/orchestration/subPlacementAll/parameters/subPlacementAll.parameters.all.json
-  #           parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-  #           parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-  #           parPlatformManagementMgSubs="['${{ env.MgmtSubId }}']"
-  #           parPlatformConnectivityMgSubs="['${{ env.ConnectivitySubId }}']"
-  #           parPlatformIdentityMgSubs="['${{ env.IdentitySubId }}']"
-  #         deploymentName: create_subscription_placement-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
-  #     - name: Deploy Default Policy Assignments - Validation
-  #       id: create_policy_assignments_validation
-  #       uses: azure/arm-deploy@v1
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
-  #           parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-  #           parDdosEnabled=false
-  #           parDdosProtectionPlanId=''
-  #           parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
-  #           parLogAnalyticsWorkspaceResourceId=${{ steps.get_logging_resources_validation.outputs.logAnalyticsWorkspaceResourceId}}
-  #           parDataCollectionRuleVMInsightsResourceId=${{ steps.get_logging_resources_validation.outputs.dataCollectionRuleVMInsightsId }}
-  #           parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_logging_resources_validation.outputs.dataCollectionRuleChangeTrackingResourceId }}
-  #           parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_logging_Resources_validation.outputs.dataCollectionRuleMDFCSQLId }}
-  #           parUserAssignedManagedIdentityResourceId=${{ steps.get_logging_resources_validation.outputs.userAssignedManagedIdentityId }}
-  #           parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
-  #           parPrivateDnsResourceGroupId=${{ steps.get_hub_network_resources_validation.outputs.privateDnsResourceGroupId }}
-  #           parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-  #         deploymentName: create_policy_assignments-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         deploymentMode: Validate
-  # preview:
-  #   runs-on: ubuntu-latest
-  #   needs: validate
-  #   name: Run what-if job
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #         ref: 'v0.19.4'
-  #     - name: Azure Login with OIDC
-  #       uses: azure/login@v2
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #     - name: Azure CLI script
-  #       uses: azure/cli@v2
-  #       with:
-  #         azcliversion: latest
-  #         inlineScript: |
-  #           az account show
-  #     - name: Az CLI Deploy Management Groups - Preview
-  #       id: create_mgs_preview
-  #       shell: bash
-  #       run: |
-  #           az deployment tenant what-if --template-file infra-as-code/bicep/modules/managementGroups/managementGroups.bicep \
-  #           --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
-  #           --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
-  #           --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
-  #           --location ${{ env.Location }} --name create_mgs-${{ env.runNumber }}
-  #     - name: Deploy Custom Policy Definitions - Preview
-  #       id: create_policy_defs_preview
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
-  #         parameters: infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.all.json parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         deploymentName: create_policy_defs_validation-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         additionalArguments: "--what-if"
-  #     - name: Deploy Custom Role Definitions - Preview
-  #       id: create_rbac_roles_preview
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
-  #         parameters: infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         deploymentName: create_rbac_roles-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         additionalArguments: "--what-if"
-  #     - name: Deploy Logging Resource Group - Preview
-  #       id: create_logging_rg_preview
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: subscription
-  #         subscriptionId: ${{ env.LoggingSubId }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-  #         parameters: parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
-  #         deploymentName: create_logging_rg-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         additionalArguments: "--what-if"
-  #     - name: Deploy Logging - Preview
-  #       id: create_logging_preview
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: resourcegroup
-  #         subscriptionId: ${{ env.LoggingSubId }}
-  #         region: ${{ env.Location }}
-  #         resourceGroupName: ${{ env.LoggingResourceGroupName }}
-  #         template: infra-as-code/bicep/modules/logging/logging.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/modules/logging/parameters/logging.parameters.all.json
-  #           parLogAnalyticsWorkspaceLocation=${{env.Location}}
-  #           parAutomationAccountLocation=${{env.Location}}
-  #         deploymentName: create_logging-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         additionalArguments: "--what-if"
-  #     - name: Get logging resources - Preview
-  #       id: get_logging_resources_preview
-  #       uses: azure/cli@v2
-  #       with:
-  #         azcliversion: latest
-  #         inlineScript: |
-  #           az account set -s "${{env.MgmtSubId}}"
-  #           logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
-  #           dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-vmi-dcr --query id )
-  #           dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
-  #           dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-mdfcsql-dcr --query id )
-  #           userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-umi-identity --query id)
-  #           echo "$logAnalyticsWorkspaceResourceId"
-  #           echo "$dataCollectionRuleVMInsightsId"
-  #           echo "$dataCollectionRuleChangeTrackingResourceId"
-  #           echo "$dataCollectionRuleMDFCSQLId"
-  #           echo "$userAssignedManagedIdentityId"
-  #           echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
-  #           echo "dataCollectionRuleVMInsightsId=$dataCollectionRuleVMInsightsId" >> "$GITHUB_OUTPUT"
-  #           echo "dataCollectionRuleChangeTrackingResourceId=$dataCollectionRuleChangeTrackingResourceId" >> "$GITHUB_OUTPUT"
-  #           echo "dataCollectionRuleMDFCSQLId=$dataCollectionRuleMDFCSQLId" >> "$GITHUB_OUTPUT"
-  #           echo "userAssignedManagedIdentityId=$userAssignedManagedIdentityId" >> $GITHUB_OUTPUT
-  #     - name: Show logging resources - Preview
-  #       id: show_logging_resources_preview
-  #       run: |
-  #         echo "logAnalyticsWorkspaceResourceId: ${{ steps.get_logging_resources_preview.outputs.logAnalyticsWorkspaceResourceId}}"
-  #         echo "dataCollectionRuleVMInsightsId: ${{ steps.get_logging_resources_preview.outputs.dataCollectionRuleVMInsightsId}}"
-  #         echo "dataCollectionRuleChangeTrackingResourceId: ${{ steps.get_logging_resources_preview.outputs.dataCollectionRuleChangeTrackingResourceId}}"
-  #         echo "dataCollectionRuleChangeTrackingResourceId: ${{ steps.get_logging_resources_preview.outputs.dataCollectionRuleChangeTrackingResourceId}}"
-  #         echo "userAssignedManagedIdentityId: ${{ steps.get_logging_resources_preview.outputs.userAssignedManagedIdentityId}}"
-  #     - name: Deploy MG Diag Settings - Preview
-  #       id: mg_diag_settings_preview
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: managementgroup
-  #         region: ${{ env.Location }}
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         template: infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.all.json
-  #           parLogAnalyticsWorkspaceResourceId=${{ steps.get_logging_resources_preview.outputs.logAnalyticsWorkspaceResourceId}}
-  #           parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-  #           parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-  #         deploymentName: mg_diag_settings-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         additionalArguments: "--what-if"
-  #     - name: Deploy Hub Networking Resource Group - Preview
-  #       id: create_hub_network_rg_preview
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: subscription
-  #         subscriptionId: ${{ env.ConnectivitySubId }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-  #         parameters: parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
-  #         deploymentName: create_hub_network_rg-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         additionalArguments: "--what-if"
-  #     - name: Deploy Hub Network - Preview
-  #       id: create_hub_network_preview
-  #       uses: azure/arm-deploy@v1
-  #       with:
-  #         scope: resourcegroup
-  #         subscriptionId: ${{ env.ConnectivitySubId }}
-  #         resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-  #         template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.all.json
-  #           parLocation=${{ env.Location }}
-  #           parCompanyPrefix=${{ env.ManagementGroupPrefix }}
-  #           parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
-  #           parAzBastionEnabled=false
-  #           parDdosEnabled=false
-  #           parAzFirewallEnabled=false
-  #           parAzFirewallName=${{ env.ManagementGroupPrefix }}-azfw-${{ env.Location }}
-  #           parAzFirewallPoliciesName=${{ env.ManagementGroupPrefix }}-azfwpolicy-${{ env.Location }}
-  #           parHubRouteTableName=${{ env.ManagementGroupPrefix }}-hub-routetable-${{ env.Location }}
-  #           parVpnGatewayEnabled=false
-  #           parExpressRouteGatewayEnabled=false
-  #           parPrivateDnsZoneAutoMergeAzureBackupZone=true
-  #           parPrivateDnsZonesEnabled=true
-  #           parPrivateDnsZones="['privatelink.file.core.windows.net', 'privatelink.wvd.microsoft.com']"
-  #         deploymentName: create_hub_network-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         additionalArguments: "--what-if"
-  #     - name: Get Hub network resources - Preview
-  #       id: get_hub_network_resources_preview
-  #       uses: azure/cli@v2
-  #       with:
-  #         azcliversion: latest
-  #         inlineScript: |
-  #           az account set -s "${{ env.ConnectivitySubId }}"
-  #           privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
-  #           echo "$privateDnsResourceGroupId"
-  #           echo "privateDnsResourceGroupId=$privateDnsResourceGroupId" >> "$GITHUB_OUTPUT"
-  #     - name: Show Hub network resources - Preview
-  #       id: show_hub_network_resources_preview
-  #       run: |
-  #         echo "privateDnsResourceGroupId: ${{ steps.get_hub_network_resources_preview.outputs.privateDnsResourceGroupId}}"
-  #     - name: Deploy Subscription Placement - Preview
-  #       id: create_subscription_placement_preview
-  #       uses: azure/arm-deploy@v1
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/orchestration/subPlacementAll/parameters/subPlacementAll.parameters.all.json
-  #           parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-  #           parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-  #           parPlatformManagementMgSubs="['${{ env.MgmtSubId }}']"
-  #           parPlatformConnectivityMgSubs="['${{ env.ConnectivitySubId }}']"
-  #           parPlatformIdentityMgSubs="['${{ env.IdentitySubId }}']"
-  #         deploymentName: create_subscription_placement-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         additionalArguments: "--what-if"
-  #     - name: Deploy Default Policy Assignments - Preview
-  #       id: create_policy_assignments_preview
-  #       uses: azure/arm-deploy@v1
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
-  #           parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-  #           parDdosEnabled=false
-  #           parDdosProtectionPlanId=''
-  #           parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
-  #           parLogAnalyticsWorkspaceResourceId=${{ steps.get_logging_resources_preview.outputs.logAnalyticsWorkspaceResourceId}}
-  #           parDataCollectionRuleVMInsightsResourceId=${{ steps.get_logging_resources_preview.outputs.dataCollectionRuleVMInsightsId }}
-  #           parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_logging_resources_preview.outputs.dataCollectionRuleChangeTrackingResourceId }}
-  #           parDataCollectionRuleMDFCSQLResourceId=${{ steps.get_logging_resources_preview.outputs.dataCollectionRuleMDFCSQLId }}
-  #           parUserAssignedManagedIdentityResourceId=${{ steps.get_logging_resources_preview.outputs.userAssignedManagedIdentityId }}
-  #           parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
-  #           parPrivateDnsResourceGroupId=${{ steps.get_hub_network_resources_preview.outputs.privateDnsResourceGroupId }}
-  #           parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-  #         deploymentName: create_policy_assignments-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #         additionalArguments: "--what-if"
-  #
-  #     - name: Deploy Custom Policy Definitions - Deployment
-  #       id: create_policy_defs_deployment
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
-  #         parameters: infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.all.json parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         deploymentName: create_policy_defs_validation-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #     - name: Deploy Custom Role Definitions - Deployment
-  #       id: create_rbac_roles_deployment
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
-  #         parameters: infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.all.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         deploymentName: create_rbac_roles-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #     - name: Deploy Logging Resource Group - Deployment
-  #       id: create_logging_rg_deployment
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: subscription
-  #         subscriptionId: ${{ env.LoggingSubId }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-  #         parameters: parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
-  #         deploymentName: create_logging_rg-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #     - name: Deploy Logging - Deployment
-  #       id: create_logging_deployment
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: resourcegroup
-  #         subscriptionId: ${{ env.LoggingSubId }}
-  #         region: ${{ env.Location }}
-  #         resourceGroupName: ${{ env.LoggingResourceGroupName }}
-  #         template: infra-as-code/bicep/modules/logging/logging.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/modules/logging/parameters/logging.parameters.all.json
-  #           parLogAnalyticsWorkspaceLocation=${{env.Location}}
-  #           parAutomationAccountLocation=${{env.Location}}
-  #         deploymentName: create_logging-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #     - name: Deploy MG Diag Settings - Deployment
-  #       id: mg_diag_settings_deployment
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: managementgroup
-  #         region: ${{ env.Location }}
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         template: infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.all.json
-  #           parLogAnalyticsWorkspaceResourceId=${{steps.create_logging_deployment.outputs.outLogAnalyticsWorkspaceId}}
-  #           parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-  #           parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-  #         deploymentName: mg_diag_settings-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #     - name: Deploy Hub Networking Resource Group - Deployment
-  #       id: create_hub_network_rg_deployment
-  #       uses: azure/arm-deploy@v2
-  #       with:
-  #         scope: subscription
-  #         subscriptionId: ${{ env.ConnectivitySubId }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-  #         parameters: parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
-  #         deploymentName: create_hub_network_rg-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #     - name: Deploy Hub Network - Deployment
-  #       id: create_hub_network_deploy
-  #       uses: azure/arm-deploy@v1
-  #       with:
-  #         scope: resourcegroup
-  #         subscriptionId: ${{ env.ConnectivitySubId }}
-  #         resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-  #         template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.all.json
-  #           parLocation=${{ env.Location }}
-  #           parCompanyPrefix=${{ env.ManagementGroupPrefix }}
-  #           parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
-  #           parAzBastionEnabled=false
-  #           parDdosEnabled=false
-  #           parAzFirewallEnabled=false
-  #           parAzFirewallName=${{ env.ManagementGroupPrefix }}-azfw-${{ env.Location }}
-  #           parAzFirewallPoliciesName=${{ env.ManagementGroupPrefix }}-azfwpolicy-${{ env.Location }}
-  #           parHubRouteTableName=${{ env.ManagementGroupPrefix }}-hub-routetable-${{ env.Location }}
-  #           parVpnGatewayEnabled=false
-  #           parExpressRouteGatewayEnabled=false
-  #           parPrivateDnsZoneAutoMergeAzureBackupZone=true
-  #           parPrivateDnsZonesEnabled=true
-  #           parPrivateDnsZones="['privatelink.file.core.windows.net', 'privatelink.wvd.microsoft.com']"
-  #         deploymentName: create_hub_network-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #     - name: Deploy Subscription Placement - Deployment
-  #       id: create_subscription_placement_deployment
-  #       uses: azure/arm-deploy@v1
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/orchestration/subPlacementAll/parameters/subPlacementAll.parameters.all.json
-  #           parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-  #           parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-  #           parPlatformManagementMgSubs="['${{ env.MgmtSubId }}']"
-  #           parPlatformConnectivityMgSubs="['${{ env.ConnectivitySubId }}']"
-  #           parPlatformIdentityMgSubs="['${{ env.IdentitySubId }}']"
-  #         deploymentName: create_subscription_placement-${{ env.runNumber }}
-  #         failOnStdErr: false
-  #     - name: Deploy Default Policy Assignments - Deployment
-  #       id: create_policy_assignments_deploy
-  #       uses: azure/arm-deploy@v1
-  #       with:
-  #         scope: managementgroup
-  #         managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-  #         region: ${{ env.Location }}
-  #         template: infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep
-  #         parameters: >-
-  #           infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
-  #           parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-  #           parDdosEnabled=false
-  #           parDdosProtectionPlanId=''
-  #           parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
-  #           parLogAnalyticsWorkspaceResourceId=${{ steps.create_logging_deployment.outputs.outLogAnalyticsWorkspaceId}}
-  #           parDataCollectionRuleVMInsightsResourceId=${{ steps.create_logging_deployment.outputs.outdataCollectionRuleVMInsightsId }}
-  #           parDataCollectionRuleChangeTrackingResourceId=${{ steps.create_logging_deployment.outputs.outDataCollectionRuleChangeTrackingResourceId }}
-  #           parDataCollectionRuleMDFCSQLResourceId=${{ steps.create_logging_deployment.outputs.outDataCollectionRuleMDFCSQLId }}
-  #           parUserAssignedManagedIdentityResourceId=${{ steps.create_logging_deployment.outputs.outUserAssignedManagedIdentityId }}
-  #           parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
-  #           parPrivateDnsResourceGroupId=${{ steps.create_hub_network_rg_deployment.outputs.outResourceGroupId }}
-  #           parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-  #         deploymentName: create_policy_assignments-${{ env.runNumber }}
-  #         failOnStdErr: false
   # rollback:
   #   runs-on: ubuntu-latest
   #   needs: deploy
