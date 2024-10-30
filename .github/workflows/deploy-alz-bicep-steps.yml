@@ -928,8 +928,8 @@ jobs:
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
             parPrivateDnsResourceGroupId=${{ steps.get_resources.outputs.privateDnsResourceGroupId }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
-            deploymentName: deploy_defPolAssign_preview-${{ env.runNumber }}
-            failOnStdErr: false
+          deploymentName: deploy_defPolAssign_preview-${{ env.runNumber }}
+          failOnStdErr: false
           additionalArguments: "--what-if"
   deploy_DefPol_Assignment:
     runs-on: ubuntu-latest
