@@ -794,7 +794,7 @@ jobs:
   deploy_subPlacement:
     runs-on: ubuntu-latest
     needs: [validate_preview_subPlacement]
-    environment: Deploy
+    environment: deploy
     name: Deploy Sub Placement - Deployment
     steps:
       - name: Checkout Repo
