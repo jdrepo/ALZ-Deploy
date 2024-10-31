@@ -1,17 +1,23 @@
 name: ALZ Bicep workflow deployment pipeline
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/deploy-alz-bicep-steps.yml"
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - ".github/workflows/deploy-alz-bicep-steps.yml"
   workflow_dispatch:
     inputs:
       environment:
         default: "canary"
         required: true
-        type: string 
+        type: string
+  workflow_call:
+    inputs:
+      environment:
+        default: "canary"
+        required: true
+        type: string
   
 
 env:
