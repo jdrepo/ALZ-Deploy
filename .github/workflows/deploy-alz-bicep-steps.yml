@@ -931,7 +931,7 @@ jobs:
             ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parDdosEnabled=false
-            parDdosProtectionPlanId=''
+            parDdosProtectionPlanId=""
             parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources.outputs.dataCollectionRuleVMInsightsId }}
@@ -1006,7 +1006,7 @@ jobs:
             ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parDdosEnabled=false
-            parDdosProtectionPlanId=''
+            parDdosProtectionPlanId=""
             parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources.outputs.dataCollectionRuleVMInsightsId }}
