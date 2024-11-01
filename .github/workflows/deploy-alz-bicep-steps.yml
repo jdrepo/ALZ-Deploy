@@ -12,20 +12,44 @@ on:
         default: "canary"
         required: true
         type: string
+      alzBicepRelease:
+        default: "0.19.4"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz-bicep"
+        required: true
+        type: string
+      location:
+        default: "germanywestcentral"
+        required: true
+        type: string
   workflow_call:
     inputs:
       environment:
         default: "canary"
         required: true
         type: string
+      alzBicepRelease:
+        default: "0.19.4"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz-bicep"
+        required: true
+        type: string
+      location:
+        default: "germanywestcentral"
+        required: true
+        type: string
   
 
 env:
-  alzBicepRelease: "v0.19.4"
-  ManagementGroupPrefix: "alz-bicep"
-  ManagementGroupSuffix: "-canary01"
-  TopLevelManagementGroupDisplayName: "ALZ-Bicep-Canary01"
-  Location: "germanywestcentral"
+  alzBicepRelease: ${{inputs.alzBicepRelease}}
+  ManagementGroupPrefix: ${{inputs.managementGroupPrefix}}
+  ManagementGroupSuffix: ${{inputs.environment}}
+  TopLevelManagementGroupDisplayName: "ALZ-${{inputs.managementGroupPrefix}}-${{inputs.environment}}"
+  Location: ${{inputs.location}}
   LoggingResourceGroupName: "rg-alz-bicep-canary01-logging-001"
   HubNetworkResourceGroupName: "rg-alz-bicep-canary01-hub-networking-001"
   HubNetworkAddressPrefix: "10.10.0.0/16"
