@@ -404,7 +404,7 @@ jobs:
           failOnStdErr: false
   validate_preview_logging:
     runs-on: ubuntu-latest
-    needs: [deploy_custom_role_definitions]
+    needs: [deploy_logging_rg]
     name: Deploy Logging Resources - Validation and Preview
     steps:
       - name: Checkout Repo
