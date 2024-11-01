@@ -31,7 +31,7 @@ on:
         required: true
         type: string
       alzBicepRelease:
-        default: "0.19.4"
+        default: "v0.19.4"
         required: true
         type: string
       managementGroupPrefix:
