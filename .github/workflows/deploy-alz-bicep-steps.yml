@@ -53,7 +53,7 @@ env:
   checkoutPath: "main" ## weg
   LoggingResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-logging-001"
   HubNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-networking-001"
-  HubNetworkAddressPrefix: "10.10.0.0/16"
+  #HubNetworkAddressPrefix: "10.10.0.0/16"
   # logAnalyticsWorkspaceName: "alz-log-analytics" 
   # dataCollectionRuleVMInsightsName: "alz-ama-vmi-dcr" 
   # dataCollectionRuleChangeTrackingName: "alz-ama-ct-dcr" 
@@ -547,7 +547,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           parameters: >-
-            infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.${{inputs.environment}}l.json
+            infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.${{inputs.environment}}.json
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
@@ -563,7 +563,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           parameters: >-
-            infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.${{inputs.environment}}l.json
+            infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.${{inputs.environment}}.json
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
@@ -611,7 +611,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           parameters: >-
-            infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.${{inputs.environment}}l.json
+            infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.${{inputs.environment}}.json
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
@@ -708,8 +708,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          path: main
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
@@ -732,24 +730,11 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: ./main/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            ./main/deploy/hubNetworking.parameters.json
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
             parLocation=${{ env.Location }}
-            parCompanyPrefix=${{ env.ManagementGroupPrefix }}
-            parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
-            parHubNetworkAddressPrefix=${{ env.HubNetworkAddressPrefix }}
-            parAzBastionEnabled=false
-            parDdosEnabled=false
-            parAzFirewallEnabled=false
-            parAzFirewallName=${{ env.ManagementGroupPrefix }}-azfw-${{ env.Location }}
-            parAzFirewallPoliciesName=${{ env.ManagementGroupPrefix }}-azfwpolicy-${{ env.Location }}
-            parHubRouteTableName=${{ env.ManagementGroupPrefix }}-hub-routetable-${{ env.Location }}
-            parVpnGatewayEnabled=false
-            parExpressRouteGatewayEnabled=false
-            parPrivateDnsZoneAutoMergeAzureBackupZone=true
-            parPrivateDnsZonesEnabled=true
-            parPrivateDnsZones="['privatelink.file.core.windows.net', 'privatelink.wvd.microsoft.com']"
+            parCompanyPrefix=${{ env.ManagementGroupPrefix }}            
           deploymentName: deploy_hubNetwork_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -761,23 +746,11 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: ./main/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            ./main/deploy/hubNetworking.parameters.json
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
             parLocation=${{ env.Location }}
-            parCompanyPrefix=${{ env.ManagementGroupPrefix }}
-            parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
-            parAzBastionEnabled=false
-            parDdosEnabled=false
-            parAzFirewallEnabled=false
-            parAzFirewallName=${{ env.ManagementGroupPrefix }}-azfw-${{ env.Location }}
-            parAzFirewallPoliciesName=${{ env.ManagementGroupPrefix }}-azfwpolicy-${{ env.Location }}
-            parHubRouteTableName=${{ env.ManagementGroupPrefix }}-hub-routetable-${{ env.Location }}
-            parVpnGatewayEnabled=false
-            parExpressRouteGatewayEnabled=false
-            parPrivateDnsZoneAutoMergeAzureBackupZone=true
-            parPrivateDnsZonesEnabled=true
-            parPrivateDnsZones="['privatelink.file.core.windows.net', 'privatelink.wvd.microsoft.com']"
+            parCompanyPrefix=${{ env.ManagementGroupPrefix }}      
           deploymentName: deploy_hubNetwork_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"   
@@ -789,8 +762,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          path: main
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
@@ -813,24 +784,11 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: ./main/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            ./main/deploy/hubNetworking.parameters.json
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
             parLocation=${{ env.Location }}
-            parCompanyPrefix=${{ env.ManagementGroupPrefix }}
-            parHubNetworkName=${{ env.ManagementGroupPrefix }}-hub-${{ env.Location }}
-            parHubNetworkAddressPrefix=${{ env.HubNetworkAddressPrefix }}
-            parAzBastionEnabled=false
-            parDdosEnabled=false
-            parAzFirewallEnabled=false
-            parAzFirewallName=${{ env.ManagementGroupPrefix }}-azfw-${{ env.Location }}
-            parAzFirewallPoliciesName=${{ env.ManagementGroupPrefix }}-azfwpolicy-${{ env.Location }}
-            parHubRouteTableName=${{ env.ManagementGroupPrefix }}-hub-routetable-${{ env.Location }}
-            parVpnGatewayEnabled=false
-            parExpressRouteGatewayEnabled=false
-            parPrivateDnsZoneAutoMergeAzureBackupZone=true
-            parPrivateDnsZonesEnabled=true
-            parPrivateDnsZones="['privatelink.file.core.windows.net', 'privatelink.wvd.microsoft.com']"
+            parCompanyPrefix=${{ env.ManagementGroupPrefix }}      
           deploymentName: deploy_hubNetwork_deployment-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_subPlacement:
@@ -840,8 +798,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          path: main
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
@@ -865,7 +821,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
           parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/parameters/subPlacementAll.parameters.all.json
+            infra-as-code/bicep/orchestration/subPlacementAll/parameters/subPlacementAll.parameters.${{inputs.environment}}.json
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
             parPlatformManagementMgSubs="['${{ env.MgmtSubId }}']"
@@ -883,7 +839,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
           parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/parameters/subPlacementAll.parameters.all.json
+            infra-as-code/bicep/orchestration/subPlacementAll/parameters/subPlacementAll.parameters.${{inputs.environment}}.json
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
             parPlatformManagementMgSubs="['${{ env.MgmtSubId }}']"
@@ -900,8 +856,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          path: main
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
@@ -925,7 +879,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
           parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/parameters/subPlacementAll.parameters.all.json
+            infra-as-code/bicep/orchestration/subPlacementAll/parameters/subPlacementAll.parameters.${{inputs.environment}}.json
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
             parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
             parPlatformManagementMgSubs="['${{ env.MgmtSubId }}']"
@@ -940,8 +894,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          path: main
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
