@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "parTopLevelManagementGroupPrefix": {
-      "value": "alz"
+      "value": "alz-bicep"
     },
     "parTopLevelManagementGroupSuffix": {
-      "value": ""
+      "value": "-canary"
     },
     "parIntRootMgSubs": {
       "value": []

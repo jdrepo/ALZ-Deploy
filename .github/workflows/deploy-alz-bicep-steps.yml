@@ -48,25 +48,15 @@ env:
   alzBicepRelease: ${{inputs.alzBicepRelease}}
   ManagementGroupPrefix: ${{inputs.managementGroupPrefix}}
   ManagementGroupSuffix: "-${{inputs.environment}}"
-  TopLevelManagementGroupDisplayName: "ALZ-${{inputs.managementGroupPrefix}}-${{inputs.environment}}"
+  TopLevelManagementGroupDisplayName: "${{inputs.managementGroupPrefix}}-${{inputs.environment}}"
   Location: ${{inputs.location}}
-  checkoutPath: "main" ## weg
   LoggingResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-logging-001"
   HubNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-networking-001"
-  #HubNetworkAddressPrefix: "10.10.0.0/16"
-  # logAnalyticsWorkspaceName: "alz-log-analytics" 
-  # dataCollectionRuleVMInsightsName: "alz-ama-vmi-dcr" 
-  # dataCollectionRuleChangeTrackingName: "alz-ama-ct-dcr" 
-  # dataCollectionRuleMDFCSQLName: "alz-ama-mdfcsql-dcr" 
-  # userAssignedManagedIdentityName: "alz-logging-mi" 
   LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
   IdentitySubId: ${{ secrets.IDENTITY_SUB_ID }}
   MgmtSubId: ${{ secrets.MGMT_SUB_ID }}
   ConnectivitySubId: ${{ secrets.CONNECTIVITY_SUB_ID }}
   DefenderForCloudEmailSecurityContact: ${{ secrets.DFC_EMAIL_SECURITY_CONTACT }}
-  RoleAssignmentManagementGroupId: "alz-bicep-platform-prod"
-  SpokeNetworkSubId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  SpokeNetworkResourceGroupName: "Spoke_Networking_POC"
   runNumber: ${{ github.run_number }}
 
 permissions:
@@ -331,7 +321,9 @@ jobs:
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
-          parameters: infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.${{inputs.environment}}.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          parameters: >-
+            infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.${{inputs.environment}}.json 
+            parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_logging_rg:
@@ -694,10 +686,10 @@ jobs:
           scope: subscription
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
-          template: >-
+          template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          parameters: >-
             infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
-            ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-          parameters: parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
+            parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
           deploymentName: deploy_hubNetworkRg_deployment-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_hubNetwork:
@@ -943,11 +935,9 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep
           parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
+            infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.${{inputs.environment}}.json
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-            parDdosEnabled=false
-            parDdosProtectionPlanId=""
-            parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
+            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources.outputs.dataCollectionRuleVMInsightsId }}
             parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.outputs.dataCollectionRuleChangeTrackingResourceId }}
@@ -955,7 +945,6 @@ jobs:
             parUserAssignedManagedIdentityResourceId=${{ steps.get_resources.outputs.userAssignedManagedIdentityId }}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
             parPrivateDnsResourceGroupId=${{ steps.get_resources.outputs.privateDnsResourceGroupId }}
-            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_defPolAssign_validate-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -968,11 +957,9 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep
           parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
+            infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.${{inputs.environment}}.json
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-            parDdosEnabled=false
-            parDdosProtectionPlanId=""
-            parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
+            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources.outputs.dataCollectionRuleVMInsightsId }}
             parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.outputs.dataCollectionRuleChangeTrackingResourceId }}
@@ -980,7 +967,6 @@ jobs:
             parUserAssignedManagedIdentityResourceId=${{ steps.get_resources.outputs.userAssignedManagedIdentityId }}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
             parPrivateDnsResourceGroupId=${{ steps.get_resources.outputs.privateDnsResourceGroupId }}
-            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_defPolAssign_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -992,8 +978,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          path: main
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
@@ -1043,11 +1027,9 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep
           parameters: >-
-            ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.all.json
+            infra-as-code/bicep/modules/policy/assignments/alzDefaults/parameters/alzDefaultPolicyAssignments.parameters.${{inputs.environment}}.json
             parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-            parDdosEnabled=false
-            parDdosProtectionPlanId=""
-            parLogAnalyticsWorkSpaceAndAutomationAccountLocation=${{env.Location}}
+            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             parDataCollectionRuleVMInsightsResourceId=${{ steps.get_resources.outputs.dataCollectionRuleVMInsightsId }}
             parDataCollectionRuleChangeTrackingResourceId=${{ steps.get_resources.outputs.dataCollectionRuleChangeTrackingResourceId }}
@@ -1055,7 +1037,6 @@ jobs:
             parUserAssignedManagedIdentityResourceId=${{ steps.get_resources.outputs.userAssignedManagedIdentityId }}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
             parPrivateDnsResourceGroupId=${{ steps.get_resources.outputs.privateDnsResourceGroupId }}
-            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_defPolAssign_deployment-${{ env.runNumber }}
           failOnStdErr: false
     

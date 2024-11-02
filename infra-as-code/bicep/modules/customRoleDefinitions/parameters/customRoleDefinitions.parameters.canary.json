@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "parAssignableScopeManagementGroupId": {
-      "value": "alz"
+      "value": "alz-bicep-canary"
     },
     "parTelemetryOptOut": {
       "value": false
