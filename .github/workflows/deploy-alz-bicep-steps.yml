@@ -47,9 +47,10 @@ on:
 env:
   alzBicepRelease: ${{inputs.alzBicepRelease}}
   ManagementGroupPrefix: ${{inputs.managementGroupPrefix}}
-  ManagementGroupSuffix: ${{inputs.environment}}
+  ManagementGroupSuffix: "-${{inputs.environment}}"
   TopLevelManagementGroupDisplayName: "ALZ-${{inputs.managementGroupPrefix}}-${{inputs.environment}}"
   Location: ${{inputs.location}}
+  checkoutPath: "main"
   LoggingResourceGroupName: "rg-alz-bicep-canary01-logging-001"
   HubNetworkResourceGroupName: "rg-alz-bicep-canary01-hub-networking-001"
   HubNetworkAddressPrefix: "10.10.0.0/16"
@@ -79,8 +80,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          path: main
+        # with:
+        #   path: ${{ env.checkoutPath }}
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
@@ -113,8 +114,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          path: main
+        # with:
+        #   path: main
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
@@ -134,6 +135,7 @@ jobs:
         shell: bash
         run: |
             az deployment tenant validate --template-file ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep \
+            --parameters infra-as-code/bicep/modules/managementGroups/parameters/managementGroups.parameters.${{inputs.environment}}.json \
             --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
             --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
             --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
@@ -143,6 +145,7 @@ jobs:
         shell: bash
         run: |
             az deployment tenant what-if --template-file ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep \
+            --parameters infra-as-code/bicep/modules/managementGroups/parameters/managementGroups.parameters.${{inputs.environment}}.json \
             --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
             --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
             --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
@@ -155,8 +158,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          path: main
+        # with:
+        #   path: main
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
@@ -176,6 +179,7 @@ jobs:
         shell: bash
         run: |
             az deployment tenant create --template-file ALZ-Bicep/infra-as-code/bicep/modules/managementGroups/managementGroups.bicep \
+            --parameters infra-as-code/bicep/modules/managementGroups/parameters/managementGroups.parameters.${{inputs.environment}}.json \
             --parameters parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }} \
             --parameters parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }} \
             --parameters parTopLevelManagementGroupDisplayName="${{ env.TopLevelManagementGroupDisplayName }}" \
