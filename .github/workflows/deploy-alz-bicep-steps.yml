@@ -363,8 +363,8 @@ jobs:
           subscriptionId: ${{ env.LoggingSubId }}
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-          parameters: |
-           infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json 
+          parameters: >-
+           infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
            parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
           deploymentName: deploy_logging_rg_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -377,7 +377,7 @@ jobs:
           subscriptionId: ${{ env.LoggingSubId }}
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-          parameters: |
+          parameters: >-
            infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json 
            parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
           deploymentName: deploy_logging_rg_preview-${{ env.runNumber }}
@@ -413,7 +413,7 @@ jobs:
           subscriptionId: ${{ env.LoggingSubId }}
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-          parameters: |
+          parameters: >-
            infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json 
            parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}          
            deploymentName: deploy_logging_rg_deploy-${{ env.runNumber }}
