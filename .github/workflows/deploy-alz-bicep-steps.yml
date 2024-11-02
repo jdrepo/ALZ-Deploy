@@ -881,7 +881,7 @@ jobs:
           failOnStdErr: false
   validate_preview_DefPol_Assignment:
     runs-on: ubuntu-latest
-    needs: [deploy_subPlacement]
+    needs: [deploy_subPlacement,deploy_logging]
     name: Deploy Default Policy Assignment - Validation and Preview
     steps:
       - name: Checkout Repo
@@ -1067,4 +1067,4 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: run wipe script
         shell: pwsh
-        run: ALZ-Bicep/accelerator/script/destroy-landing-zone.ps1
+        run: ALZ-Bicep/accelerator/scripts/destroy-landing-zone.ps1
