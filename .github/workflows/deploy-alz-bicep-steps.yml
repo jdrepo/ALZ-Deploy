@@ -908,7 +908,7 @@ jobs:
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceName1=$(jq .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
-            logAnalyticsWorkspaceName2=${{job.deploy_logging.outputs.outLogAnalyticsWorkspaceName}}
+            logAnalyticsWorkspaceName2="${{needs.deploy_logging.outputs.outLogAnalyticsWorkspaceName}}"
             logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
             dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-vmi-dcr --query id )
             dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
@@ -1065,3 +1065,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: run wipe script
+        shell: pwsh
+        run: ALZ-Bicep/accelerator/script/destroy-landing-zone.ps1
