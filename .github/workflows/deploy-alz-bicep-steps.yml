@@ -499,6 +499,7 @@ jobs:
             parAutomationAccountLocation=${{env.Location}}
           deploymentName: deploy_logging-deploy-${{ env.runNumber }}
           failOnStdErr: false
+      - run: echo "outputs ${{steps.deploy_logging_deployment.outputs.outLogAnalyticsWorkspaceName}}"
   validate_preview_mgDiagSettings:
     runs-on: ubuntu-latest
     needs: [deploy_logging]
@@ -529,9 +530,7 @@ jobs:
             az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
             echo "$logAnalyticsWorkspaceResourceId"
-            echo "laws2: ${{needs.deploy_logging.outputs.outLogAnalyticsWorkspaceName}}"
             echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
-      - run: echo "outputs ${{needs.deploy_logging.outputs.outLogAnalyticsWorkspaceName}}"    
       - name: Deploy MG Diag Settings - Validation
         id: deploy_mgDiagSettings_validation
         uses: azure/arm-deploy@v2
