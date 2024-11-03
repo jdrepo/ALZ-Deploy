@@ -895,6 +895,7 @@ jobs:
           ref: ${{ env.alzBicepRelease }}
       - name: Show env
         run: env | sort
+      - run: echo "outputs ${{needs.jobs.deploy_logging.outputs.outLogAnalyticsWorkspaceName}}"
       - name: Azure Login with OIDC
         uses: azure/login@v2
         with:
