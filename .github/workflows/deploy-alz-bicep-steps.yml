@@ -882,7 +882,7 @@ jobs:
           failOnStdErr: false
   validate_preview_DefPol_Assignment:
     runs-on: ubuntu-latest
-    needs: [deploy_subPlacement,deploy_logging]
+    needs: [deploy_subPlacement]
     name: Deploy Default Policy Assignment - Validation and Preview
     steps:
       - name: Checkout Repo
@@ -895,7 +895,6 @@ jobs:
           ref: ${{ env.alzBicepRelease }}
       - name: Show env
         run: env | sort
-      - run: echo "outputs ${{needs.jobs.deploy_logging.outputs.outLogAnalyticsWorkspaceName}}"
       - name: Azure Login with OIDC
         uses: azure/login@v2
         with:
@@ -909,9 +908,8 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
-            logAnalyticsWorkspaceName1=$(jq .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
-            logAnalyticsWorkspaceName2="${{needs.deploy_logging.outputs.outLogAnalyticsWorkspaceName}}"
-            logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
+            logAnalyticsWorkspaceName=$(jq .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
+            logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name $logAnalyticsWorkspaceName --query id)
             dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-vmi-dcr --query id )
             dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
             dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-mdfcsql-dcr --query id )
@@ -919,8 +917,6 @@ jobs:
             az account set -s "${{ env.ConnectivitySubId }}"
             privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
             echo "$logAnalyticsWorkspaceResourceId"
-            echo "logAnalyticsWorkspaceName1: $logAnalyticsWorkspaceName1"
-            echo "logAnalyticsWorkspaceName2: $logAnalyticsWorkspaceName2"
             echo "$dataCollectionRuleVMInsightsId"
             echo "$dataCollectionRuleChangeTrackingResourceId"
             echo "$dataCollectionRuleMDFCSQLId"
