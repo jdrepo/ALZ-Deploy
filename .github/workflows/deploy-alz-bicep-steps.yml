@@ -1106,7 +1106,7 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: infra-as-code/bicep/modules/policy/assignments/customDefaults/alzCustomPolicyAssignments.bicep
+          template: infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
           parameters: >-
             infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
           deploymentName: deploy_custPolAssign_preview-${{ env.runNumber }}
