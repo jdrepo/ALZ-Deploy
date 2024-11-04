@@ -1,4 +1,4 @@
-name: ALZ Bicep workflow deployment pipeline
+name: Deploy ALZ Base Components 
 
 on:
   # push:
@@ -22,7 +22,6 @@ on:
         type: string
       location:
         default: "germanywestcentral"
-        required: true
         type: string
   workflow_call:
     inputs:
@@ -40,9 +39,25 @@ on:
         type: string
       location:
         default: "germanywestcentral"
-        required: true
         type: string
-  
+    secrets:
+      LOGGING_SUB_ID:
+        required: false
+      IDENTITY_SUB_ID:
+        required: false
+      MGMT_SUB_ID:
+        required: false
+      CONNECTIVITY_SUB_ID:
+        required: false
+      DFC_EMAIL_SECURITY_CONTACT:
+        required: false
+      AZURE_CLIENT_ID:
+        required: false
+      AZURE_TENANT_ID:
+        required: false
+      AZURE_SUBSCRIPTION_ID:
+        required: false
+
 
 env:
   alzBicepRelease: ${{inputs.alzBicepRelease}}

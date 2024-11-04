@@ -1,7 +1,30 @@
 metadata name = 'ALZ Bicep - Custom Policy Assignments'
 metadata description = 'Assigns ALZ Custom Policies to the Management Group hierarchy'
 
+type policyAssignmentSovereigntyGlobalOptionsType = {
+  @description('Enable/disable Sovereignty Baseline - Global Policies at root management group.')
+  parTopLevelSovereigntyGlobalPoliciesEnable: bool
 
+  @description('Allowed locations for resource deployment. Empty = deployment location only.')
+  parListOfAllowedLocations: string[]
+
+  @description('Effect for Sovereignty Baseline - Global Policies.')
+  parPolicyEffect: ('Audit' | 'Deny' | 'Disabled' | 'AuditIfNotExists')
+}
+
+type policyAssignmentSovereigntyConfidentialOptionsType = {
+  @description('Approved Azure resource types (e.g., Confidential Computing SKUs). Empty = allow all.')
+  parAllowedResourceTypes: string[]
+
+  @description('Allowed locations for resource deployment. Empty = deployment location only.')
+  parListOfAllowedLocations: string[]
+
+  @description('Approved VM SKUs for Azure Confidential Computing. Empty = allow all.')
+  parAllowedVirtualMachineSKUs: string[]
+
+  @description('Effect for Sovereignty Baseline - Confidential Policies.')
+  parPolicyEffect: ('Audit' | 'Deny' | 'Disabled' | 'AuditIfNotExists')
+}
 
 @description('Prefix for management group hierarchy.')
 @minLength(2)
@@ -11,6 +34,21 @@ param parTopLevelManagementGroupPrefix string = 'alz'
 @description('Optional suffix for management group names/IDs.')
 @maxLength(10)
 param parTopLevelManagementGroupSuffix string = ''
+
+@description('Assign Sovereignty Baseline - Global Policies to root management group.')
+param parTopLevelPolicyAssignmentSovereigntyGlobal policyAssignmentSovereigntyGlobalOptionsType = {
+  parTopLevelSovereigntyGlobalPoliciesEnable: false
+  parListOfAllowedLocations: []
+  parPolicyEffect: 'Deny'
+}
+
+@description('Assign Sovereignty Baseline - Confidential Policies to confidential landing zone groups.')
+param parPolicyAssignmentSovereigntyConfidential policyAssignmentSovereigntyConfidentialOptionsType = {
+  parAllowedResourceTypes: []
+  parListOfAllowedLocations: []
+  parAllowedVirtualMachineSKUs: []
+  parPolicyEffect: 'Deny'
+}
 
 @description('Apply platform policies to Platform group or child groups.')
 param parPlatformMgAlzDefaultsEnable bool = true
