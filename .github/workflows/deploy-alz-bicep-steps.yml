@@ -909,7 +909,8 @@ jobs:
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceName=$(jq .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
-            logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name $logAnalyticsWorkspaceName --query id)
+            echo $logAnalyticsWorkspaceName
+            logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name "alz-log-analytics" --query id)
             dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-vmi-dcr --query id )
             dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
             dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-mdfcsql-dcr --query id )
