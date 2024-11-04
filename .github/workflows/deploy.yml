@@ -1,0 +1,43 @@
+name: Deploy complete ALZ solution
+
+on:
+  workflow_dispatch:
+
+jobs:
+  alz-deploy-base-canary:
+    name: "Deploy ALZ Base Components - Canary"
+    uses: ./.github/workflows/deploy-alz-bicep-steps.yml
+    with:
+      environment: "canary"
+      alzBicepRelease: "v0.19.4"
+      managementGroupPrefix: "alz"
+      location: "germanywestcentral"
+    secrets:
+      LOGGING_SUB_ID: ${{ secrets.LOGGING_SUB_ID_CANARY }}
+      IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_CANARY}}
+      MGMT_SUB_ID: ${{ secrets.MGMT_SUB_ID_CANARY}}
+      CONNECTIVITY_SUB_ID: ${{ secrets.CONNECTIVITY_SUB_ID_CANARY}}
+      DFC_EMAIL_SECURITY_CONTACT: ${{ secrets.DFC_EMAIL_SECURITY_CONTACT_CANARY}}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
+  alz-deploy-base-prod:
+    name: "Deploy ALZ Base Components - Production"
+    uses: ./.github/workflows/deploy-alz-bicep-steps.yml
+    with:
+      environment: "prod"
+      alzBicepRelease: "v0.19.4"
+      managementGroupPrefix: "alz"
+      location: "germanywestcentral"
+    secrets:
+      LOGGING_SUB_ID: ${{ secrets.LOGGING_SUB_ID_PROD }}
+      IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_PROD}}
+      MGMT_SUB_ID: ${{ secrets.MGMT_SUB_ID_PROD}}
+      CONNECTIVITY_SUB_ID: ${{ secrets.CONNECTIVITY_SUB_ID_PROD}}
+      DFC_EMAIL_SECURITY_CONTACT: ${{ secrets.DFC_EMAIL_SECURITY_CONTACT_PROD}}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_PROD}}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_PROD}}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_PROD}}
+
+
+
+
