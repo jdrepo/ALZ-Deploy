@@ -1154,7 +1154,7 @@ jobs:
             failOnStdErr: false
   wipe:
     runs-on: ubuntu-latest
-    needs: [deploy_DefPol_Assignment]
+    needs: [deploy_CustPol_Assignment]
     environment: wipe
     steps:
       - run: echo "Here is where you'd perform the steps to wipe."

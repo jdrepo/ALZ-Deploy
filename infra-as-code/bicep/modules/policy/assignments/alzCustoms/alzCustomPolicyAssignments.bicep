@@ -148,7 +148,7 @@ var varModuleDeploymentNames = {
 
 
 var varPolicyAssignmentDenyPrivateDNSZones = {
-  definitionId: '/providers/Microsoft.Authorization/policyDefinitions/deny-private-dns-zones'
+  definitionId: '${varTopLevelManagementGroupResourceId}/providers/Microsoft.Authorization/policyDefinitions/Deny-Private-DNS-Zones'
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deny_private_dns_zones.tmpl.json')
 }
 
