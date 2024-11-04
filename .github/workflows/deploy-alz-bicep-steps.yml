@@ -909,12 +909,15 @@ jobs:
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
-            echo $logAnalyticsWorkspaceName
+            dataCollectionRuleVMInsightsName=$(jq -r .parameters.parDataCollectionRuleVMInsightsName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
+            dataCollectionRuleChangeTrackingName=$(jq -r .parameters.parDataCollectionRuleChangeTrackingName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
+            dataCollectionRuleMDFCSQLName=$(jq -r .parameters.par parDataCollectionRuleMDFCSQLName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
+            userAssignedManagedIdentityName=$(jq -r .parameters.par parUserAssignedManagedIdentityName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
             logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name $logAnalyticsWorkspaceName --query id)
-            dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-vmi-dcr --query id )
-            dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
-            dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-mdfcsql-dcr --query id )
-            userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-logging-mi --query id)
+            dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleVMInsightsName --query id )
+            dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleChangeTrackingName --query id )
+            dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleMDFCSQLName --query id )
+            userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name $userAssignedManagedIdentityName --query id)
             az account set -s "${{ env.ConnectivitySubId }}"
             privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
             echo "$logAnalyticsWorkspaceResourceId"
@@ -1002,11 +1005,16 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
-            logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
-            dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-vmi-dcr --query id )
-            dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-ct-dcr --query id )
-            dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-ama-mdfcsql-dcr --query id )
-            userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-logging-mi --query id)
+            logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
+            dataCollectionRuleVMInsightsName=$(jq -r .parameters.parDataCollectionRuleVMInsightsName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
+            dataCollectionRuleChangeTrackingName=$(jq -r .parameters.parDataCollectionRuleChangeTrackingName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
+            dataCollectionRuleMDFCSQLName=$(jq -r .parameters.par parDataCollectionRuleMDFCSQLName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
+            userAssignedManagedIdentityName=$(jq -r .parameters.par parUserAssignedManagedIdentityName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
+            logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name $logAnalyticsWorkspaceName --query id)
+            dataCollectionRuleVMInsightsId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleVMInsightsName --query id )
+            dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleChangeTrackingName --query id )
+            dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleMDFCSQLName --query id )
+            userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name $userAssignedManagedIdentityName --query id)
             az account set -s "${{ env.ConnectivitySubId }}"
             privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
             echo "$logAnalyticsWorkspaceResourceId"
@@ -1070,7 +1078,7 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: infra-as-code/bicep/modules/policy/assignments/cusromDefaults/customDefaultPolicyAssignments.bicep
+          template: infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
           parameters: >-
             infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
           deploymentName: deploy_custPolAssign_validate-${{ env.runNumber }}
