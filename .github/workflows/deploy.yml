@@ -6,7 +6,7 @@ on:
 jobs:
   alz-deploy-base-canary:
     name: "Deploy ALZ Base Components - Canary"
-    uses: ./.github/workflows/deploy-alz-bicep-steps.yml
+    uses: ./.github/workflows/deploy-alz-base.yml
     with:
       environment: "canary"
       alzBicepRelease: "v0.19.4"
@@ -22,7 +22,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
   alz-deploy-base-prod:
     name: "Deploy ALZ Base Components - Production"
-    uses: ./.github/workflows/deploy-alz-bicep-steps.yml
+    uses: ./.github/workflows/deploy-alz-base.yml
     with:
       environment: "prod"
       alzBicepRelease: "v0.19.4"
