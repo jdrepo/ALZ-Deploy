@@ -1,0 +1,117 @@
+name: Deploy AMBA to ALZ environment 
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - ".github/workflows/deploy-alz-bicep-steps.yml"
+  workflow_dispatch:
+    inputs:
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      ambaRelease:
+        default: "2024-09-02"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz-bicep"
+        required: true
+        type: string
+      location:
+        default: "germanywestcentral"
+        type: string
+      wipeAfterDeploy:
+        default: false
+        type: boolean
+
+  workflow_call:
+    inputs:
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      ambaRelease:
+        default: "2024-09-02"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz-bicep"
+        required: true
+        type: string
+      location:
+        default: "germanywestcentral"
+        type: string
+      wipeAfterDeploy:
+        default: false
+        type: boolean
+    secrets:
+      LOGGING_SUB_ID:
+        required: false
+      IDENTITY_SUB_ID:
+        required: false
+      MGMT_SUB_ID:
+        required: false
+      CONNECTIVITY_SUB_ID:
+        required: false
+      DFC_EMAIL_SECURITY_CONTACT:
+        required: false
+      AZURE_CLIENT_ID:
+        required: false
+      AZURE_TENANT_ID:
+        required: false
+      AZURE_SUBSCRIPTION_ID:
+        required: false
+
+
+env:
+  ambaRelease: ${{inputs.ambaRelease}}
+  ManagementGroupPrefix: ${{inputs.managementGroupPrefix}}
+  ManagementGroupSuffix: "-${{inputs.environment}}"
+  TopLevelManagementGroupDisplayName: "${{inputs.managementGroupPrefix}}-${{inputs.environment}}"
+  Location: ${{inputs.location}}
+  runNumber: ${{ github.run_number }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate_preview_amba:
+    runs-on: ubuntu-latest
+    name: Deploy Management Groups - Validation and Preview
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Checkout azure-monitor-baseline-alerts Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/azure-monitor-baseline-alerts
+          path: azure-monitor-baseline-alerts
+          ref: ${{ env.ambaRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy AMBA - Validate
+        id: deploy_amba_validation
+        shell: bash
+        run: |
+            az deployment mg validate --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json 
+            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }} 
+            --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json
+            --name deploy_amba_validation-${{ env.runNumber }}
+      - name: Deploy AMBA - Preview
+        id: deploy_amba_preview
+        shell: bash
+        run: |
+            az deployment mg what-if --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json 
+            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }} 
+            --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json
+            --name deploy_amba_validation-${{ env.runNumber }}
