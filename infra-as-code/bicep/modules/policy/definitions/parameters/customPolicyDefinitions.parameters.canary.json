@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "parTargetManagementGroupId": {
-            "value": "alz"
+            "value": "alz-canary"
         },
         "parTelemetryOptOut": {
             "value": false

@@ -6,7 +6,7 @@
       "value": "alz"
     },
     "parTopLevelManagementGroupSuffix": {
-      "value": ""
+      "value": "-canary"
     },
     "parTopLevelManagementGroupDisplayName": {
       "value": "Azure Landing Zones"
