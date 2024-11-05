@@ -3,6 +3,10 @@ name: Deploy complete ALZ solution
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   alz-deploy-base-canary:
     name: "Deploy ALZ Base Components - Canary"
