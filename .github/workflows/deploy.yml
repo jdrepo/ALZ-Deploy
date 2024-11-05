@@ -24,6 +24,7 @@ jobs:
       DFC_EMAIL_SECURITY_CONTACT: ${{ secrets.DFC_EMAIL_SECURITY_CONTACT_CANARY}}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
   alz-deploy-base-prod:
     name: "Deploy ALZ Base Components - Production"
     uses: ./.github/workflows/deploy-alz-base.yml
