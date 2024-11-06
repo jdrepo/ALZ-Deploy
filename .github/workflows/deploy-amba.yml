@@ -104,7 +104,7 @@ jobs:
         shell: bash
         run: |
             az deployment mg validate --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json \
-            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}-${{ env.ManagementGroupSuffix }} \
+            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json \
             --name deploy_amba_validation-${{ env.runNumber }} 
       - name: Deploy AMBA - Preview
@@ -112,6 +112,6 @@ jobs:
         shell: bash
         run: |
             az deployment mg what-if --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json \ 
-            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}-${{ env.ManagementGroupSuffix }} \
+            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json \
             --name deploy_amba_validation-${{ env.runNumber }}
