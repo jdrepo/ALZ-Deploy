@@ -17,7 +17,7 @@ on:
         required: true
         type: string
       managementGroupPrefix:
-        default: "alz-bicep"
+        default: "alz"
         required: true
         type: string
       location:
