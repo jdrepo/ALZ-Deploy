@@ -81,7 +81,7 @@ permissions:
 jobs:
   validate_preview_amba:
     runs-on: ubuntu-latest
-    name: Deploy Management Groups - Validation and Preview
+    name: Deploy AMBA - Validation and Preview
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -103,15 +103,15 @@ jobs:
         id: deploy_amba_validation
         shell: bash
         run: |
-            az deployment mg validate --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json 
-            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }} 
-            --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json
-            --name deploy_amba_validation-${{ env.runNumber }}
+            az deployment mg validate --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json \
+            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }} \
+            --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json \
+            --name deploy_amba_validation-${{ env.runNumber }} 
       - name: Deploy AMBA - Preview
         id: deploy_amba_preview
         shell: bash
         run: |
-            az deployment mg what-if --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json 
-            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }} 
-            --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json
+            az deployment mg what-if --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json \ 
+            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }} \
+            --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json \
             --name deploy_amba_validation-${{ env.runNumber }}
