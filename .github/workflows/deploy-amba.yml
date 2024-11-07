@@ -85,12 +85,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Checkout azure-monitor-baseline-alerts Repo
-        uses: actions/checkout@v4
-        with:
-          repository: Azure/azure-monitor-baseline-alerts
-          path: azure-monitor-baseline-alerts
-          ref: ${{ env.ambaRelease }}
       - name: Show env
         run: env | sort
       - name: Azure Login with OIDC
@@ -103,7 +97,7 @@ jobs:
         id: deploy_amba_validation
         shell: bash
         run: |
-            az deployment mg validate --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json \
+            az deployment mg validate --template-uri https://raw.githubusercontent.com/Azure/azure-monitor-baseline-alerts/refs/tags/${{ env.ambaRelease }}/patterns/alz/alzArm.json \
             --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json \
             --name deploy_amba_validation-${{ env.runNumber }} 
@@ -111,7 +105,7 @@ jobs:
         id: deploy_amba_preview
         shell: bash
         run: |
-            az deployment mg what-if --template-file azure-monitor-baseline-alerts/patterns/alz/alzArm.json \ 
+            az deployment mg what-if --template-uri https://raw.githubusercontent.com/Azure/azure-monitor-baseline-alerts/refs/tags/${{ env.ambaRelease }}/patterns/alz/alzArm.json \ 
             --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json \
-            --name deploy_amba_validation-${{ env.runNumber }}
+            --name deploy_amba_preview-${{ env.runNumber }}
