@@ -106,7 +106,7 @@ jobs:
         id: deploy_amba_preview
         shell: bash
         run: |
-            az deployment mg validate --template-uri https://raw.githubusercontent.com/Azure/azure-monitor-baseline-alerts/refs/tags/${{ env.ambaRelease }}/patterns/alz/alzArm.json \
+            az deployment mg what-if --template-uri https://raw.githubusercontent.com/Azure/azure-monitor-baseline-alerts/refs/tags/${{ env.ambaRelease }}/patterns/alz/alzArm.json \
             --parameters amba/parameters/alzAmba-${{ env.ambaRelease }}.param.${{inputs.environment}}.json \
             --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} \
