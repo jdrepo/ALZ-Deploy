@@ -70,7 +70,7 @@ env:
   ambaRelease: ${{inputs.ambaRelease}}
   ManagementGroupPrefix: ${{inputs.managementGroupPrefix}}
   ManagementGroupSuffix: "-${{inputs.environment}}"
-  TopLevelManagementGroupDisplayName: "${{inputs.managementGroupPrefix}}-${{inputs.environment}}"
+  ManagementSubscriptionId: ${{secrets.MGMT_SUB_ID}}
   Location: ${{inputs.location}}
   runNumber: ${{ github.run_number }}
 
@@ -98,14 +98,16 @@ jobs:
         shell: bash
         run: |
             az deployment mg validate --template-uri https://raw.githubusercontent.com/Azure/azure-monitor-baseline-alerts/refs/tags/${{ env.ambaRelease }}/patterns/alz/alzArm.json \
-            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json \
+            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
+            --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} \
             --name deploy_amba_validation-${{ env.runNumber }} 
       - name: Deploy AMBA - Preview
         id: deploy_amba_preview
         shell: bash
         run: |
-            az deployment mg what-if --template-uri https://raw.githubusercontent.com/Azure/azure-monitor-baseline-alerts/refs/tags/${{ env.ambaRelease }}/patterns/alz/alzArm.json \ 
-            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
+            az deployment mg validate --template-uri https://raw.githubusercontent.com/Azure/azure-monitor-baseline-alerts/refs/tags/${{ env.ambaRelease }}/patterns/alz/alzArm.json \
             --parameters amba/parameters/alzAmba.param.${{inputs.environment}}.json \
+            --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
+            --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} \
             --name deploy_amba_preview-${{ env.runNumber }}
