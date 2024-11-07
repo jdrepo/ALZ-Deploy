@@ -115,6 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy AMBA - Deployment
     needs: [validate_preview_amba]
+    environment: ${{inputs.environment}}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
