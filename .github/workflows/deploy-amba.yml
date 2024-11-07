@@ -136,4 +136,13 @@ jobs:
             --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} \
             --name deploy_amba_deployment-${{ env.runNumber }} 
+  remediate:
+    runs-on: ubuntu-latest
+    name: Remediate AMBA Policies
+    needs: [deploy_amba]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Show env
+        run: echo remdiate policies 
      
