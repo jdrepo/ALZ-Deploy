@@ -114,6 +114,7 @@ jobs:
   deploy_amba:
     runs-on: ubuntu-latest
     name: Deploy AMBA - Deployment
+    needs: [validate_preview_amba]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -133,5 +134,5 @@ jobs:
             --parameters amba/parameters/alzAmba-${{ env.ambaRelease }}.param.${{inputs.environment}}.json \
             --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} \
-            --name deploy_amba_validation-${{ env.runNumber }} 
+            --name deploy_amba_deployment-${{ env.runNumber }} 
      
