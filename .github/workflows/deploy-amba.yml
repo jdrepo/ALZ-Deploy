@@ -132,6 +132,10 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Show env
-        run: echo remdiate policies 
+      - name: Remediate policies
+        shell: pwsh
+        run: |
+          .\patterns\alz\scripts\Start-AMBARemediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Notification-Assets
+
+
      
