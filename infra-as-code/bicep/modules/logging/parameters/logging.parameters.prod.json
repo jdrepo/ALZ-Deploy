@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "parLogAnalyticsWorkspaceName": {
-      "value": "laws-gwc-alz-canary"
+      "value": "laws-gwc-alz-prod"
     },
     "parLogAnalyticsWorkspaceLocation": {
       "value": "germanywestcentral"
@@ -23,22 +23,22 @@
       ]
     },
     "parDataCollectionRuleVMInsightsName": {
-      "value": "dcr-ama-vmi-alz-canary"
+      "value": "dcr-ama-vmi-alz-prod"
     },
     "parDataCollectionRuleChangeTrackingName": {
-      "value": "dcr-ama-ct-alz-canary"
+      "value": "dcr-ama-ct-alz-prod"
     },
     "parDataCollectionRuleMDFCSQLName": {
-      "value": "dcr-ama-mdfcsql-alz-canary"
+      "value": "dcr-ama-mdfcsql-alz-prod"
     },
     "parUserAssignedManagedIdentityName": {
-      "value": "mi-logging-alz-canary"
+      "value": "mi-logging-alz-prod"
     },
     "parLogAnalyticsWorkspaceLinkAutomationAccount": {
       "value": true
     },
     "parAutomationAccountName": {
-      "value": "aa-gwc-alz-canary"
+      "value": "aa-gwc-alz-prod"
     },
     "parAutomationAccountLocation": {
       "value": "germanywestcentral"
@@ -51,7 +51,7 @@
     },
     "parTags": {
       "value": {
-        "Environment": "canary"
+        "Environment": "prod"
       }
     },
     "parUseSentinelClassicPricingTiers": {

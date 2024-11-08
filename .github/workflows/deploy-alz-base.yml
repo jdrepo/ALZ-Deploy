@@ -115,6 +115,7 @@ jobs:
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          az bicep build --file infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
   validate_preview_create_mgs:
@@ -219,7 +220,9 @@ jobs:
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
-          parameters: infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          parameters: >-
+            infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json 
+            parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -231,7 +234,9 @@ jobs:
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
-          parameters: infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          parameters: >-
+            infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json 
+            parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}          
           deploymentName: deploy_custom_policy_defs_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -265,7 +270,9 @@ jobs:
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
-          parameters: infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          parameters: >-
+            infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json 
+            parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}          
           deploymentName: deploy_custom_policy_defs_deploy-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_custom_role_definitions:
@@ -297,7 +304,9 @@ jobs:
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
-          parameters: infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.${{inputs.environment}}.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          parameters: >-
+            infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.${{inputs.environment}}.json 
+            parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -309,7 +318,9 @@ jobs:
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/customRoleDefinitions/customRoleDefinitions.bicep
-          parameters: infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.${{inputs.environment}}.json parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          parameters: >-
+            infra-as-code/bicep/modules/customRoleDefinitions/parameters/customRoleDefinitions.parameters.${{inputs.environment}}.json 
+            parAssignableScopeManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -379,7 +390,7 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
           parameters: >-
             infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
-            parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
+            parResourceGroupName=${{ env.LoggingResourceGroupName }}
           deploymentName: deploy_logging_rg_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate     
@@ -393,7 +404,7 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
           parameters: >-
             infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json 
-            parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}
+            parResourceGroupName=${{ env.LoggingResourceGroupName }}
           deploymentName: deploy_logging_rg_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"     
@@ -429,7 +440,7 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
           parameters: >-
             infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json 
-            parResourceGroupName=${{ env.LoggingResourceGroupName }} parLocation=${{ env.Location }}          
+            parResourceGroupName=${{ env.LoggingResourceGroupName }}         
           deploymentName: deploy_logging_rg_deploy-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_logging:
@@ -464,8 +475,6 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
           parameters: >-
             infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json
-            parLogAnalyticsWorkspaceLocation=${{env.Location}}
-            parAutomationAccountLocation=${{env.Location}}
           deploymentName: deploy_logging-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -480,8 +489,6 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
           parameters: >-
             infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json
-            parLogAnalyticsWorkspaceLocation=${{env.Location}}
-            parAutomationAccountLocation=${{env.Location}}
           deploymentName: deploy_logging-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -517,11 +524,8 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
           parameters: >-
             infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json
-            parLogAnalyticsWorkspaceLocation=${{env.Location}}
-            parAutomationAccountLocation=${{env.Location}}
           deploymentName: deploy_logging-deploy-${{ env.runNumber }}
           failOnStdErr: false
-      - run: echo "outputs ${{steps.deploy_logging_deployment.outputs.outLogAnalyticsWorkspaceName}}"
   validate_preview_mgDiagSettings:
     runs-on: ubuntu-latest
     needs: [deploy_logging]
@@ -551,7 +555,6 @@ jobs:
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
-            echo "$logAnalyticsWorkspaceResourceId"
             echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
       - name: Deploy MG Diag Settings - Validation
         id: deploy_mgDiagSettings_validation
@@ -564,8 +567,6 @@ jobs:
           parameters: >-
             infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.${{inputs.environment}}.json
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
-            parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_mgDiagSettings-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -580,8 +581,6 @@ jobs:
           parameters: >-
             infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.${{inputs.environment}}.json
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
-            parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_mgDiagSettings-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -615,7 +614,6 @@ jobs:
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name alz-log-analytics --query id)
-            echo "$logAnalyticsWorkspaceResourceId"
             echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
       - name:  Deploy MG Diag Settings - Deploy
         id: deploy_mgDiagSettings_deploy
@@ -628,8 +626,6 @@ jobs:
           parameters: >-
             infra-as-code/bicep/orchestration/mgDiagSettingsAll/parameters/mgDiagSettingsAll.parameters.${{inputs.environment}}.json
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
-            parTopLevelManagementGroupPrefix=${{ env.ManagementGroupPrefix }}
-            parTopLevelManagementGroupSuffix=${{ env.ManagementGroupSuffix }}
           deploymentName: deploy_mgDiagSettings-deploy-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_hubNetwork_rg:
@@ -663,7 +659,7 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
           parameters: >-
             infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
-            parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
+            parResourceGroupName=${{ env.HubNetworkResourceGroupName }}
           deploymentName: deploy_hubNetworkRg_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -677,7 +673,7 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
           parameters: >- 
             infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
-            parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
+            parResourceGroupName=${{ env.HubNetworkResourceGroupName }}
           deploymentName: deploy_hubNetworkRg_validation-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -712,7 +708,7 @@ jobs:
           template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
           parameters: >-
             infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
-            parResourceGroupName=${{ env.HubNetworkResourceGroupName }} parLocation=${{ env.Location }}
+            parResourceGroupName=${{ env.HubNetworkResourceGroupName }}
           deploymentName: deploy_hubNetworkRg_deployment-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_hubNetwork:
@@ -747,9 +743,7 @@ jobs:
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
-            parLocation=${{ env.Location }}
-            parCompanyPrefix=${{ env.ManagementGroupPrefix }}            
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json            
           deploymentName: deploy_hubNetwork_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -763,9 +757,7 @@ jobs:
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
-            parLocation=${{ env.Location }}
-            parCompanyPrefix=${{ env.ManagementGroupPrefix }}      
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json    
           deploymentName: deploy_hubNetwork_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"   
@@ -801,9 +793,7 @@ jobs:
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
-            parLocation=${{ env.Location }}
-            parCompanyPrefix=${{ env.ManagementGroupPrefix }}      
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json      
           deploymentName: deploy_hubNetwork_deployment-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_subPlacement:

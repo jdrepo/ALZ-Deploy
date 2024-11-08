@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "parTopLevelManagementGroupPrefix": {
-      "value": "alz-bicep"
+      "value": "alz"
     },
     "parTopLevelManagementGroupSuffix": {
       "value": "-canary"
@@ -57,7 +57,7 @@
       "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/alz-logging/providers/Microsoft.ManagedIdentity/userAssignedIdentities/alz-umi-identity"
     },
     "parAutomationAccountName": {
-      "value": "alz-automation-account"
+      "value": "aa-gwc-alz-canary"
     },
     "parMsDefenderForCloudEmailSecurityContact": {
       "value": "security_contact@replace_me.com"

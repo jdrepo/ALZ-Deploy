@@ -6,7 +6,7 @@
       "value": "alz"
     },
     "parTopLevelManagementGroupSuffix": {
-      "value": "-canary"
+      "value": "-prod"
     },
     "parDdosEnabled": {
       "value": false
@@ -57,7 +57,7 @@
       "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/alz-logging/providers/Microsoft.ManagedIdentity/userAssignedIdentities/alz-umi-identity"
     },
     "parAutomationAccountName": {
-      "value": "aa-gwc-alz-canary"
+      "value": "aa-gwc-alz-prod"
     },
     "parMsDefenderForCloudEmailSecurityContact": {
       "value": "security_contact@replace_me.com"

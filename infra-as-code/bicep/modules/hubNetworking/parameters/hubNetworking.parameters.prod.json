@@ -9,34 +9,34 @@
       "value": "alz"
     },
     "parHubNetworkName": {
-      "value": "vnet-gwc-hub-alz-canary"
+      "value": "vnet-gwc-hub-alz-prod"
     },
     "parHubNetworkAddressPrefix": {
-      "value": "10.10.0.0/16"
+      "value": "10.100.0.0/16"
     },
     "parSubnets": {
       "value": [
         {
           "name": "AzureBastionSubnet",
-          "ipAddressRange": "10.10.15.0/24",
+          "ipAddressRange": "10.100.15.0/24",
           "networkSecurityGroupId": "",
           "routeTableId": ""
         },
         {
           "name": "GatewaySubnet",
-          "ipAddressRange": "10.10.252.0/24",
+          "ipAddressRange": "10.100.252.0/24",
           "networkSecurityGroupId": "",
           "routeTableId": ""
         },
         {
           "name": "AzureFirewallSubnet",
-          "ipAddressRange": "10.10.254.0/24",
+          "ipAddressRange": "10.100.254.0/24",
           "networkSecurityGroupId": "",
           "routeTableId": ""
         },
         {
           "name": "AzureFirewallManagementSubnet",
-          "ipAddressRange": "10.10.253.0/24",
+          "ipAddressRange": "10.100.253.0/24",
           "networkSecurityGroupId": "",
           "routeTableId": ""
         }
@@ -52,13 +52,13 @@
       "value": "pip-gwc"
     },
     "parPublicIpSuffix": {
-      "value": "alz-canary"
+      "value": "alz-prod"
     },
     "parAzBastionEnabled": {
       "value": false
     },
     "parAzBastionName": {
-      "value": "bas-gwc-alz-canary"
+      "value": "bas-gwc-alz-prod"
     },
     "parAzBastionSku": {
       "value": "Standard"
@@ -73,16 +73,16 @@
       "value": false
     },
     "parDdosPlanName": {
-      "value": "ddos-gwc-alz-canary"
+      "value": "ddos-gwc-alz-prod"
     },
     "parAzFirewallEnabled": {
       "value": false
     },
     "parAzFirewallName": {
-      "value": "azfw-gwc-alz-canary"
+      "value": "azfw-gwc-alz-prod"
     },
     "parAzFirewallPoliciesName": {
-      "value": "azfwpol-gwc-alz-canary"
+      "value": "azfwpol-gwc-alz-prod"
     },
     "parAzFirewallTier": {
       "value": "Standard"
@@ -106,7 +106,7 @@
       "value": []
     },
     "parHubRouteTableName": {
-      "value": "rt-gwc-hub-alz-canary"
+      "value": "rt-gwc-hub-alz-prod"
     },
     "parDisableBgpRoutePropagation": {
       "value": false
@@ -128,7 +128,7 @@
     },
     "parVpnGatewayConfig": {
       "value": {
-        "name": "vpng-gwc-alz-canary",
+        "name": "vpng-gwc-alz-prod",
         "gatewayType": "Vpn",
         "sku": "VpnGw1",
         "vpnType": "RouteBased",
@@ -151,7 +151,7 @@
     },
     "parExpressRouteGatewayConfig": {
       "value": {
-        "name": "ergw-gwc-alz-canary",
+        "name": "ergw-gwc-alz-prod",
         "gatewayType": "ExpressRoute",
         "sku": "Standard",
         "vpnType": "RouteBased",
