@@ -89,7 +89,7 @@ jobs:
             az deployment mg validate --template-uri https://raw.githubusercontent.com/Azure/azure-monitor-baseline-alerts/refs/tags/${{ env.ambaRelease }}/patterns/alz/alzArm.json \
             --parameters amba/parameters/alzAmba-${{ env.ambaRelease }}.param.${{inputs.environment}}.json \
             --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
-            --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} --parameters ALZMonitorActionGroupEmail='("jens.diedrich1@googlemail.com")' \
+            --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} --parameters ALZMonitorActionGroupEmail='["jens.diedrich1@googlemail.com"]' \
             --name deploy_amba_validation-${{ env.runNumber }} 
       - name: Deploy AMBA - Preview
         id: deploy_amba_preview
