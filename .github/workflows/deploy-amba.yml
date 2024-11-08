@@ -1,11 +1,6 @@
 name: Deploy AMBA to ALZ environment 
 
 on:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - ".github/workflows/deploy-alz-bicep-steps.yml"
   workflow_dispatch:
     inputs:
       environment:
@@ -48,15 +43,7 @@ on:
         default: false
         type: boolean
     secrets:
-      LOGGING_SUB_ID:
-        required: false
-      IDENTITY_SUB_ID:
-        required: false
       MGMT_SUB_ID:
-        required: false
-      CONNECTIVITY_SUB_ID:
-        required: false
-      DFC_EMAIL_SECURITY_CONTACT:
         required: false
       AZURE_CLIENT_ID:
         required: false

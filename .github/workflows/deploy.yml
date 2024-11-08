@@ -25,6 +25,20 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
+  alz-deploy-amba-canary:
+    needs: [alz-deploy-base-canary]
+    name: "Deploy AMBA - Canary"
+    uses: ./.github/workflows/deploy-amba.yml
+    with:
+      environment: "canary"
+      ambaRelease: "2024-09-02"
+      managementGroupPrefix: "alz"
+      location: "germanywestcentral"
+    secrets:
+      MGMT_SUB_ID: ${{ secrets.MGMT_SUB_ID_CANARY}}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
   alz-deploy-base-prod:
     needs: [alz-deploy-base-canary]
     name: "Deploy ALZ Base Components - Production"
@@ -43,6 +57,20 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_PROD}}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_PROD}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_PROD}}
+  alz-deploy-amba-prod:
+    needs: [alz-deploy-base-prod]
+    name: "Deploy AMBA - Prod"
+    uses: ./.github/workflows/deploy-amba.yml
+    with:
+      environment: "prod"
+      ambaRelease: "2024-09-02"
+      managementGroupPrefix: "alz"
+      location: "germanywestcentral"
+    secrets:
+      MGMT_SUB_ID: ${{ secrets.MGMT_SUB_ID_CANARY}}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
 
 
 
