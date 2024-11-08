@@ -132,10 +132,15 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+      - name: Checkout AMBA Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/azure-monitor-baseline-alerts
+          ref: ${{ env.ambaRelease }}
       - name: Remediate policies
         shell: pwsh
         run: |
-          .\patterns\alz\scripts\Start-AMBARemediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Notification-Assets
+          azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Notification-Assets
 
 
      
