@@ -137,6 +137,7 @@ jobs:
         with:
           repository: Azure/azure-monitor-baseline-alerts
           ref: ${{ env.ambaRelease }}
+          path: azure-monitor-baseline-alerts
       - name: Remediate policies
         shell: pwsh
         run: |
