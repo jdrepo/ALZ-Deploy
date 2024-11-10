@@ -151,9 +151,9 @@ jobs:
           inlineScript: | 
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Notification-Assets
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Alerting-ServiceHealth
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-connectivity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Connectivity
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-identity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Identity
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-management${{ env.ManagementGroupSuffix }}" -policyName Alerting-Management
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-connectivity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Connectivity
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-identity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Identity
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-management${{ env.ManagementGroupSuffix }}" -policyName Alerting-Management
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-KeyManagement
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-LoadBalancing
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-NetworkChanges
@@ -163,6 +163,27 @@ jobs:
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-VM
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-Web
           azPSVersion: "latest"
+  wipe:
+    runs-on: ubuntu-latest
+    name: Remediate AMBA Policies
+    needs: [deploy_amba]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Checkout AMBA Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/azure-monitor-baseline-alerts
+          ref: ${{ env.ambaRelease }}
+          path: azure-monitor-baseline-alerts
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
         
 
      
