@@ -189,8 +189,9 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            # azure-monitor-baseline-alerts//patterns/alz/scripts/Start-AMBA-ALZ-Maintenance.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -cleanItems Amba-Alz -WhatIf             
-            azure-monitor-baseline-alerts//patterns/alz/scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false -WhatIf
+            # azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Maintenance.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -cleanItems Amba-Alz -WhatIf             
+            # azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false -WhatIf
+            ./scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false -WhatIf
           azPSVersion: "latest"
 
 
