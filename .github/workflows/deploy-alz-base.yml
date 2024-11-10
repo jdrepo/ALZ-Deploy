@@ -1306,6 +1306,7 @@ jobs:
           failOnStdErr: false
   wipe:
     runs-on: ubuntu-latest
+    if: ${{ inputs.wipeAfterDeploy }}
     needs: [deploy_CustPol_Assignment]
     environment: wipe
     steps:
@@ -1326,6 +1327,9 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: run wipe script
-        shell: pwsh
-        run: ALZ-Bicep/accelerator/scripts/destroy-landing-zone.ps1 
+      - name: Cleaning up ALZ deployments
+        uses: azure/powershell@v2
+        with:
+          inlineScript: | 
+            ./Wipe-ESLZAzTenantUnattended.ps1 -tenantRootGroupID ${{ secrets.AZURE_TENANT_ID }} -intermediateRootGroupID "${{ env.ManagementGroupPrefix}}${{ env.ManagementGroupSuffix}}" -resetMdfcTierOnSubs:$true
+          azPSVersion: "latest" 

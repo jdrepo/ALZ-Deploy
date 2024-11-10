@@ -69,6 +69,9 @@ param parSubnets subnetOptionsType = [
 @sys.description('Array of DNS Server IP addresses for VNet.')
 param parDnsServerIps array = []
 
+@sys.description('Array of VNet to peer.')
+param parPeeredVnetResourceIds array = []
+
 @sys.description('''Resource Lock Configuration for Virtual Network.
 
 - `kind` - The lock settings of the service which can be CanNotDelete, ReadOnly, or None.
@@ -145,6 +148,22 @@ resource resIdentityVnet 'Microsoft.Network/virtualNetworks@2023-02-01' = {
     subnets: varSubnetProperties
   }
 }
+
+// module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
+//   name: 'deploy-Identity-VNet-AVM'
+//   params: {
+//     name: parIdentityNetworkName
+//     location: parLocation
+//     tags: parTags
+//     dnsServers: parDnsServerIps
+//     addressPrefixes: [
+//       parIdentityNetworkAddressPrefix
+//     ]
+//     subnets: [
+//       parSubnets
+//     ]
+//   }
+// }
 
 // Create a virtual network resource lock if parGlobalResourceLock.kind != 'None' or if parVirtualNetworkLock.kind != 'None'
 resource resVirtualNetworkLock 'Microsoft.Authorization/locks@2020-05-01' = if (parVirtualNetworkLock.kind != 'None' || parGlobalResourceLock.kind != 'None') {
