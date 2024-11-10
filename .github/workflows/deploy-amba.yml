@@ -165,6 +165,7 @@ jobs:
           azPSVersion: "latest"
   wipe:
     runs-on: ubuntu-latest
+    if: ${{inputs.wipeAfterDeploy}}
     name: Remediate AMBA Policies
     needs: [deploy_amba]
     steps:
@@ -183,7 +184,12 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
+      - name: Cleaning up AMBA deployments
+        uses: azure/powershell@v2
+        with:
+          inlineScript: | 
+            azure-monitor-baseline-alerts/Start-AMBA-ALZ-Maintenance.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -cleanItems Amba-Alz -WhatIf             
+          azPSVersion: "latest"
 
-        
 
      
