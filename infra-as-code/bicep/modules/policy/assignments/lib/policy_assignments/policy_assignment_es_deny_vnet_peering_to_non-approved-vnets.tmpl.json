@@ -1,0 +1,25 @@
+{
+  "name": "Only-Peer-to-VNET",
+  "type": "Microsoft.Authorization/policyAssignments",
+  "apiVersion": "2024-04-01",
+  "properties": {
+    "description": "This policy denies the creation of vNet Peerings to non-approved vNets under the assigned scope.",
+    "displayName": "Deny vNet peering to non-approved vNets - custom",
+    "notScopes": [],
+    "parameters": {
+	  "allowedVnets": {
+		"value": []  
+	  },		  
+      "effect": {
+        "value": "Deny"
+      },
+    },
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/Deny-VNET-Peering-To-Non-Approved-VNETs",
+    "scope": null,
+    "enforcementMode": "Default"
+  },
+  "location": null,
+  "identity": {
+    "type": "None"
+  }
+}

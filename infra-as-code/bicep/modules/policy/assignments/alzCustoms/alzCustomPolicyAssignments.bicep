@@ -53,62 +53,17 @@ param parPolicyAssignmentSovereigntyConfidential policyAssignmentSovereigntyConf
 @description('Apply platform policies to Platform group or child groups.')
 param parPlatformMgAlzDefaultsEnable bool = true
 
-@description('Assign policies to Corp & Online Management Groups under Landing Zones.')
-param parLandingZoneChildrenMgAlzDefaultsEnable bool = true
-
 @description('Assign policies to Confidential Corp and Online groups under Landing Zones.')
 param parLandingZoneMgConfidentialEnable bool = false
-
-@description('Location of Log Analytics Workspace & Automation Account.')
-param parLogAnalyticsWorkSpaceAndAutomationAccountLocation string = 'eastus'
-
-@description('Resource ID of Log Analytics Workspace.')
-param parLogAnalyticsWorkspaceResourceId string = ''
-
-@description('Resource ID for VM Insights Data Collection Rule.')
-param parDataCollectionRuleVMInsightsResourceId string = ''
-
-@description('Resource ID for Change Tracking Data Collection Rule.')
-param parDataCollectionRuleChangeTrackingResourceId string = ''
-
-@description('Resource ID for MDFC SQL Data Collection Rule.')
-param parDataCollectionRuleMDFCSQLResourceId string = ''
-
-@description('Resource ID for User Assigned Managed Identity.')
-param parUserAssignedManagedIdentityResourceId string = ''
-
-@description('Number of days to retain logs in Log Analytics Workspace.')
-param parLogAnalyticsWorkspaceLogRetentionInDays string = '365'
-
-@description('Name of the Automation Account.')
-param parAutomationAccountName string = 'alz-automation-account'
-
-@description('Email address for Microsoft Defender for Cloud alerts.')
-param parMsDefenderForCloudEmailSecurityContact string = 'security_contact@replace_me.com'
-
-@description('Enable/disable DDoS Network Protection. True enforces Enable-DDoS-VNET policy; false disables.')
-param parDdosEnabled bool = true
-
-@description('Resource ID of the DDoS Protection Plan for Virtual Networks.')
-param parDdosProtectionPlanId string = ''
 
 @description('Resource ID of the Resource Group for Private DNS Zones. Empty to skip assigning the Deploy-Private-DNS-Zones policy.')
 param parPrivateDnsResourceGroupId string = ''
 
-@description('List of Private DNS Zones to audit under the Corp Management Group. This overwrites default values.')
-param parPrivateDnsZonesNamesToAuditInCorp array = []
+@description('Resource IDs for Identity Network.')
+param parIdentityNetworkResourceIds array = []
 
-@description('Disable all default ALZ policies.')
-param parDisableAlzDefaultPolicies bool = false
-
-@description('Disable all default sovereign policies.')
-param parDisableSlzDefaultPolicies bool = false
-
-@description('Tag name for excluding VMs from this policy’s scope.')
-param parVmBackupExclusionTagName string = ''
-
-@description('Tag value for excluding VMs from this policy’s scope. Comma-separated list for multiple values.')
-param parVmBackupExclusionTagValue array = []
+@description('Disable all custom ALZ policies.')
+param parDisableAlzCustomPolicies bool = false
 
 @description('Names of policy assignments to exclude. Found in Assigning Policies documentation.')
 param parExcludedPolicyAssignments array = []
@@ -116,20 +71,6 @@ param parExcludedPolicyAssignments array = []
 @description('Opt out of deployment telemetry.')
 param parTelemetryOptOut bool = false
 
-var varLogAnalyticsWorkspaceName = split(parLogAnalyticsWorkspaceResourceId, '/')[8]
-
-var varLogAnalyticsWorkspaceResourceGroupName = split(parLogAnalyticsWorkspaceResourceId, '/')[4]
-
-var varLogAnalyticsWorkspaceSubscription = split(parLogAnalyticsWorkspaceResourceId, '/')[2]
-
-var varUserAssignedManagedIdentityResourceName = split(parUserAssignedManagedIdentityResourceId, '/')[8]
-
-// Customer Usage Attribution Id Telemetry
-var varCuaid = '98cef979-5a6b-403b-83c7-10c8f04ac9a2'
-
-// ZTN Telemetry
-var varZtnP1CuaId = '4eaba1fc-d30a-4e63-a57f-9e6c3d86a318'
-//var varZtnP1Trigger = ((!contains(parExcludedPolicyAssignments, varPolicyAssignmentDenySubnetWithoutNsg.libDefinition.name)) && (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDenyStoragehttp.libDefinition.name))) ? true : false
 
 // **Variables**
 // Orchestration Module Variables
@@ -142,6 +83,8 @@ var varDeploymentNameWrappers = {
 var varModuleDeploymentNames = {
   //modPolicyAssignment
     modPolicyAssignmentLzsCorpDenyPrivateDNSZones: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyPrivateDNSZones-corp-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyVnetPeeringtoNonApprovedVnets-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+
 }
 
 // Policy Assignments Modules Variables
@@ -150,6 +93,11 @@ var varModuleDeploymentNames = {
 var varPolicyAssignmentDenyPrivateDNSZones = {
   definitionId: '${varTopLevelManagementGroupResourceId}/providers/Microsoft.Authorization/policyDefinitions/Deny-Private-DNS-Zones'
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deny_private_dns_zones.tmpl.json')
+}
+
+var varPolicyAssignmentDenyVnetPeeringNonApprovedVNets = {
+  definitionId: '${varTopLevelManagementGroupResourceId}/providers/Microsoft.Authorization/policyDefinitions/Deny-VNET-Peering-To-Non-Approved-VNETs'
+  libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deny_vnet_peering_to_non-approved-vnets.tmpl.json')
 }
 
 
@@ -219,7 +167,26 @@ targetScope = 'managementGroup'
 
 
 // Modules - Policy Assignments - Identity Management Group
-
+// Module - Policy Assignment - Deny-VNET-Peering-To-Non-Approved-VNETs
+module modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = [for mgScope in varCorpManagementGroupIdsFiltered: if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.name)) {
+  scope: managementGroup(mgScope)
+  name: varModuleDeploymentNames.modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets
+  params: {
+    parPolicyAssignmentDefinitionId: varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.definitionId
+    parPolicyAssignmentName: varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.name
+    parPolicyAssignmentDisplayName: varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.properties.displayName
+    parPolicyAssignmentDescription: varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.properties.description
+    parPolicyAssignmentParameters: varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.properties.parameters
+    parPolicyAssignmentParameterOverrides: { 
+      allowedVnets: {
+        value: parIdentityNetworkResourceIds
+      }
+    }
+    parPolicyAssignmentIdentityType: varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.identity.type
+    parPolicyAssignmentEnforcementMode: parDisableAlzCustomPolicies ? 'DoNotEnforce' : varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.properties.enforcementMode
+    parTelemetryOptOut: parTelemetryOptOut
+  }
+}]
 
 // Modules - Policy Assignments - Management Management Group
 
@@ -229,7 +196,7 @@ targetScope = 'managementGroup'
 
 // Modules - Policy Assignments - Corp Management Group
 // Module - Policy Assignment - Deny-Public-IP-On-NIC
-module modPolicyAssignmentLzsCorpDenyPrivateDNSZones '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = [for mgScope in varCorpManagementGroupIdsFiltered: if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDenyPrivateDNSZones.libDefinition.name) && parLandingZoneChildrenMgAlzDefaultsEnable) {
+module modPolicyAssignmentLzsCorpDenyPrivateDNSZones '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = [for mgScope in varCorpManagementGroupIdsFiltered: if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDenyPrivateDNSZones.libDefinition.name)) {
   scope: managementGroup(mgScope)
   name: varModuleDeploymentNames.modPolicyAssignmentLzsCorpDenyPrivateDNSZones
   params: {
@@ -239,7 +206,7 @@ module modPolicyAssignmentLzsCorpDenyPrivateDNSZones '../../../policy/assignment
     parPolicyAssignmentDescription: varPolicyAssignmentDenyPrivateDNSZones.libDefinition.properties.description
     parPolicyAssignmentParameters: varPolicyAssignmentDenyPrivateDNSZones.libDefinition.properties.parameters
     parPolicyAssignmentIdentityType: varPolicyAssignmentDenyPrivateDNSZones.libDefinition.identity.type
-    parPolicyAssignmentEnforcementMode: parDisableAlzDefaultPolicies ? 'DoNotEnforce' : varPolicyAssignmentDenyPrivateDNSZones.libDefinition.properties.enforcementMode
+    parPolicyAssignmentEnforcementMode: parDisableAlzCustomPolicies ? 'DoNotEnforce' : varPolicyAssignmentDenyPrivateDNSZones.libDefinition.properties.enforcementMode
     parTelemetryOptOut: parTelemetryOptOut
   }
 }]
