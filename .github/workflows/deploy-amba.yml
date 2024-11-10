@@ -127,6 +127,7 @@ jobs:
             --name deploy_amba_deployment-${{ env.runNumber }} 
   remediate:
     runs-on: ubuntu-latest
+    if: ${{! inputs.wipeAfterDeploy}}
     name: Remediate AMBA Policies
     needs: [deploy_amba]
     steps:
@@ -166,7 +167,7 @@ jobs:
   wipe:
     runs-on: ubuntu-latest
     if: ${{inputs.wipeAfterDeploy}}
-    name: Remediate AMBA Policies
+    name: Cleaning up AMBA deployments
     needs: [deploy_amba]
     steps:
       - name: Checkout Repo
