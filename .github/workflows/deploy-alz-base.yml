@@ -1307,7 +1307,7 @@ jobs:
   wipe:
     runs-on: ubuntu-latest
     if: ${{ inputs.wipeAfterDeploy }}
-    needs: [deploy_CustPol_Assignment]
+    needs: [deploy_identityNetwork]
     environment: wipe
     steps:
       - run: echo "Here is where you'd perform the steps to wipe."
