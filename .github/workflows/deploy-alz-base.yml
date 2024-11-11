@@ -1331,5 +1331,5 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            ./Wipe-ESLZAzTenantUnattended.ps1 -tenantRootGroupID ${{ secrets.AZURE_TENANT_ID }} -intermediateRootGroupID "${{ env.ManagementGroupPrefix}}${{ env.ManagementGroupSuffix}}" -resetMdfcTierOnSubs:$true
+            ./scripts/Wipe-ESLZAzTenantUnattended.ps1 -tenantRootGroupID ${{ secrets.AZURE_TENANT_ID }} -intermediateRootGroupID "${{ env.ManagementGroupPrefix}}${{ env.ManagementGroupSuffix}}" -resetMdfcTierOnSubs:$true
           azPSVersion: "latest" 
