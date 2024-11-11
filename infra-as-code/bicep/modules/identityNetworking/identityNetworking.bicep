@@ -38,6 +38,9 @@ param parCompanyPrefix string = 'alz'
 @sys.description('Name for Identity Network.')
 param parIdentityNetworkName string = 'vnet-${parLocation}-identity-${parCompanyPrefix}'
 
+@sys.description('Name for Network Security Group 1')
+param parIdentityNsg1Name string = 'nsg-${parLocation}-001-${parCompanyPrefix}'
+
 @sys.description('Tags you would like to be applied to all resources in this module.')
 param parTags object = {}
 
@@ -66,15 +69,15 @@ param parSubnets subnetOptionsType = [
   }
 ]
 
-@sys.description('The name, IP address range, network security group, route table and delegation serviceName for each subnet in the virtual networks.')
-param parSubnets2 array = [
-  {
-    name: 'subnet1'
-    addressPrefix: '10.20.1.0/24'
-    networkSecurityGroupResourceId: ''
-    routeTableResourceId: ''
-  }
-]
+// @sys.description('The name, IP address range, network security group, route table and delegation serviceName for each subnet in the virtual networks.')
+// param parSubnets2 array = [
+//   {
+//     name: 'subnet1'
+//     addressPrefix: '10.20.1.0/24'
+//     networkSecurityGroupResourceId: ''
+//     routeTableResourceId: ''
+//   }
+// ]
 
 @sys.description('Array of DNS Server IP addresses for VNet.')
 param parDnsServerIps array = []
@@ -107,6 +110,8 @@ param parIdentityRouteTableLock lockType = {
   notes: 'This lock was created by the ALZ Bicep Identity Networking Module.'
 }
 
+// @sys.description('Optional. Network security group rules for Identity Network subnets.')
+// param parNsg 
 
 var varSubnetMap = map(range(0, length(parSubnets)), i => {
     name: parSubnets[i].name
@@ -130,8 +135,8 @@ var varSubnetProperties = [for subnet in varSubnetMap: {
       }
     ]
 
-    networkSecurityGroup: (empty(subnet.networkSecurityGroupId)) ? null : {
-      id: subnet.networkSecurityGroupId
+    networkSecurityGroup:  {
+      id: '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${parIdentityNsg1Name}'
     }
 
     routeTable: (empty(subnet.routeTableId)) ? null : {
@@ -159,21 +164,30 @@ resource resIdentityVnet 'Microsoft.Network/virtualNetworks@2023-02-01' = {
   }
 }
 
-module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
-  name: 'deploy-Identity-VNet-AVM'
+// module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
+//   name: 'deploy-Identity-VNet-AVM'
+//   params: {
+//     name: parIdentityNetworkName
+//     location: parLocation
+//     tags: parTags
+//     dnsServers: parDnsServerIps
+//     addressPrefixes: [
+//       parIdentityNetworkAddressPrefix
+//     ]
+//     subnets: [
+//       parSubnets2[0].nameu
+//     ]
+//     lock: {
+//       name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
+//       kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
+//     }
+//   }
+// }
+
+module modNSG1 'br/public:avm/res/network/network-security-group:0.5.0' = {
+  name: 'deploy-NSG1'
   params: {
-    name: parIdentityNetworkName
-    location: parLocation
-    tags: parTags
-    dnsServers: parDnsServerIps
-    addressPrefixes: [
-      parIdentityNetworkAddressPrefix
-    ]
-    subnets: parSubnets2
-    lock: {
-      name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
-      kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
-    }
+    name: parIdentityNsg1Name
   }
 }
 
@@ -193,5 +207,5 @@ output outIdentityVirtualNetworkName string = resIdentityVnet.name
 output outIdentityVirtualNetworkId string = resIdentityVnet.id
 
 
-output outIdentityVirtualNetworkName2 string = modIdentityVNetAVM.outputs.name
-output outIdentityVirtualNetworkId2 string = modIdentityVNetAVM.outputs.resourceId
+// output outIdentityVirtualNetworkName2 string = modIdentityVNetAVM.outputs.name
+// output outIdentityVirtualNetworkId2 string = modIdentityVNetAVM.outputs.resourceId
