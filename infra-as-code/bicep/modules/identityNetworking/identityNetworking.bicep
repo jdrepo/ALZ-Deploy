@@ -18,6 +18,23 @@ type subnetOptionsType = ({
   delegation: string?
 })[]
 
+type subnetOptionsType2 = ({
+  @description('Name of subnet.')
+  name: string
+
+  @description('IP-address range for subnet.')
+  addressPrefix: string
+
+  @description('Id of Network Security Group to associate with subnet.')
+  networkSecurityGroupResourceId: string?
+
+  @description('Id of Route Table to associate with subnet.')
+  routeTableResourceId: string?
+
+  @description('Name of the delegation to create for the subnet.')
+  delegation: string?
+})[]
+
 type lockType = {
   @description('Optional. Specify the name of lock.')
   name: string?
@@ -69,15 +86,15 @@ param parSubnets subnetOptionsType = [
   }
 ]
 
-// @sys.description('The name, IP address range, network security group, route table and delegation serviceName for each subnet in the virtual networks.')
-// param parSubnets2 array = [
-//   {
-//     name: 'subnet1'
-//     addressPrefix: '10.20.1.0/24'
-//     networkSecurityGroupResourceId: ''
-//     routeTableResourceId: ''
-//   }
-// ]
+@sys.description('The name, IP address range, network security group, route table and delegation serviceName for each subnet in the virtual networks.')
+param parSubnets2 array = [
+  {
+    name: 'subnet1'
+    addressPrefix: '10.20.1.0/24'
+    networkSecurityGroupResourceId: '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${parIdentityNsg1Name}'
+    routeTableResourceId: ''
+  }
+]
 
 @sys.description('Array of DNS Server IP addresses for VNet.')
 param parDnsServerIps array = []
@@ -121,6 +138,15 @@ var varSubnetMap = map(range(0, length(parSubnets)), i => {
     delegation: parSubnets[i].?delegation ?? ''
   })
 
+  // var varSubnetMap2 = map(range(0, length(parSubnets2)), i => {
+  //   name: parSubnets2[i].name
+  //   addressPrefix: parSubnets2[i].addressPrefix
+  //   networkSecurityGroupResourceId: parSubnets2[i].?networkSecurityGroupResourceId ?? ''
+  //   routeTableResourceId: parSubnets2[i].?routeTableResourceId ?? ''
+  //   delegation: parSubnets2[i].?delegation ?? ''
+  // })
+
+  
 var varSubnetProperties = [for subnet in varSubnetMap: {
   name: subnet.name
   properties: {
@@ -145,6 +171,14 @@ var varSubnetProperties = [for subnet in varSubnetMap: {
   }
 }]
 
+// var varSubnetProperties2 = [for subnet in varSubnetMap2: {
+//   name: subnet.name
+//   addressPrefix: subnet.addressPrefix
+//   delegation: (empty(subnet.delegation)) ? null : subnet.delegation
+//   networkSecurityGroupResourceId:  '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${parIdentityNsg1Name}'
+//   routeTableResourceId: subnet.routeTableResourceId
+//   }]
+
 
 resource resIdentityVnet 'Microsoft.Network/virtualNetworks@2023-02-01' = {
   dependsOn: []
@@ -164,25 +198,24 @@ resource resIdentityVnet 'Microsoft.Network/virtualNetworks@2023-02-01' = {
   }
 }
 
-// module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
-//   name: 'deploy-Identity-VNet-AVM'
-//   params: {
-//     name: parIdentityNetworkName
-//     location: parLocation
-//     tags: parTags
-//     dnsServers: parDnsServerIps
-//     addressPrefixes: [
-//       parIdentityNetworkAddressPrefix
-//     ]
-//     subnets: [
-//       parSubnets2[0].nameu
-//     ]
-//     lock: {
-//       name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
-//       kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
-//     }
-//   }
-// }
+module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
+  name: 'deploy-Identity-VNet-AVM'
+  dependsOn: [modNSG1]
+  params: {
+    name: parIdentityNetworkName
+    location: parLocation
+    tags: parTags
+    dnsServers: parDnsServerIps
+    addressPrefixes: [
+      parIdentityNetworkAddressPrefix
+    ]
+    subnets: parSubnets2
+    lock: {
+      name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
+      kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
+    }
+  }
+}
 
 module modNSG1 'br/public:avm/res/network/network-security-group:0.5.0' = {
   name: 'deploy-NSG1'
