@@ -29,9 +29,6 @@
         "parPolicyEffect": "Deny"
       }
     },
-    "parPrivateDnsZonesNamesToAuditInCorp": {
-      "value": []
-    },
     "parExcludedPolicyAssignments": {
       "value": []
     },
