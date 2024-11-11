@@ -181,7 +181,7 @@ var varSubnetProperties = [for subnet in varSubnetMap: {
 
 
 resource resIdentityVnet 'Microsoft.Network/virtualNetworks@2023-02-01' = {
-  dependsOn: []
+  dependsOn: [modNSG1]
   name: parIdentityNetworkName
   location: parLocation
   tags: parTags
@@ -222,6 +222,10 @@ module modNSG1 'br/public:avm/res/network/network-security-group:0.5.0' = {
   params: {
     name: parIdentityNsg1Name
   }
+}
+
+resource resNsg1 'Microsoft.Network/networkSecurityGroups@2024-01-01' existing = {
+  name: parIdentityNsg1Name
 }
 
 // Create a virtual network resource lock if parGlobalResourceLock.kind != 'None' or if parVirtualNetworkLock.kind != 'None'
