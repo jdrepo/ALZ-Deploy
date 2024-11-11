@@ -8,9 +8,6 @@
     "parTopLevelManagementGroupSuffix": {
       "value": "-prod"
     },
-    "parDdosEnabled": {
-      "value": false
-    },
     "parTopLevelPolicyAssignmentSovereigntyGlobal": {
       "value": {
         "parTopLevelSovereigntyGlobalPoliciesEnable": false,
@@ -19,9 +16,6 @@
       }
     },
     "parPlatformMgAlzDefaultsEnable": {
-      "value": true
-    },
-    "parLandingZoneChildrenMgAlzDefaultsEnable": {
       "value": true
     },
     "parLandingZoneMgConfidentialEnable": {
@@ -34,51 +28,6 @@
         "parAllowedVirtualMachineSKUs": [],
         "parPolicyEffect": "Deny"
       }
-    },
-    "parLogAnalyticsWorkSpaceAndAutomationAccountLocation": {
-      "value": "germanywestcentral"
-    },
-    "parLogAnalyticsWorkspaceResourceId": {
-      "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/alz-logging/providers/Microsoft.OperationalInsights/workspaces/alz-log-analytics"
-    },
-    "parLogAnalyticsWorkspaceLogRetentionInDays": {
-      "value": "365"
-    },
-    "parDataCollectionRuleVMInsightsResourceId": {
-      "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/alz-logging/providers/Microsoft.Insights/dataCollectionRules/alz-ama-vmi-dcr"
-    },
-    "parDataCollectionRuleChangeTrackingResourceId": {
-      "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/alz-logging/providers/Microsoft.Insights/dataCollectionRules/alz-ama-ct-dcr"
-    },
-    "parDataCollectionRuleMDFCSQLResourceId": {
-      "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/alz-logging/providers/Microsoft.Insights/dataCollectionRules/ama-mdfcsql-default-dcr"
-    },
-    "parUserAssignedManagedIdentityResourceId": {
-      "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/alz-logging/providers/Microsoft.ManagedIdentity/userAssignedIdentities/alz-umi-identity"
-    },
-    "parAutomationAccountName": {
-      "value": "aa-gwc-alz-prod"
-    },
-    "parMsDefenderForCloudEmailSecurityContact": {
-      "value": "security_contact@replace_me.com"
-    },
-    "parDdosProtectionPlanId": {
-      "value": ""
-    },
-    "parPrivateDnsResourceGroupId": {
-      "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/rg-alz-hub-networking-001"
-    },
-    "parPrivateDnsZonesNamesToAuditInCorp": {
-      "value": []
-    },
-    "parDisableAlzDefaultPolicies": {
-      "value": false
-    },
-    "parVmBackupExclusionTagName": {
-      "value": ""
-    },
-    "parVmBackupExclusionTagValue": {
-      "value": []
     },
     "parExcludedPolicyAssignments": {
       "value": []
