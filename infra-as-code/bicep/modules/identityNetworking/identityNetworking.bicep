@@ -66,6 +66,16 @@ param parSubnets subnetOptionsType = [
   }
 ]
 
+@sys.description('The name, IP address range, network security group, route table and delegation serviceName for each subnet in the virtual networks.')
+param parSubnets2 array = [
+  {
+    name: 'subnet1'
+    addressPrefix: '10.20.1.0/24'
+    networkSecurityGroupResourceId: ''
+    routeTableResourceId: ''
+  }
+]
+
 @sys.description('Array of DNS Server IP addresses for VNet.')
 param parDnsServerIps array = []
 
@@ -149,21 +159,23 @@ resource resIdentityVnet 'Microsoft.Network/virtualNetworks@2023-02-01' = {
   }
 }
 
-// module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
-//   name: 'deploy-Identity-VNet-AVM'
-//   params: {
-//     name: parIdentityNetworkName
-//     location: parLocation
-//     tags: parTags
-//     dnsServers: parDnsServerIps
-//     addressPrefixes: [
-//       parIdentityNetworkAddressPrefix
-//     ]
-//     subnets: [
-//       parSubnets
-//     ]
-//   }
-// }
+module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
+  name: 'deploy-Identity-VNet-AVM'
+  params: {
+    name: parIdentityNetworkName
+    location: parLocation
+    tags: parTags
+    dnsServers: parDnsServerIps
+    addressPrefixes: [
+      parIdentityNetworkAddressPrefix
+    ]
+    subnets: parSubnets2
+    lock: {
+      name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
+      kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
+    }
+  }
+}
 
 // Create a virtual network resource lock if parGlobalResourceLock.kind != 'None' or if parVirtualNetworkLock.kind != 'None'
 resource resVirtualNetworkLock 'Microsoft.Authorization/locks@2020-05-01' = if (parVirtualNetworkLock.kind != 'None' || parGlobalResourceLock.kind != 'None') {
@@ -179,3 +191,7 @@ resource resVirtualNetworkLock 'Microsoft.Authorization/locks@2020-05-01' = if (
 
 output outIdentityVirtualNetworkName string = resIdentityVnet.name
 output outIdentityVirtualNetworkId string = resIdentityVnet.id
+
+
+output outIdentityVirtualNetworkName2 string = modIdentityVNetAVM.outputs.name
+output outIdentityVirtualNetworkId2 string = modIdentityVNetAVM.outputs.resourceId

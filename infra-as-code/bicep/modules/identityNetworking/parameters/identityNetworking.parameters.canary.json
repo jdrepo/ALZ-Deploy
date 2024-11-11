@@ -8,10 +8,10 @@
     "parCompanyPrefix": {
       "value": "alz"
     },
-    "parHubNetworkName": {
+    "parIdentityNetworkName": {
       "value": "vnet-gwc-identity-alz-canary"
     },
-    "parHubNetworkAddressPrefix": {
+    "parIdentityNetworkAddressPrefix": {
       "value": "10.20.0.0/16"
     },
     "parSubnets": {
@@ -24,22 +24,27 @@
         }
       ]
     },
+	"parSubnets2": {
+	  "value": [
+	  {
+		 "name": "subnet1",
+		 "addressPrefix": "10.20.1.0/24",
+         "networkSecurityGroupResourceId": "",
+         "routeTableResourceId": ""
+	  }
+     ]	  
+	},
     "parDnsServerIps": {
       "value": []
     },
-    "parPublicIpSku": {
-      "value": "Standard"
-    },
+
     "parIdentityRouteTableName": {
       "value": "rt-gwc-identity-alz-canary"
     },
     "parTags": {
       "value": {
-        "Environment": ""
+        "Environment": "canary"
       }
-    },
-    "parTelemetryOptOut": {
-      "value": false
     },
     "parGlobalResourceLock": {
       "value": {
