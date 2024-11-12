@@ -198,24 +198,24 @@ resource resIdentityVnet 'Microsoft.Network/virtualNetworks@2023-02-01' = {
   }
 }
 
-module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
-  name: 'deploy-Identity-VNet-AVM'
-  dependsOn: [modNSG1]
-  params: {
-    name: parIdentityNetworkName
-    location: parLocation
-    tags: parTags
-    dnsServers: parDnsServerIps
-    addressPrefixes: [
-      parIdentityNetworkAddressPrefix
-    ]
-    subnets: parSubnets2
-    lock: {
-      name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
-      kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
-    }
-  }
-}
+// module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
+//   name: 'deploy-Identity-VNet-AVM'
+//   dependsOn: [modNSG1]
+//   params: {
+//     name: parIdentityNetworkName
+//     location: parLocation
+//     tags: parTags
+//     dnsServers: parDnsServerIps
+//     addressPrefixes: [
+//       parIdentityNetworkAddressPrefix
+//     ]
+//     subnets: parSubnets2
+//     lock: {
+//       name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
+//       kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
+//     }
+//   }
+// }
 
 module modNSG1 'br/public:avm/res/network/network-security-group:0.5.0' = {
   name: 'deploy-NSG1'
