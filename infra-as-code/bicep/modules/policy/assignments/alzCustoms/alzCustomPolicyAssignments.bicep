@@ -59,8 +59,8 @@ param parLandingZoneMgConfidentialEnable bool = false
 @description('Resource ID of the Resource Group for Private DNS Zones. Empty to skip assigning the Deploy-Private-DNS-Zones policy.')
 param parPrivateDnsResourceGroupId string = ''
 
-@description('Resource IDs for Identity Network.')
-param parIdentityNetworkResourceIds array = []
+@description('Resource IDs for Hub Network.')
+param parHubNetworkResourceId string = ''
 
 @description('Disable all custom ALZ policies.')
 param parDisableAlzCustomPolicies bool = false
@@ -168,8 +168,8 @@ targetScope = 'managementGroup'
 
 // Modules - Policy Assignments - Identity Management Group
 // Module - Policy Assignment - Deny-VNET-Peering-To-Non-Approved-VNETs
-module modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = [for mgScope in varCorpManagementGroupIdsFiltered: if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.name)) {
-  scope: managementGroup(mgScope)
+module modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.name)) {
+  scope: managementGroup(varManagementGroupIds.platformIdentity)
   name: varModuleDeploymentNames.modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets
   params: {
     parPolicyAssignmentDefinitionId: varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.definitionId
@@ -179,14 +179,14 @@ module modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets '../../../policy/
     parPolicyAssignmentParameters: varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.properties.parameters
     parPolicyAssignmentParameterOverrides: { 
       allowedVnets: {
-        value: parIdentityNetworkResourceIds
+        value: [parHubNetworkResourceId]
       }
     }
     parPolicyAssignmentIdentityType: varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.identity.type
     parPolicyAssignmentEnforcementMode: parDisableAlzCustomPolicies ? 'DoNotEnforce' : varPolicyAssignmentDenyVnetPeeringNonApprovedVNets.libDefinition.properties.enforcementMode
     parTelemetryOptOut: parTelemetryOptOut
   }
-}]
+}
 
 // Modules - Policy Assignments - Management Management Group
 
