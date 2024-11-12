@@ -63,6 +63,17 @@ param parGlobalResourceLock lockType = {
 param parIdentityNetworkAddressPrefix string = '10.20.0.0/16'
 
 
+
+@sys.description('The name, IP address range, network security group, route table and delegation serviceName for each subnet in the virtual networks.')
+param parSubnets subnetOptionsType = [
+  {
+    name: 'identity-subnet1'
+    addressPrefix: '10.20.1.0/24'
+    networkSecurityGroupResourceId: ''
+    routeTableResourceId: ''
+  }
+]
+
 @sys.description('Array of DNS Server IP addresses for VNet.')
 param parDnsServerIps array = []
 
@@ -94,6 +105,14 @@ param parIdentityRouteTableLock lockType = {
   notes: 'This lock was created by the ALZ Bicep Identity Networking Module.'
 }
 
+var varSubnetProperties = [ for (subnet, i) in parSubnets : {
+  name: subnet.name
+  addressPrefix: subnet.addressPrefix
+  networkSecurityGroupResourceId:  '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${parIdentityNsgName}'
+  routeTableResourceId: subnet.routeTableResourceId
+}
+]
+
 module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
   name: 'deploy-Identity-VNet-AVM'
   params: {
@@ -108,6 +127,7 @@ module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
       name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
       kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
     }
+    subnets: varSubnetProperties
     peerings: [
       {
         remoteVirtualNetworkResourceId: parHubNetworkResourceId
