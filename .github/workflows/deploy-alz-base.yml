@@ -1287,8 +1287,8 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           parameters: >-
-            parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json            
+            parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
           deploymentName: deploy_identityNetwork_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -1302,8 +1302,8 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           parameters: >-
-            parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json    
+            parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
           deploymentName: deploy_identityNetwork_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"   
@@ -1350,8 +1350,8 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           parameters: >-
-            parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json      
+            parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
           deploymentName: deploy_identityNetwork_deployment-${{ env.runNumber }}
           failOnStdErr: false
   wipe:
