@@ -74,7 +74,7 @@ env:
   Location: ${{inputs.location}}
   LoggingResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-logging-001"
   HubNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-networking-001"
-  IdentityNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-identity-001"
+  IdentityNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-identity-001"
   LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
   IdentitySubId: ${{ secrets.IDENTITY_SUB_ID }}
   MgmtSubId: ${{ secrets.MGMT_SUB_ID }}
