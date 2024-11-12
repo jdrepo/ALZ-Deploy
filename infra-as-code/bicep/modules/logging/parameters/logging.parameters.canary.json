@@ -23,16 +23,16 @@
       ]
     },
     "parDataCollectionRuleVMInsightsName": {
-      "value": "dcr-ama-vmi-alz-canary"
+      "value": "dcr-gwc-vmi-alz-canary"
     },
     "parDataCollectionRuleChangeTrackingName": {
-      "value": "dcr-ama-ct-alz-canary"
+      "value": "dcr-gwc-ct-alz-canary"
     },
     "parDataCollectionRuleMDFCSQLName": {
-      "value": "dcr-ama-mdfcsql-alz-canary"
+      "value": "dcr-gwc-mdfcsql-alz-canary"
     },
     "parUserAssignedManagedIdentityName": {
-      "value": "mi-logging-alz-canary"
+      "value": "mi-gwc-logging-alz-canary"
     },
     "parLogAnalyticsWorkspaceLinkAutomationAccount": {
       "value": true

@@ -23,16 +23,16 @@
       ]
     },
     "parDataCollectionRuleVMInsightsName": {
-      "value": "dcr-ama-vmi-alz-prod"
+      "value": "dcr-gwc-vmi-alz-prod"
     },
     "parDataCollectionRuleChangeTrackingName": {
-      "value": "dcr-ama-ct-alz-prod"
+      "value": "dcr-gwc-ct-alz-prod"
     },
     "parDataCollectionRuleMDFCSQLName": {
-      "value": "dcr-ama-mdfcsql-alz-prod"
+      "value": "dcr-gwc-mdfcsql-alz-prod"
     },
     "parUserAssignedManagedIdentityName": {
-      "value": "mi-logging-alz-prod"
+      "value": "mi-gwc-logging-alz-prod"
     },
     "parLogAnalyticsWorkspaceLinkAutomationAccount": {
       "value": true
