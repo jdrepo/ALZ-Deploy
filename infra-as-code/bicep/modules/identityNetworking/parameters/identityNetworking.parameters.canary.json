@@ -14,30 +14,12 @@
     "parIdentityNetworkAddressPrefix": {
       "value": "10.20.0.0/16"
     },
-    "parSubnets": {
-      "value": [
-        {
-          "name": "subnet1",
-          "ipAddressRange": "10.20.1.0/24",
-          "networkSecurityGroupId": "",
-          "routeTableId": ""
-        }
-      ]
-    },
-	"parSubnets2": {
-	  "value": [
-	  {
-		 "name": "subnet1",
-		 "addressPrefix": "10.20.1.0/24",
-         "networkSecurityGroupResourceId": "",
-         "routeTableResourceId": ""
-	  }
-     ]	  
-	},
     "parDnsServerIps": {
       "value": []
     },
-
+	"parIdentityNsgName": {
+		"value": "nsg-gwc-001-alz-canary"
+	},
     "parIdentityRouteTableName": {
       "value": "rt-gwc-identity-alz-canary"
     },
