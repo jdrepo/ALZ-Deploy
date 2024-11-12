@@ -17,6 +17,9 @@
     "parDnsServerIps": {
       "value": []
     },
+	"parHubNetworkResourceId": {
+      "value": ""
+    },
 	"parIdentityNsgName": {
 		"value": "nsg-gwc-001-alz-canary"
 	},

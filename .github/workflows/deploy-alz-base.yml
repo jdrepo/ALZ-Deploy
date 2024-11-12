@@ -1077,6 +1077,17 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.ConnectivitySubId}}"
+            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+            hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+            echo "$hubNetworkResourceId"
+            echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
       - name: Deploy Custom Policy Assignment - Validation
         id: deploy_custPolAssignment_validation
         uses: azure/arm-deploy@v2
@@ -1086,6 +1097,7 @@ jobs:
           region: ${{ env.Location }}
           template: infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
           parameters: >-
+            parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
           deploymentName: deploy_custPolAssign_validate-${{ env.runNumber }}
           failOnStdErr: false
@@ -1099,6 +1111,7 @@ jobs:
           region: ${{ env.Location }}
           template: infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
           parameters: >-
+            parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
           deploymentName: deploy_custPolAssign_preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -1124,6 +1137,17 @@ jobs:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        - name: Get existing resources
+          id: get_resources
+          uses: azure/cli@v2
+          with:
+            azcliversion: latest
+            inlineScript: |
+              az account set -s "${{env.ConnectivitySubId}}"
+              hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+              hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+              echo "$hubNetworkResourceId"
+              echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
         - name: Deploy Custom Policy Assignment - Deployment
           id: deploy_custPolAssignment_deployment
           uses: azure/arm-deploy@v2
@@ -1133,6 +1157,7 @@ jobs:
             region: ${{ env.Location }}
             template: infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
             parameters: >-
+              parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
               infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
             deploymentName: deploy_custPolAssign_validate-${{ env.runNumber }}
             failOnStdErr: false
@@ -1251,6 +1276,7 @@ jobs:
             hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
             hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
             echo "$hubNetworkResourceId"
+            echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
       - name: Deploy Identity Network - Validation
         id: deploy_identityNetwork_validation
         uses: azure/arm-deploy@v2
@@ -1261,6 +1287,7 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           parameters: >-
+            parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json            
           deploymentName: deploy_identityNetwork_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -1275,6 +1302,7 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           parameters: >-
+            parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json    
           deploymentName: deploy_identityNetwork_preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -1301,6 +1329,17 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.ConnectivitySubId}}"
+            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+            hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+            echo "$hubNetworkResourceId"
+            echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
       - name: Deploy Identity Network - Deployment
         id: deploy_identityNetwork_deployment
         uses: azure/arm-deploy@v2
@@ -1311,6 +1350,7 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           parameters: >-
+            parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json      
           deploymentName: deploy_identityNetwork_deployment-${{ env.runNumber }}
           failOnStdErr: false

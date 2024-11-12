@@ -67,7 +67,7 @@ param parIdentityNetworkAddressPrefix string = '10.20.0.0/16'
 param parDnsServerIps array = []
 
 @sys.description('Hub VNet Resource Id to peer with.')
-param parPeeredVnetResourceId string
+param parHubNetworkResourceId string
 
 @sys.description('''Resource Lock Configuration for Virtual Network.
 
@@ -110,7 +110,7 @@ module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
     }
     peerings: [
       {
-        remoteVirtualNetworkResourceId: parPeeredVnetResourceId
+        remoteVirtualNetworkResourceId: parHubNetworkResourceId
         allowForwardedTraffic: true
         allowGatewayTransit: false
         allowVirtualNetworkAccess: true
