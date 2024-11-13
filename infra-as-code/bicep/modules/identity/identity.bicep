@@ -120,6 +120,6 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
 module modKv1 'br/public:avm/res/key-vault/vault:0.9.0' = {
   name: '${_dep}-Kv1'
   params: {
-    name: 'kv-${parLocationCode}-identity-01-${parCompanyPrefix}-${parTags.Environment}-${take(uniqueString(resourceGroup().name),6)}'
+    name: 'kv-${parLocationCode}-01-${take(uniqueString(resourceGroup().name),6)}'
   }
 }
