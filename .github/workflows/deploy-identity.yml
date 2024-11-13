@@ -1,4 +1,4 @@
-name: Deploy AMBA to ALZ environment 
+name: Deploy Identity to ALZ environment 
 
 on:
   workflow_dispatch:
