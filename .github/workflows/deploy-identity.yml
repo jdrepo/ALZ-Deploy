@@ -1,0 +1,112 @@
+name: Deploy AMBA to ALZ environment 
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz"
+        required: true
+        type: string
+      location:
+        default: "germanywestcentral"
+        type: string
+      wipeAfterDeploy:
+        default: false
+        type: boolean
+
+  workflow_call:
+    inputs:
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz"
+        required: true
+        type: string
+      location:
+        default: "germanywestcentral"
+        type: string
+      wipeAfterDeploy:
+        default: false
+        type: boolean
+    secrets:
+      IDENTITY_SUB_ID:
+        required: false
+      AZURE_CLIENT_ID:
+        required: false
+      AZURE_TENANT_ID:
+        required: false
+      AZURE_SUBSCRIPTION_ID:
+        required: false
+env:
+  ManagementGroupPrefix: ${{inputs.managementGroupPrefix}}
+  ManagementGroupSuffix: "-${{inputs.environment}}"
+  IdentitySubscriptionId: ${{secrets.IDENTITY_SUB_ID}}
+  IdentityNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-identity-001"
+  Location: ${{inputs.location}}
+  runNumber: ${{ github.run_number }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate_preview_identity:
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    name: Deploy Identity - Validation and Preview
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+    - name: Azure Login with OIDC
+      uses: azure/login@v2
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Get existing resources
+      id: get_resources
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{env.IdentitySubscriptionId}}"
+          identityNetworkName=$(jq -r .parameters.parIdentityNetworkName.value infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json) 
+          identityNetworkResourceId=$(az network vnet show --resource-group ${{ env.IdentityNetworkResourceGroupName }} --name $identityNetworkName --query id)
+          echo "$identityNetworkResourceId"
+          echo "identityNetworkResourceId=$identityNetworkResourceId" >> "$GITHUB_OUTPUT"
+    - name: Deploy Identity - Validation
+      id: deploy_identityNetwork_validation
+      uses: azure/arm-deploy@v2
+      with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.IdentitySubscriptionId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
+          template: infra-as-code/bicep/modules/identity/identity.bicep
+          parameters: >-
+            parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
+            infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json            
+          deploymentName: deploy_identity_validation-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+    # - name: Deploy Identity Network - Preview
+    # id: deploy_identityNetwork_preview
+    # uses: azure/arm-deploy@v2
+    # with:
+    #     scope: resourcegroup
+    #     subscriptionId: ${{ env.IdentitySubId }}
+    #     region: ${{ env.Location }}
+    #     resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
+    #     template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
+    #     parameters: >-
+    #     infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json    
+    #     parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
+    #     deploymentName: deploy_identityNetwork_preview-${{ env.runNumber }}
+    #     failOnStdErr: false
+    #     additionalArguments: "--what-if"   
