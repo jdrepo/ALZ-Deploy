@@ -18,7 +18,6 @@ param parLocation string = resourceGroup().location
 param parLocationCode string = 'gwc'
 
 @sys.description('The identity virtual network resource Id that will host the VMs NIC')
-@minLength(79)
 param parIdentityVnetResourceId string
 
 @sys.description('The identity subnet name that will host the VMs NIC')
@@ -58,6 +57,8 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
     name: parIdentitySubnetName
   }
 }
+
+/*** NEW RESOURCES ***/
 
 module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
   name: '${_dep}-Vm1'
@@ -113,5 +114,12 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
     enableAutomaticUpdates: true
     patchMode: 'AutomaticByPlatform'
     bypassPlatformSafetyChecksOnUserSchedule: true
+  }
+}
+
+module modKv1 'br/public:avm/res/key-vault/vault:0.9.0' = {
+  name: '${_dep}-Kv1'
+  params: {
+    name: 'kv-${parLocationCode}-identity-01-${parCompanyPrefix}-${parTags.Environment}-${take(uniqueString(resourceGroup().name),6)}'
   }
 }
