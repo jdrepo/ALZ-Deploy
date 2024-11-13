@@ -166,7 +166,7 @@ jobs:
           azPSVersion: "latest"
   wipe:
     runs-on: ubuntu-latest
-    if: ${{inputs.wipeAfterDeploy}}
+    if: ${{ inputs.wipeAfterDeploy }}
     name: Cleaning up AMBA deployments
     needs: [deploy_amba]
     steps:
