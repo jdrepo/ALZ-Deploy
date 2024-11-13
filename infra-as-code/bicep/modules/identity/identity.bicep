@@ -75,22 +75,24 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
       sku: '2025-datacenter-azure-edition-smalldisk'
       version: 'latest'
     }
-    // nicConfigurations: [
-    //   {
-    //     tags: parTags
-    //     enableAcceleratedNetworking: false
-    //     ipConfigurations: [
-    //       {
-    //         name: 'ipconfig01'
-    //         subnetResourceId: resIdentityVirtualNetwork::identitySubnet.id
-    //         privateIPAllocationMethod: 'Static'
-    //         privateIPAddress: cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,0)
+    nicConfigurations: [
+      {
+        tags: parTags
+        enableAcceleratedNetworking: false
+        ipConfigurations: [
+          {
+            name: 'ipconfig01'
+            subnetResourceId: resIdentityVirtualNetwork::identitySubnet.id
+            privateIPAllocationMethod: 'Static'
+            //privateIPAddress: cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,0)
+            privateIPAddress: '10.20.1.5'
+
             
-    //       }
-    //     ]
-    //     nicSuffix: 'nic-01'
-    //   }
-    // ]
+          }
+        ]
+        nicSuffix: 'nic-01'
+      }
+    ]
     osDisk: {
       caching: 'ReadWrite'
       diskSizeGB: 35
