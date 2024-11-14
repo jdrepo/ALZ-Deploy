@@ -37,7 +37,6 @@ param parTimeZone string = 'W. Europe Standard Time'
 /*** VARIABLES ***/
 
 var _dep = deployment().name
-var subnet = resIdentitySubnet
 
 /*** EXISTING SUBSCRIPTION RESOURCES ***/
 
@@ -61,10 +60,6 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
   }
 }
 
-resource resIdentitySubnet 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' existing = {
-  name: parIdentitySubnetName
-  parent: resIdentityVirtualNetwork
-}
 
 
 /*** NEW RESOURCES ***/
@@ -93,8 +88,8 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
             name: 'ipconfig01'
             subnetResourceId: resIdentityVirtualNetwork::identitySubnet.id
             privateIPAllocationMethod: 'Static'
-            //privateIPAddress: cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,0)
-            privateIPAddress: '10.20.1.5'
+            privateIPAddress: cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,0)
+            //privateIPAddress: '10.20.1.5'
 
             
           }

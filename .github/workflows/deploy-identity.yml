@@ -97,18 +97,23 @@ jobs:
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
-    # - name: Deploy Identity Network - Preview
-    # id: deploy_identityNetwork_preview
-    # uses: azure/arm-deploy@v2
-    # with:
-    #     scope: resourcegroup
-    #     subscriptionId: ${{ env.IdentitySubId }}
-    #     region: ${{ env.Location }}
-    #     resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
-    #     template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
-    #     parameters: >-
-    #     infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json    
-    #     parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
-    #     deploymentName: deploy_identityNetwork_preview-${{ env.runNumber }}
-    #     failOnStdErr: false
-    #     additionalArguments: "--what-if"   
+          additionalArguments: "--debug"   
+    - name: Deploy Identity - Preview
+      id: deploy_identityNetwork_preview
+      uses: azure/arm-deploy@v2
+      with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.IdentitySubscriptionId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
+          template: infra-as-code/bicep/modules/identity/identity.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
+            parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
+            parAdminUserName="domadmin"
+            parAdminPassword="qwertz.."
+          deploymentName: deploy_identity_preview-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"   
+
+
