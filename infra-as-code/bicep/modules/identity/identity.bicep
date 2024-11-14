@@ -131,4 +131,4 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
 // }
 
 //output cidr string =  cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,0)
-output subnet string = subnet
+//output subnet string = subnet
