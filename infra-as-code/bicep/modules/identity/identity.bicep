@@ -37,7 +37,7 @@ param parTimeZone string = 'W. Europe Standard Time'
 /*** VARIABLES ***/
 
 var _dep = deployment().name
-var subnet = resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix
+var subnet = resIdentityVirtualNetwork::identitySubnet
 
 /*** EXISTING SUBSCRIPTION RESOURCES ***/
 
@@ -131,4 +131,4 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
 // }
 
 //output cidr string =  cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,0)
-//output subnet string = subnet
+output subnet object = subnet
