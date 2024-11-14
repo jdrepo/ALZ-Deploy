@@ -37,7 +37,7 @@ param parTimeZone string = 'W. Europe Standard Time'
 /*** VARIABLES ***/
 
 var _dep = deployment().name
-var subnet = resIdentityVirtualNetwork::identitySubnet
+var subnet = resIdentitySubnet
 
 /*** EXISTING SUBSCRIPTION RESOURCES ***/
 
@@ -59,6 +59,11 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
   resource identitySubnet 'subnets' existing = {
     name: parIdentitySubnetName
   }
+}
+
+resource resIdentitySubnet 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' existing = {
+  name: parIdentitySubnetName
+  parent: resIdentityVirtualNetwork
 }
 
 
