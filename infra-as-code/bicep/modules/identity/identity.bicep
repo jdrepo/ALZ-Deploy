@@ -88,8 +88,8 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
             name: 'ipconfig01'
             subnetResourceId: resIdentityVirtualNetwork::identitySubnet.id
             privateIPAllocationMethod: 'Static'
-            privateIPAddress: cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,0)
-            //privateIPAddress: '10.20.1.5'
+            //privateIPAddress: cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,0)
+            privateIPAddress: '10.20.1.5'
 
             
           }
