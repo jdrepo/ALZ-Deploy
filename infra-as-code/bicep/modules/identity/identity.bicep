@@ -28,7 +28,7 @@ param parIdentitySubnetName string = 'identity-subnet1'
 param parAdminUserName string
 
 @sys.description('VM admin password')
-//@secure()
+@secure()
 param parAdminPassword string
 
 @description('Optional. Virtual machine time zone')
