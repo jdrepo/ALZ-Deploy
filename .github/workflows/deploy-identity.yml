@@ -101,7 +101,7 @@ jobs:
             infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parAdminUserName="domadmin"
-            parAdminPassword="qwertz.."
+            parAdminPassword="qwertz..22A$"
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -118,7 +118,7 @@ jobs:
             infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parAdminUserName="domadmin"
-            parAdminPassword="qwertz.."
+            parAdminPassword="qwertz..22A$"
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -161,7 +161,7 @@ jobs:
             infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parAdminUserName="domadmin"
-            parAdminPassword="qwertz..!"
+            parAdminPassword="qwertz..22A$"
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--verbose"
