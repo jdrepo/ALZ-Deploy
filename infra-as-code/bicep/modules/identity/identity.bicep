@@ -128,6 +128,6 @@ module modKv1 'br/public:avm/res/key-vault/vault:0.9.0' = {
   }
 }
 
-// output vm1ResourceId string = modVm1.outputs.resourceId
-// output kv1ResourceId string = modKv1.outputs.resourceId
-output adminPassword string = parAdminPassword
+output vm1ResourceId string = modVm1.outputs.resourceId
+output kv1ResourceId string = modKv1.outputs.resourceId
+
