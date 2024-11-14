@@ -92,6 +92,8 @@ jobs:
           parameters: >-
             infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
+            parAdminUserName="domadmin"
+            parAdminPassword="qwertz.."
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
