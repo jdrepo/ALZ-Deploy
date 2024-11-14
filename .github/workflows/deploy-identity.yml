@@ -105,7 +105,6 @@ jobs:
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
-          additionalArguments: "--debug"   
     - name: Deploy Identity - Preview
       id: deploy_identity_preview
       uses: azure/arm-deploy@v2
@@ -165,7 +164,7 @@ jobs:
             parAdminPassword="qwertz.."
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
-          additionalArguments: "--verbose --debug"
+          additionalArguments: "--verbose"
     - name: Get Deployment output
       id: deploy_identity_output
       shell: bash
