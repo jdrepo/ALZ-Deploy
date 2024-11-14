@@ -24,11 +24,11 @@ param parIdentityVnetResourceId string
 param parIdentitySubnetName string = 'identity-subnet1'
 
 @sys.description('VM admin user name')
-@secure()
+//@secure()
 param parAdminUserName string
 
 @sys.description('VM admin password')
-@secure()
+//@secure()
 param parAdminPassword string
 
 @description('Optional. Virtual machine time zone')
@@ -64,69 +64,69 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
 
 /*** NEW RESOURCES ***/
 
-// module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
-//   name: '${_dep}-Vm1'
-//   params: {
-//     location: parLocation
-//     tags: parTags
-//     name: 'vm-${parLocationCode}-dc-01'
-//     adminUsername: parAdminUserName
-//     adminPassword: parAdminPassword
-//     timeZone: parTimeZone
-//     imageReference: {
-//       offer: 'WindowsServer'
-//       publisher: 'MicrosoftWindowsServer'
-//       sku: '2025-datacenter-azure-edition-smalldisk'
-//       version: 'latest'
-//     }
-//     nicConfigurations: [
-//       {
-//         tags: parTags
-//         enableAcceleratedNetworking: false
-//         name: 'nic-01-vm-${parLocationCode}-dc-01'
-//         ipConfigurations: [
-//           {
-//             name: 'ipconfig01'
-//             subnetResourceId: resIdentityVirtualNetwork::identitySubnet.id
-//             privateIPAllocationMethod: 'Static'
-//             privateIPAddress: cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,3)
-//           }
-//         ]
-//         nicSuffix: '-nic-01'
-//       }
-//     ]
-//     osDisk: {
-//       caching: 'ReadWrite'
-//       diskSizeGB: 35
-//       managedDisk: {
-//         storageAccountType: 'StandardSSD_LRS'
-//       }
-//     }
-//     dataDisks: [
-//       {
-//         caching: 'None'
-//         createOption: 'Empty'
-//         diskSizeGB: 8
-//         managedDisk: {
-//           storageAccountType: 'StandardSSD_LRS'
-//         }
-//       }
-//     ]
-//     osType: 'Windows'
-//     vmSize: 'Standard_B2s'
-//     zone: 1
-//     enableAutomaticUpdates: true
-//     patchMode: 'AutomaticByPlatform'
-//     bypassPlatformSafetyChecksOnUserSchedule: true
-//   }
-// }
+module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
+  name: '${_dep}-Vm1'
+  params: {
+    location: parLocation
+    tags: parTags
+    name: 'vm-${parLocationCode}-dc-01'
+    adminUsername: parAdminUserName
+    adminPassword: parAdminPassword
+    timeZone: parTimeZone
+    imageReference: {
+      offer: 'WindowsServer'
+      publisher: 'MicrosoftWindowsServer'
+      sku: '2025-datacenter-azure-edition-smalldisk'
+      version: 'latest'
+    }
+    nicConfigurations: [
+      {
+        tags: parTags
+        enableAcceleratedNetworking: false
+        name: 'nic-01-vm-${parLocationCode}-dc-01'
+        ipConfigurations: [
+          {
+            name: 'ipconfig01'
+            subnetResourceId: resIdentityVirtualNetwork::identitySubnet.id
+            privateIPAllocationMethod: 'Static'
+            privateIPAddress: cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,3)
+          }
+        ]
+        nicSuffix: '-nic-01'
+      }
+    ]
+    osDisk: {
+      caching: 'ReadWrite'
+      diskSizeGB: 35
+      managedDisk: {
+        storageAccountType: 'StandardSSD_LRS'
+      }
+    }
+    dataDisks: [
+      {
+        caching: 'None'
+        createOption: 'Empty'
+        diskSizeGB: 8
+        managedDisk: {
+          storageAccountType: 'StandardSSD_LRS'
+        }
+      }
+    ]
+    osType: 'Windows'
+    vmSize: 'Standard_B2s'
+    zone: 1
+    enableAutomaticUpdates: true
+    patchMode: 'AutomaticByPlatform'
+    bypassPlatformSafetyChecksOnUserSchedule: true
+  }
+}
 
-// module modKv1 'br/public:avm/res/key-vault/vault:0.9.0' = {
-//   name: '${_dep}-Kv1'
-//   params: {
-//     name: 'kv-${parLocationCode}-01-${take(uniqueString(resourceGroup().name),6)}'
-//   }
-// }
+module modKv1 'br/public:avm/res/key-vault/vault:0.9.0' = {
+  name: '${_dep}-Kv1'
+  params: {
+    name: 'kv-${parLocationCode}-01-${take(uniqueString(resourceGroup().name),6)}'
+  }
+}
 
 // output vm1ResourceId string = modVm1.outputs.resourceId
 // output kv1ResourceId string = modKv1.outputs.resourceId
