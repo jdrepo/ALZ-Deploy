@@ -90,8 +90,8 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identity/identity.bicep
           parameters: >-
+            infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
-            infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json            
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
