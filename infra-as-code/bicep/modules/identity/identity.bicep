@@ -24,7 +24,7 @@ param parIdentityVnetResourceId string
 param parIdentitySubnetName string = 'identity-subnet1'
 
 @sys.description('VM admin user name')
-//@secure()
+@secure()
 param parAdminUserName string
 
 @sys.description('VM admin password')
