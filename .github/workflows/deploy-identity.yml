@@ -3,6 +3,10 @@ name: Deploy Identity to ALZ environment
 on:
   workflow_dispatch:
     inputs:
+      deploy:
+        description: 'Deploy after preview'
+        default: false
+        type: boolean
       environment:
         default: "canary"
         required: true
@@ -20,6 +24,10 @@ on:
 
   workflow_call:
     inputs:
+      deploy:
+        description: 'Deploy after preview'
+        default: false
+        type: boolean
       environment:
         default: "canary"
         required: true
@@ -116,7 +124,9 @@ jobs:
           failOnStdErr: false
           additionalArguments: "--what-if"
   deploy_identity:
+    if: ${{ inputs.deploy }}
     runs-on: ubuntu-latest
+    needs: [validate_preview_identity]
     environment: ${{inputs.environment}}
     name: Deploy Identity
     steps:
@@ -155,5 +165,12 @@ jobs:
             parAdminPassword="qwertz.."
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
+          additionalArguments: "--verbose --debug"
+    - name: Get Deployment output
+      id: deploy_identity_output
+      shell: bash
+      run: echo "ip ${{ steps.deploy_identity.outputs.ip}}"
+
+
 
 
