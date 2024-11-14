@@ -90,7 +90,7 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
 //             subnetResourceId: resIdentityVirtualNetwork::identitySubnet.id
 //             privateIPAllocationMethod: 'Static'
 //             //privateIPAddress: cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix,0)
-//             privateIPAddress: '10.20.1.5'
+//             privateIPAddress: '10.20.1.1'
 
             
 //           }

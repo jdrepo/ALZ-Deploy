@@ -169,7 +169,9 @@ jobs:
     - name: Get Deployment output
       id: deploy_identity_output
       shell: bash
-      run: echo "ip ${{ steps.deploy_identity.outputs.ip}}"
+      run: | 
+        echo "ip ${{ steps.deploy_identity.outputs.ip}}"
+        echo "cidr ${{ steps.deploy_identity.outputs.cidr}}"
 
 
 
