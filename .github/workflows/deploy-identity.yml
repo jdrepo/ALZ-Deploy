@@ -136,11 +136,13 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
+      with:
+        path: 'ALZ-Deploy'
     - name: Checkout Repo bicep-registry-modules
       uses: actions/checkout@v4
       with:
           repository: Azure/bicep-registry-modules
-          path: bicep-registry-modules 
+          path: 'bicep-registry-modules' 
     - name: Azure Login with OIDC
       uses: azure/login@v2
       with:
@@ -154,7 +156,7 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account set -s "${{env.IdentitySubscriptionId}}"
-          identityNetworkName=$(jq -r .parameters.parIdentityNetworkName.value infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json) 
+          identityNetworkName=$(jq -r .parameters.parIdentityNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json) 
           identityNetworkResourceId=$(az network vnet show --resource-group ${{ env.IdentityNetworkResourceGroupName }} --name $identityNetworkName --query id)
           echo "$identityNetworkResourceId"
           echo "identityNetworkResourceId=$identityNetworkResourceId" >> $GITHUB_OUTPUT
@@ -166,9 +168,9 @@ jobs:
           subscriptionId: ${{ env.IdentitySubscriptionId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
-          template: infra-as-code/bicep/modules/identity/identity.bicep
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/identity/identity.bicep
           parameters: >-
-            infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity-${{ env.runNumber }}
@@ -178,7 +180,7 @@ jobs:
       id: deploy_identity_output
       shell: bash
       run: | 
-        echo "cidr ${{ steps.deploy_identity.outputs.adminPassword}}"
+        echo "KeyVault: ${{ steps.deploy_identity.outputs.kv1ResourceId}}"
 
 
 
