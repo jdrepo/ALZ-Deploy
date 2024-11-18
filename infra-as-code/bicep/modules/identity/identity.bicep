@@ -136,7 +136,7 @@ module modKv '../keyVault/keyVault.bicep' = {
 }
 
 resource resKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: 'kv-${parLocationCode}-001-${parTags.Environment}-${take(uniqueString(resourceGroup().name),6)}'
+  name: take(('kv-${parLocationCode}-001-${parTags.Environment}-${parCompanyPrefix}-${take(uniqueString(resourceGroup().name),4)}'),24)
 }
 
 module modKvPassword '../keyVaultSecret/keyVaultSecret.bicep' = {
