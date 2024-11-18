@@ -71,13 +71,11 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
-      with:
-        path: ALZ-Deploy
     - name: Checkout Repo bicep-registry-modules
       uses: actions/checkout@v4
       with:
           repository: Azure/bicep-registry-modules
-          path: bicep-registry-modules 
+          path: ../bicep-registry-modules 
     - name: Azure Login with OIDC
       uses: azure/login@v2
       with:
