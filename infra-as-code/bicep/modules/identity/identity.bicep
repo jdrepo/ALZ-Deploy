@@ -27,16 +27,17 @@ param parIdentitySubnetName string = 'identity-subnet1'
 @secure()
 param parAdminUserName string
 
-@sys.description('VM admin password')
-@secure()
-param parAdminPassword string
 
 @description('Optional. Virtual machine time zone')
 param parTimeZone string = 'W. Europe Standard Time'
 
+param parTimeNow string = utcNow('u')
+
+
 /*** VARIABLES ***/
 
 var _dep = deployment().name
+var varPasswordSecretName = 'vmpassword'
 
 /*** EXISTING SUBSCRIPTION RESOURCES ***/
 
@@ -66,12 +67,14 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
 
 module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
   name: '${_dep}-Vm1'
+  dependsOn: [modKv,modKvPassword]
   params: {
     location: parLocation
     tags: parTags
     name: 'vm-${parLocationCode}-dc-01'
     adminUsername: parAdminUserName
-    adminPassword: parAdminPassword
+    //adminPassword: parAdminPassword
+    adminPassword: resKv.getSecret(varPasswordSecretName)
     timeZone: parTimeZone
     imageReference: {
       offer: 'WindowsServer'
@@ -121,13 +124,41 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
   }
 }
 
-module modKv1 'br/public:avm/res/key-vault/vault:0.9.0' = {
-  name: '${_dep}-Kv1'
+// module modKv1 'br/public:avm/res/key-vault/vault:0.9.0' = {
+//   name: '${_dep}-Kv1'
+//   params: {
+//     name: 'kv-${parLocationCode}-01-${take(uniqueString(resourceGroup().name),6)}'
+//   }
+// }
+
+module modKv '../keyVault/keyVault.bicep' = {
+  name: '${_dep}-Kv'
   params: {
-    name: 'kv-${parLocationCode}-01-${take(uniqueString(resourceGroup().name),6)}'
+    parKeyVaultName: 'kv-${parLocationCode}-001-${parTags.Environment}-${take(uniqueString(resourceGroup().name),6)}'
+    parTags: parTags
+    parSecretDeployEnabled: true
   }
 }
 
+resource resKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: 'kv-${parLocationCode}-001-${parTags.Environment}-${take(uniqueString(resourceGroup().name),6)}'
+}
+
+module modKvPassword '../keyVaultSecret/keyVaultSecret.bicep' = {
+  name: '${_dep}-KvPassword'
+  params: {
+    parSecretName: varPasswordSecretName
+    parKeyVaultName: modKv.outputs.name
+    parTags: parTags
+    parSecretDeployIdentityId: modKv.outputs.SecretDeployIdentityId
+    parContentType: 'password'
+    parRecoverSecret: 'yes'
+    parNewSecretVersion: 'no'
+    parExpireDate: dateTimeAdd(parTimeNow,'P1D')
+  }
+}
+
+
 output vm1ResourceId string = modVm1.outputs.resourceId
-output kv1ResourceId string = modKv1.outputs.resourceId
+output kv1ResourceId string = modKv.outputs.resourceId
 
