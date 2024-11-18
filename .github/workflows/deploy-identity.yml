@@ -103,9 +103,9 @@ jobs:
           subscriptionId: ${{ env.IdentitySubscriptionId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
-          template: ALZ-Deploy/ALZ-Deploy/infra-as-code/bicep/modules/identity/identity.bicep
+          template: ALZ-Deploy/infra-as-code/bicep/modules/identity/identity.bicep
           parameters: >-
-            ALZ-Deploy/ALZ-Deploy/infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
+            ALZ-Deploy/infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
