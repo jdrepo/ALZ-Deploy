@@ -129,7 +129,7 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
 module modKv '../keyVault/keyVault.bicep' = {
   name: '${_dep}-Kv'
   params: {
-    parKeyVaultName: 'kv-${parLocationCode}-001-${parTags.Environment}-${parCompanyPrefix}-${take(uniqueString(resourceGroup().name),4)}'
+    parKeyVaultName: take(('kv-${parLocationCode}-001-${parTags.Environment}-${parCompanyPrefix}-${take(uniqueString(resourceGroup().name),4)}'),24)
     parTags: parTags
     parSecretDeployEnabled: true
   }
