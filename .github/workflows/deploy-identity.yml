@@ -1,4 +1,4 @@
-name: Deploy Identity to ALZ environment 
+name: 2. Deploy Identity to ALZ environment 
 
 on:
   workflow_dispatch:
