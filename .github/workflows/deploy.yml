@@ -1,4 +1,4 @@
-name: Deploy complete ALZ solution
+name: 0. Deploy complete ALZ solution
 
 on:
   workflow_dispatch:
