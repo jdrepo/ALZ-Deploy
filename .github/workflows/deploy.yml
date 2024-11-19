@@ -16,6 +16,7 @@ jobs:
       alzBicepRelease: "v0.19.4"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
+      wipeAfterDeploy: false
     secrets:
       LOGGING_SUB_ID: ${{ secrets.LOGGING_SUB_ID_CANARY }}
       IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_CANARY}}
@@ -25,8 +26,23 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
-  alz-deploy-amba-canary:
+  alz-deploy-identity-canary:
     needs: [alz-deploy-base-canary]
+    name: "Deploy Identity - Canary"
+    uses: ./.github/workflows/deploy-identity.yml
+    with:
+      environment: "canary"
+      deploy: true
+      managementGroupPrefix: "alz"
+      location: "germanywestcentral"
+      wipeAfterDeploy: false
+    secrets:
+      IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_CANARY}}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}    
+  alz-deploy-amba-canary:
+    needs: [alz-deploy-identity-canary]
     name: "Deploy AMBA - Canary"
     uses: ./.github/workflows/deploy-amba.yml
     with:
@@ -34,6 +50,7 @@ jobs:
       ambaRelease: "2024-09-02"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
+      wipeAfterDeploy: false
     secrets:
       MGMT_SUB_ID: ${{ secrets.MGMT_SUB_ID_CANARY}}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
@@ -48,6 +65,7 @@ jobs:
       alzBicepRelease: "v0.19.4"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
+      wipeAfterDeploy: false
     secrets:
       LOGGING_SUB_ID: ${{ secrets.LOGGING_SUB_ID_PROD }}
       IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_PROD}}
@@ -66,6 +84,7 @@ jobs:
       ambaRelease: "2024-09-02"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
+      wipeAfterDeploy: false
     secrets:
       MGMT_SUB_ID: ${{ secrets.MGMT_SUB_ID_CANARY}}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
