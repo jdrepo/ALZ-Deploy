@@ -1,4 +1,4 @@
-name: Deploy ALZ Base Components 
+name: 1. Deploy ALZ Base Components 
 
 on:
   # push:
@@ -74,7 +74,8 @@ env:
   Location: ${{inputs.location}}
   LoggingResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-logging-001"
   HubNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-networking-001"
-  IdentityNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-identity-001"
+  HubPrivateDNSResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-networking-001"
+  IdentityNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-privatedns"
   LoggingSubId: ${{ secrets.LOGGING_SUB_ID }}
   IdentitySubId: ${{ secrets.IDENTITY_SUB_ID }}
   MgmtSubId: ${{ secrets.MGMT_SUB_ID }}
@@ -717,9 +718,92 @@ jobs:
             parResourceGroupName=${{ env.HubNetworkResourceGroupName }}
           deploymentName: deploy_hubNetworkRg_deployment-${{ env.runNumber }}
           failOnStdErr: false
-  validate_preview_hubNetwork:
+  validate_preview_privatedns_rg:
     runs-on: ubuntu-latest
     needs: [deploy_hubNetwork_rg]
+    name: Deploy Private DNS RG - Validation and Preview
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy Private DNS RG - Validation
+        id: deploy_privateDnsRg_validation
+        uses: azure/arm-deploy@v2
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
+            parResourceGroupName=${{ env.HubPrivateDNSResourceGroupName }}
+          deploymentName: deploy_privateDnsRg_validation-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+      - name: Deploy Private DNS RG - Preview
+        id: deploy_privateDNSRg_preview
+        uses: azure/arm-deploy@v2
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          parameters: >- 
+            infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
+            parResourceGroupName=${{ env.HubPrivateDNSResourceGroupName  }}
+          deploymentName: deploy_hubNetworkRg_validation-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"
+  deploy_privatedns_rg:
+    runs-on: ubuntu-latest
+    needs: [validate_preview_privatedns_rg]
+    name: Deploy Private DNS RG
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy Private DNS RG
+        id: deploy_privateDnsRg
+        uses: azure/arm-deploy@v2
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
+            parResourceGroupName=${{ env.HubPrivateDNSResourceGroupName }}
+          deploymentName: deploy_privateDnsRg-${{ env.runNumber }}
+          failOnStdErr: false
+  validate_preview_hubNetwork:
+    runs-on: ubuntu-latest
+    needs: [deploy_privatedns_rg]
     environment: ${{inputs.environment}}
     name: Deploy Hub Network - Validation and Preview
     steps:
