@@ -833,8 +833,8 @@ jobs:
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            parPrivateDnsZonesResourceGroup=${{ env.HubPrivateDNSResourceGroupName }}
-            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json            
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
+            parPrivateDnsZonesResourceGroup=${{ env.HubPrivateDNSResourceGroupName }}            
           deploymentName: deploy_hubNetwork_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -848,8 +848,8 @@ jobs:
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            parPrivateDnsZonesResourceGroup=${{ env.HubPrivateDNSResourceGroupName }}
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json    
+            parPrivateDnsZonesResourceGroup=${{ env.HubPrivateDNSResourceGroupName }}
           deploymentName: deploy_hubNetwork_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"   
@@ -885,8 +885,8 @@ jobs:
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            parPrivateDnsZonesResourceGroup=${{ env.HubPrivateDNSResourceGroupName }}
-            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json      
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
+            parPrivateDnsZonesResourceGroup=${{ env.HubPrivateDNSResourceGroupName }}      
           deploymentName: deploy_hubNetwork_deployment-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_subPlacement:
