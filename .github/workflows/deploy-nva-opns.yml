@@ -125,3 +125,49 @@ jobs:
           deploymentName: deploy_opnsense_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
+  deploy_opns:
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    name: Deploy NVA OpnSense
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+      with:
+        path: 'ALZ-Deploy'
+    - name: Checkout Repo bicep-registry-modules
+      uses: actions/checkout@v4
+      with:
+          repository: Azure/bicep-registry-modules
+          path: 'bicep-registry-modules'
+    - name: Azure Login with OIDC
+      uses: azure/login@v2
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Get existing resources
+      id: get_resources
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{env.ConnectivitySubscriptionId}}"
+          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+          hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.hubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+          echo "$hubNetworkResourceId"
+          echo "hubNetworkResourceId=$hubNetworkResourceId" >> $GITHUB_OUTPUT
+    - name: Deploy NVA OpnSense
+      id: deploy_opns
+      uses: azure/arm-deploy@v2
+      with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubscriptionId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/opnsense.bicep
+          parameters: >-
+            ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/parameters/opnsense.parameters.${{inputs.environment}}.json
+            parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
+          deploymentName: deploy_opnsense-${{ env.runNumber }}
+          failOnStdErr: false
+         
