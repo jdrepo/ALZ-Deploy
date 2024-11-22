@@ -42,6 +42,18 @@
           "ipAddressRange": "10.10.253.0/24",
           "networkSecurityGroupId": "",
           "routeTableId": ""
+        },
+        {
+          "name": "OPNS-Untrusted",
+          "ipAddressRange": "10.10.251.0/24",
+          "networkSecurityGroupId": "",
+          "routeTableId": ""
+        },
+        {
+          "name": "OPNS-Trusted",
+          "ipAddressRange": "10.10.250.0/24",
+          "networkSecurityGroupId": "",
+          "routeTableId": ""
         }
       ]
     },
