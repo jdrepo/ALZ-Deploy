@@ -64,7 +64,7 @@
       "value": "Standard"
     },
     "parPublicIpPrefix": {
-      "value": "pip-gwc"
+      "value": "pip-gwc-"
     },
     "parPublicIpSuffix": {
       "value": "alz-canary"
