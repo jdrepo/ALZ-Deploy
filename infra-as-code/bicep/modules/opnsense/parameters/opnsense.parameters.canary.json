@@ -17,10 +17,13 @@
       }
     },
     "parVirtualMachineSize": {
-      "value": "Standard_B2s"
+      "value": "Standard_B1s"
     },
     "parVirtualMachineName": {
       "value": "vm-opns"
+    },
+	"parAdminUser": {
+      "value": "azureuser"
     },
     "parVirtualNetworkResourceId": {
       "value": ""
@@ -40,16 +43,16 @@
     "PublicIPAddressSku": {
       "value": "Standard"
     },
-    "OpnScriptURI": {
-      "value": "'https://raw.githubusercontent.com/dmauser/opnazure/master/scripts/'"
+    "parOpnScriptURI": {
+      "value": "https://raw.githubusercontent.com/dmauser/opnazure/master/scripts/"
     },
-    "ShellScriptName": {
+    "parShellScriptName": {
       "value": "configureopnsense.sh"
     },
-    "OpnVersion": {
+    "parOpnVersion": {
       "value": "24.7"
     },
-    "WALinuxVersion": {
+    "parWALinuxVersion": {
       "value": "2.11.1.4"
     }
     

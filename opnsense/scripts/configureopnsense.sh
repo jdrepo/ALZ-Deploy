@@ -36,7 +36,7 @@ elif [ "$4" = "TwoNics" ]; then
     fetch $1get_nic_gw.py
     gwip=$(python get_nic_gw.py $5)
     sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config.xml
-    sed -i "" "s_zzz.zzz.zzz.zzz_$6_" config.xml
+    # sed -i "" "s_zzz.zzz.zzz.zzz_$6_" config.xml
     cp config.xml /usr/local/etc/config.xml
 fi
 
@@ -64,12 +64,12 @@ sed -i "" "s/set -e/#set -e/g" opnsense-bootstrap.sh.in
 sed -i "" "s/reboot/shutdown -r +2/g" opnsense-bootstrap.sh.in
 sh ./opnsense-bootstrap.sh.in -y -r "$2"
 
-# Add Azure waagent
-# fetch https://github.com/Azure/WALinuxAgent/archive/refs/tags/v$3.tar.gz
-# tar -xvzf v$3.tar.gz
-# cd WALinuxAgent-$3/
-# python3 setup.py install --register-service --lnx-distro=freebsd --force
-# cd ..
+Add Azure waagent
+fetch https://github.com/Azure/WALinuxAgent/archive/refs/tags/v$3.tar.gz
+tar -xvzf v$3.tar.gz
+cd WALinuxAgent-$3/
+python3 setup.py install --register-service --lnx-distro=freebsd --force
+cd ..
 
 # Fix waagent by replacing configuration settings
 # ln -s /usr/local/bin/python3.11 /usr/local/bin/python

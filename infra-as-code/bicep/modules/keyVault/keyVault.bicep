@@ -14,6 +14,9 @@ param parTags object = {}
 @sys.description('Region where to deploy the resources.')
 param parLocation string = resourceGroup().location
 
+@sys.description('Virtual network rules.')
+param parVirtualNetworkRules array = []
+
 @sys.description('Region code for resource naming.')
 param parLocationCode string = 'gwc'
 
@@ -128,6 +131,7 @@ module modKeyVault 'br/public:avm/res/key-vault/vault:0.9.0' = {
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
+      virtualNetworkRules: parVirtualNetworkRules
     }
   }
 }
