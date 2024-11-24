@@ -81,8 +81,10 @@
       "value": []
     },
     "parExcludedPolicyAssignments": {
-      "value": []
-    },
+	  "value": [
+		"Deploy-MDFC-Config-H224"
+	  ]
+		},
     "parTelemetryOptOut": {
       "value": false
     }
