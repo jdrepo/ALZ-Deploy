@@ -71,6 +71,18 @@ param parExcludedPolicyAssignments array = []
 @description('Opt out of deployment telemetry.')
 param parTelemetryOptOut bool = false
 
+@description('Email address for Microsoft Defender for Cloud alerts.')
+param parMsDefenderForCloudEmailSecurityContact string = 'security_contact@replace_me.com'
+
+@description('Location of Log Analytics Workspace & Automation Account.')
+param parLogAnalyticsWorkSpaceAndAutomationAccountLocation string = 'eastus'
+
+@description('Resource ID of Log Analytics Workspace.')
+param parLogAnalyticsWorkspaceResourceId string = ''
+
+@description('Disable all default ALZ policies.')
+param parDisableAlzDefaultPolicies bool = false
+
 
 // **Variables**
 // Orchestration Module Variables
@@ -81,7 +93,7 @@ var varDeploymentNameWrappers = {
 }
 
 var varModuleDeploymentNames = {
-  //modPolicyAssignment
+    modPolicyAssignmentIntRootDeployMdfcConfig: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployMDFCConfig-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentLzsCorpDenyPrivateDNSZones: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyPrivateDNSZones-corp-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyVnetPeeringtoNonApprovedVnets-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
 
@@ -98,6 +110,11 @@ var varPolicyAssignmentDenyPrivateDNSZones = {
 var varPolicyAssignmentDenyVnetPeeringNonApprovedVNets = {
   definitionId: '${varTopLevelManagementGroupResourceId}/providers/Microsoft.Authorization/policyDefinitions/Deny-VNET-Peering-To-Non-Approved-VNETs'
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deny_vnet_peering_to_non-approved-vnets.tmpl.json')
+}
+
+var varPolicyAssignmentDeployMDFCConfig = {
+  definitionId: '${varTopLevelManagementGroupResourceId}/providers/Microsoft.Authorization/policySetDefinitions/Deploy-MDFC-Config_20240319'
+  libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deploy_mdfc_config.tmpl.json')
 }
 
 
@@ -159,6 +176,39 @@ targetScope = 'managementGroup'
 
 
 // Modules - Policy Assignments - Intermediate Root Management Group
+
+// Module - Policy Assignment - Deploy-MDFC-Config-H224
+module modPolicyAssignmentIntRootDeployMdfcConfig '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployMDFCConfig.libDefinition.name)) {
+  scope: managementGroup(varManagementGroupIds.intRoot)
+  name: varModuleDeploymentNames.modPolicyAssignmentIntRootDeployMdfcConfig
+  params: {
+    parPolicyAssignmentDefinitionId: varPolicyAssignmentDeployMDFCConfig.definitionId
+    parPolicyAssignmentName: varPolicyAssignmentDeployMDFCConfig.libDefinition.name
+    parPolicyAssignmentDisplayName: varPolicyAssignmentDeployMDFCConfig.libDefinition.properties.displayName
+    parPolicyAssignmentDescription: varPolicyAssignmentDeployMDFCConfig.libDefinition.properties.description
+    parPolicyAssignmentParameters: varPolicyAssignmentDeployMDFCConfig.libDefinition.properties.parameters
+    parPolicyAssignmentParameterOverrides: {
+      emailSecurityContact: {
+        value: parMsDefenderForCloudEmailSecurityContact
+      }
+      ascExportResourceGroupLocation: {
+        value: parLogAnalyticsWorkSpaceAndAutomationAccountLocation
+      }
+      logAnalytics: {
+        value: parLogAnalyticsWorkspaceResourceId
+      }
+      enableAscForOssDb : {
+        value: 'Disabled'
+      }
+    }
+    parPolicyAssignmentIdentityType: varPolicyAssignmentDeployMDFCConfig.libDefinition.identity.type
+    parPolicyAssignmentIdentityRoleDefinitionIds: [
+      varRbacRoleDefinitionIds.owner
+    ]
+    parPolicyAssignmentEnforcementMode: parDisableAlzDefaultPolicies ? 'DoNotEnforce' : varPolicyAssignmentDeployMDFCConfig.libDefinition.properties.enforcementMode
+    parTelemetryOptOut: parTelemetryOptOut
+  }
+}
 
 // Modules - Policy Assignments - Platform Management Group
 

@@ -21,6 +21,19 @@
     "parLandingZoneMgConfidentialEnable": {
       "value": false
     },
+	"parDisableAlzDefaultPolicies": {
+			"value": false
+	},
+	"parMsDefenderForCloudEmailSecurityContact": {
+			"value": "security_contact@replace_me.com"
+	},
+	"parLogAnalyticsWorkSpaceAndAutomationAccountLocation": {
+			"value": "eastus"
+	},
+	"parLogAnalyticsWorkspaceResourceId": {
+			"value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/alz-logging/providers/Microsoft.OperationalInsights/workspaces/alz-log-analytics"
+	},
+	
     "parPolicyAssignmentSovereigntyConfidential": {
       "value": {
         "parAllowedResourceTypes": [],
@@ -37,3 +50,4 @@
     }
   }
 }
+
