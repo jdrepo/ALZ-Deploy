@@ -44,7 +44,7 @@
       "value": "Standard"
     },
     "parOpnScriptURI": {
-      "value": "https://raw.githubusercontent.com/dmauser/opnazure/master/scripts/"
+      "value": "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense/scripts/"
     },
     "parShellScriptName": {
       "value": "configureopnsense.sh"
