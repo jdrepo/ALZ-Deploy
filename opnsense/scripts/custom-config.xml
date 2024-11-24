@@ -186,7 +186,7 @@
   </sysctl>
   <system>
     <optimization>normal</optimization>
-    <hostname>OPNsense</hostname>
+    <hostname>vm-opns-</hostname>
     <domain>localhost</domain>
     <dnsallowoverride>1</dnsallowoverride>
     <group>
@@ -403,58 +403,6 @@
     </rule>
     <rule>
       <type>pass</type>
-      <interface>lan</interface>
-      <ipprotocol>inet</ipprotocol>
-      <statetype>keep state</statetype>
-      <descr>Allow Firewall Management Windows-VM-Subnet</descr>
-      <direction>in</direction>
-      <log>1</log>
-      <quick>1</quick>
-      <source>
-        <address>WindowsVMSubnet</address>
-      </source>
-      <destination>
-        <network>lanip</network>
-      </destination>
-      <updated>
-        <username>root@10.0.1.7</username>
-        <time>1650569687.4794</time>
-        <description>/firewall_rules_edit.php made changes</description>
-      </updated>
-      <created>
-        <username>root@10.0.1.7</username>
-        <time>1650569687.4794</time>
-        <description>/firewall_rules_edit.php made changes</description>
-      </created>
-    </rule>
-    <rule>
-      <type>pass</type>
-      <interface>lan</interface>
-      <ipprotocol>inet</ipprotocol>
-      <statetype>keep state</statetype>
-      <descr>Allow Windows-VM-Subnet Internet Access</descr>
-      <direction>in</direction>
-      <log>1</log>
-      <quick>1</quick>
-      <source>
-        <address>WindowsVMSubnet</address>
-      </source>
-      <destination>
-        <any>1</any>
-      </destination>
-      <updated>
-        <username>root@10.0.1.7</username>
-        <time>1650570771.5832</time>
-        <description>/firewall_rules_edit.php made changes</description>
-      </updated>
-      <created>
-        <username>root@10.0.1.7</username>
-        <time>1650570771.5832</time>
-        <description>/firewall_rules_edit.php made changes</description>
-      </created>
-    </rule>
-    <rule>
-      <type>pass</type>
       <ipprotocol>inet</ipprotocol>
       <descr>Default allow LAN to any rule</descr>
       <interface>lan</interface>
@@ -663,17 +611,6 @@
         <geoip>
           <url/>
         </geoip>
-        <aliases>
-          <alias uuid="637063a6-909d-4544-b2ac-c883a9ea97e4">
-            <enabled>1</enabled>
-            <name>WindowsVMSubnet</name>
-            <type>network</type>
-            <proto/>
-            <counters>0</counters>
-            <updatefreq/>
-            <content>zzz.zzz.zzz.zzz</content>
-            <description/>
-          </alias>
         </aliases>
       </Alias>
     </Firewall>
