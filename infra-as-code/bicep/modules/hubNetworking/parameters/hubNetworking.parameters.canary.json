@@ -67,7 +67,7 @@
       "value": "pip-gwc-"
     },
     "parPublicIpSuffix": {
-      "value": "alz-canary"
+      "value": ""
     },
     "parAzBastionEnabled": {
       "value": true
