@@ -244,7 +244,13 @@
         "kind": "None",
         "notes": "This lock was created by the ALZ Bicep Hub Networking Module."
       }
-    }
+    },
+	"parOpnTrustedSubnetNsgName": {
+	  "value": "nsg-gwc-opnsense-alz-canary"
+	},
+	"parOpnUntrustedSubnetNsgName": {
+	  "value": "nsg-gwc-opnsense-alz-canary"
+	}
   }
 }
 

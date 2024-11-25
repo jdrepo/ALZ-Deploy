@@ -423,6 +423,16 @@ param parTelemetryOptOut bool = false
 @sys.description('Define outbound destination ports or ranges for SSH or RDP that you want to access from Azure Bastion.')
 param parBastionOutboundSshRdpPorts array = [ '22', '3389' ]
 
+@sys.description('Switch to enable/disable OPNSense deployment.')
+param parOpnSenseEnabled bool = false
+
+@sys.description('Name for OPNSense Trusted Subnet NSG.')
+param parOpnSenseTrustedSubnetNsgName string = 'nsg-opnsense-trusted-alz'
+
+@sys.description('Name for OPNSense Untrusted Subnet NSG.')
+param parOpnSenseUntrustedSubnetNsgName string = 'nsg-opnsense-untrusted-alz'
+
+
 var varSubnetMap = map(range(0, length(parSubnets)), i => {
     name: parSubnets[i].name
     ipAddressRange: parSubnets[i].ipAddressRange
@@ -447,6 +457,10 @@ var varSubnetProperties = [for subnet in varSubnetMap: {
 
     networkSecurityGroup: (subnet.name == 'AzureBastionSubnet' && parAzBastionEnabled) ? {
       id: '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${parAzBastionNsgName}'
+    } : (subnet.name == 'OPNS-Trusted' && parOpnSenseEnabled) ? {
+      id: '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${parOpnSenseTrustedSubnetNsgName}'
+    } : (subnet.name == 'OPNS-Untrusted' && parOpnSenseEnabled) ? {
+      id: '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${parOpnSenseUntrustedSubnetNsgName}'
     } : (empty(subnet.networkSecurityGroupId)) ? null : {
       id: subnet.networkSecurityGroupId
     }
@@ -1110,6 +1124,89 @@ module modPrivateDnsZones '../privateDnsZones/privateDnsZones.bicep' = if (parPr
     parTelemetryOptOut: parTelemetryOptOut
   }
 }
+
+module modNsgOpnsTrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.0' = if (parOpnSenseEnabled) {
+  name: 'deploy-nsg-OPNS-Trusted-Subnet'
+  params: {
+    name: parOpnSenseTrustedSubnetNsgName
+    tags: parTags
+    securityRules: [
+      {
+        name: 'In-Any'
+        properties: {
+          priority: 4096
+          sourceAddressPrefix: '*'
+          protocol: '*'
+          destinationPortRange: '*'
+          access: 'Allow'
+          direction: 'Inbound'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+        }
+      }
+      {
+        name: 'Out-Any'
+        properties: {
+          priority: 4096
+          sourceAddressPrefix: '*'
+          protocol: '*'
+          destinationPortRange: '*'
+          access: 'Allow'
+          direction: 'Outbound'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+        }
+      }
+    ]
+  }
+}
+
+module modNsgOpnsUntrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.0' = if (parOpnSenseEnabled) {
+  name: 'deploy-nsg-OPNS-Untrusted-Subnet'
+  params: {
+    name: parOpnSenseUntrustedSubnetNsgName
+    tags: parTags
+    securityRules: [
+      {
+        name: 'In-Any'
+        properties: {
+          priority: 4096
+          sourceAddressPrefix: '*'
+          protocol: '*'
+          destinationPortRange: '*'
+          access: 'Allow'
+          direction: 'Inbound'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+        }
+      }
+      {
+        name: 'Out-Any'
+        properties: {
+          priority: 4096
+          sourceAddressPrefix: '*'
+          protocol: '*'
+          destinationPortRange: '*'
+          access: 'Allow'
+          direction: 'Outbound'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+        }
+      }
+    ]
+  }
+}
+
+resource resOpnSenseTrustedSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' existing = if (parOpnSenseEnabled) {
+  parent: resHubVnet
+  name: 'OPNS-Trusted'
+}
+
+resource resOpnSenseUntrustedSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' existing = if (parOpnSenseEnabled) {
+  parent: resHubVnet
+  name: 'OPNS-Untrusted'
+}
+
 
 // // Optional Deployments for Customer Usage Attribution
 // module modCustomerUsageAttribution '../../CRML/customerUsageAttribution/cuaIdResourceGroup.bicep' = if (!parTelemetryOptOut) {
