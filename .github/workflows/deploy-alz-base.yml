@@ -834,7 +834,7 @@ jobs:
           template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
-          deploymentName: deploy_hubNetwork_validation-${{ env.runNumber }}
+          deploymentName: deploy-hubNetwork-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
       - name: Deploy Hub Network - Preview
@@ -848,7 +848,7 @@ jobs:
           template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json    
-          deploymentName: deploy_hubNetwork_preview-${{ env.runNumber }}
+          deploymentName: deploy-hubNetwork-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"   
   deploy_hubNetwork:
@@ -884,7 +884,7 @@ jobs:
           template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json
-          deploymentName: deploy_hubNetwork_deployment-${{ env.runNumber }}
+          deploymentName: deploy-hubNetwork-deployment-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_subPlacement:
     runs-on: ubuntu-latest
