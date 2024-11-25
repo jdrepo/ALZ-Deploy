@@ -1181,8 +1181,9 @@ jobs:
           region: ${{ env.Location }}
           template: infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
           parameters: >-
-            parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
+            parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
+            parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
           deploymentName: deploy_custPolAssign_validate-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -1195,8 +1196,9 @@ jobs:
           region: ${{ env.Location }}
           template: infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
           parameters: >-
-            parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
+            parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
+            parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
           deploymentName: deploy_custPolAssign_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -1241,8 +1243,9 @@ jobs:
             region: ${{ env.Location }}
             template: infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
             parameters: >-
-              parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
               infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
+              parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
+              parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
             deploymentName: deploy_custPolAssign_validate-${{ env.runNumber }}
             failOnStdErr: false
   validate_preview_identityNetwork_rg:
