@@ -200,6 +200,27 @@ module modPolicyAssignmentIntRootDeployMdfcConfig '../../../policy/assignments/p
       enableAscForOssDb : {
         value: 'Disabled'
       }
+      enableAscForSql : {
+        value: 'Disabled'
+      }
+      enableAscForAppServices : {
+        value: 'Disabled'
+      }
+      enableAscForStorage : {
+        value: 'Disabled'
+      }
+      enableAscForContainers : {
+        value: 'Disabled'
+      }
+      enableAscForSqlOnVm : {
+        value: 'Disabled'
+      }
+      enableAscForCosmosDbs : {
+        value: 'Disabled'
+      }
+      enableAscForCspm : {
+        value: 'Disabled'
+      }
     }
     parPolicyAssignmentIdentityType: varPolicyAssignmentDeployMDFCConfig.libDefinition.identity.type
     parPolicyAssignmentIdentityRoleDefinitionIds: [
