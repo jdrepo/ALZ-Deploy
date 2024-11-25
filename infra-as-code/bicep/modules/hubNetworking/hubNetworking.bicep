@@ -507,7 +507,11 @@ resource resDDoSProtectionPlanLock 'Microsoft.Authorization/locks@2020-05-01' = 
 }
 
 resource resHubVnet 'Microsoft.Network/virtualNetworks@2023-02-01' = {
-  dependsOn: [
+  dependsOn: (parOpnSenseEnabled) ? [
+    resBastionNsg
+    modNsgOpnsTrustedSubnet
+    modNsgOpnsUntrustedSubnet
+  ]: [
     resBastionNsg
   ]
   name: parHubNetworkName
