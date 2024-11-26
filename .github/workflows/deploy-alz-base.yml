@@ -21,8 +21,15 @@ on:
         required: true
         type: string
       location:
-        default: "germanywestcentral"
+        default: 'germanywestcentral'
         type: string
+      nva:
+        description: 'NVA solution'
+        default: 'opnsense-single'
+        type: choice
+        options:
+          - opnsense-single
+          - none
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -43,6 +50,10 @@ on:
         type: string
       location:
         default: "germanywestcentral"
+        type: string
+      nva:
+        description: 'NVA solution'
+        default: 'opnsense-single'
         type: string
       wipeAfterDeploy:
         default: false
