@@ -319,6 +319,7 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
 
 resource resOpnSense 'Microsoft.Compute/virtualMachines@2024-07-01' existing = {
   name: parVirtualMachineName
+  dependsOn: [modOpnSense]
 }
  
 resource vmext 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = {
