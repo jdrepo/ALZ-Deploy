@@ -198,6 +198,8 @@ resource resConnectivityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-1
 //   }
 // }
 
+
+
 module modPublicIp 'br/public:avm/res/network/public-ip-address:0.7.0' = {
   name: '${_dep}-publicip'
   params: {
@@ -353,12 +355,7 @@ module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
-      virtualNetworkRules: [
-        {
-          action: 'Allow'
-          id: resConnectivityVirtualNetwork::trustedSubnet.id
-        }        
-      ]
+      virtualNetworkRules: []
       ipRules: [for ip in varGwcSerialConsoleIps : {
           action: 'Allow'
           value: ip
@@ -374,12 +371,7 @@ module modKv '../keyVault/keyVault.bicep' = {
     parKeyVaultName: take(('kv-${parLocationCode}-001-${parTags.Environment}-${parCompanyPrefix}-${take(uniqueString(resourceGroup().name),4)}'),24)
     parTags: parTags
     parSecretDeployEnabled: true
-    parVirtualNetworkRules: [
-      {
-        action: 'Allow'
-        id: resConnectivityVirtualNetwork::trustedSubnet.id
-      }
-    ]
+    parVirtualNetworkRules: []
   }
 }
 
