@@ -427,10 +427,10 @@ param parBastionOutboundSshRdpPorts array = [ '22', '3389' ]
 param parOpnSenseEnabled bool = false
 
 @sys.description('Name for OPNSense Trusted Subnet NSG.')
-param parOpnSenseTrustedSubnetNsgName string = 'nsg-opnsense-trusted-alz'
+param parOpnSenseTrustedSubnetNsgName string = ''
 
 @sys.description('Name for OPNSense Untrusted Subnet NSG.')
-param parOpnSenseUntrustedSubnetNsgName string = 'nsg-opnsense-untrusted-alz'
+param parOpnSenseUntrustedSubnetNsgName string = ''
 
 
 var varSubnetMap = map(range(0, length(parSubnets)), i => {

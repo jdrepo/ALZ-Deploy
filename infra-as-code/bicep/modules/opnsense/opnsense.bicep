@@ -134,69 +134,69 @@ resource resConnectivityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-1
 
 /*** NEW RESOURCES ***/
 
-module modOpnSenseNsg 'br/public:avm/res/network/network-security-group:0.5.0' = {
-  name: '${_dep}-opnsense-nsg'
-  params: {
-    name: varNsgName
-    tags: parTags
-    securityRules: [
-      {
-        name: 'In-Any'
-        properties: {
-          priority: 4096
-          sourceAddressPrefix: '*'
-          protocol: '*'
-          destinationPortRange: '*'
-          access: 'Allow'
-          direction: 'Inbound'
-          sourcePortRange: '*'
-          destinationAddressPrefix: '*'
-        }
-      }
-      {
-        name: 'Out-Any'
-        properties: {
-          priority: 4096
-          sourceAddressPrefix: '*'
-          protocol: '*'
-          destinationPortRange: '*'
-          access: 'Allow'
-          direction: 'Outbound'
-          sourcePortRange: '*'
-          destinationAddressPrefix: '*'
-        }
-      }
-    ]
-  }
-}
+// module modOpnSenseNsg 'br/public:avm/res/network/network-security-group:0.5.0' = {
+//   name: '${_dep}-opnsense-nsg'
+//   params: {
+//     name: varNsgName
+//     tags: parTags
+//     securityRules: [
+//       {
+//         name: 'In-Any'
+//         properties: {
+//           priority: 4096
+//           sourceAddressPrefix: '*'
+//           protocol: '*'
+//           destinationPortRange: '*'
+//           access: 'Allow'
+//           direction: 'Inbound'
+//           sourcePortRange: '*'
+//           destinationAddressPrefix: '*'
+//         }
+//       }
+//       {
+//         name: 'Out-Any'
+//         properties: {
+//           priority: 4096
+//           sourceAddressPrefix: '*'
+//           protocol: '*'
+//           destinationPortRange: '*'
+//           access: 'Allow'
+//           direction: 'Outbound'
+//           sourcePortRange: '*'
+//           destinationAddressPrefix: '*'
+//         }
+//       }
+//     ]
+//   }
+// }
 
-module modTrustedSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
-  name: '${_dep}-trusted-subnet'
-  params: {
-    name: parTrustedSubnetName
-    virtualNetworkName: resConnectivityVirtualNetwork.name
-    addressPrefix: parTrustedSubnetCIDR
-    networkSecurityGroupResourceId: modOpnSenseNsg.outputs.resourceId
-    serviceEndpoints: [
-      'Microsoft.Storage'
-      'Microsoft.KeyVault'
-    ]
-  }
-}
+// module modTrustedSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
+//   name: '${_dep}-trusted-subnet'
+//   params: {
+//     name: parTrustedSubnetName
+//     virtualNetworkName: resConnectivityVirtualNetwork.name
+//     addressPrefix: parTrustedSubnetCIDR
+//     networkSecurityGroupResourceId: modOpnSenseNsg.outputs.resourceId
+//     serviceEndpoints: [
+//       'Microsoft.Storage'
+//       'Microsoft.KeyVault'
+//     ]
+//   }
+// }
 
-module modUntrustedSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
-  name: '${_dep}-untrusted-subnet'
-  params: {
-    name: parUntrustedSubnetName
-    virtualNetworkName: resConnectivityVirtualNetwork.name
-    addressPrefix: parUntrustedSubnetCIDR
-    networkSecurityGroupResourceId: modOpnSenseNsg.outputs.resourceId
-    serviceEndpoints: [
-      'Microsoft.Storage'
-      'Microsoft.KeyVault'
-    ]
-  }
-}
+// module modUntrustedSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
+//   name: '${_dep}-untrusted-subnet'
+//   params: {
+//     name: parUntrustedSubnetName
+//     virtualNetworkName: resConnectivityVirtualNetwork.name
+//     addressPrefix: parUntrustedSubnetCIDR
+//     networkSecurityGroupResourceId: modOpnSenseNsg.outputs.resourceId
+//     serviceEndpoints: [
+//       'Microsoft.Storage'
+//       'Microsoft.KeyVault'
+//     ]
+//   }
+// }
 
 module modPublicIp 'br/public:avm/res/network/public-ip-address:0.7.0' = {
   name: '${_dep}-publicip'
@@ -272,9 +272,9 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
         enableIPForwarding: true
         ipConfigurations: [{
           name: 'ipconfig01'
-          subnetResourceId: modUntrustedSubnet.outputs.resourceId
+          subnetResourceId: resConnectivityVirtualNetwork::unTrustedSubnet.id
           privateIPAllocationMethod: 'Static'
-          privateIPAddress: cidrHost(modUntrustedSubnet.outputs.addressPrefix,3)
+          privateIPAddress: cidrHost(resConnectivityVirtualNetwork::unTrustedSubnet.properties.addressPrefix,3)
           pipConfiguration: {
             publicIPAddressResourceId: modPublicIp.outputs.resourceId
           }
@@ -287,9 +287,9 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
         enableIPForwarding: true
         ipConfigurations: [{
           name: 'ipconfig01'
-          subnetResourceId: modTrustedSubnet.outputs.resourceId
+          subnetResourceId: resConnectivityVirtualNetwork::trustedSubnet.id
           privateIPAllocationMethod: 'Static'
-          privateIPAddress: cidrHost(modTrustedSubnet.outputs.addressPrefix,3)
+          privateIPAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,3)
         }]
         deleteOption: 'Delete'
       }
@@ -336,7 +336,7 @@ resource vmext 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = {
       fileUris: [
         '${parOpnScriptURI}${parShellScriptName}'
       ]
-      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${modTrustedSubnet.outputs.addressPrefix} "\'" "\'" "\'"1.1.1.1/32"\'" "\'" "\'" "\'" "\'" '
+      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} "\'" "\'" "\'"1.1.1.1/32"\'" "\'" "\'" "\'" "\'" '
     }
   }
 }
