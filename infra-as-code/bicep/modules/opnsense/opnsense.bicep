@@ -389,6 +389,6 @@ module modKvPassword '../keyVaultSecret/keyVaultSecret.bicep' = {
     parContentType: 'password'
     parRecoverSecret: 'yes'
     parNewSecretVersion: 'no'
-    parExpireDate: dateTimeAdd(parTimeNow,'P1D')
+    parExpireDate: dateTimeAdd(parTimeNow,'P90D')
   }
 }
