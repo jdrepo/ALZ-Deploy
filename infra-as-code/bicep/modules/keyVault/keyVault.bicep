@@ -73,6 +73,9 @@ module modSecretDeployIdentity 'br/public:avm/res/managed-identity/user-assigned
 
 module modKvSoftRecoverScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
   name: '${_dep}-kvSoftRecoverScript'
+  dependsOn: [
+    modRoleAssignIdKvSoftRecover
+  ]
   params: {
     tags: parTags
     location: parLocation
