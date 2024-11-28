@@ -62,6 +62,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}    
   alz-deploy-amba-canary:
+    if: ${{ always() }}
     needs: [alz-deploy-identity-canary]
     name: "Deploy AMBA - Canary"
     uses: ./.github/workflows/deploy-amba.yml
