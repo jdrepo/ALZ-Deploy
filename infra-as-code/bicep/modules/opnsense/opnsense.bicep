@@ -379,6 +379,9 @@ module modKv '../keyVault/keyVault.bicep' = {
 }
 
 resource resKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  dependsOn: [
+    modKv
+  ]
   name: take(('kv-${parLocationCode}-001-${parTags.Environment}-${parCompanyPrefix}-${take(uniqueString(resourceGroup().name),4)}'),24)
 }
 
