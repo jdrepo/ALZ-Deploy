@@ -253,6 +253,9 @@ module modPublicIp 'br/public:avm/res/network/public-ip-address:0.7.0' = {
 
 module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
   name: '${_dep}-opnsense'
+  dependsOn: [
+    modKv
+  ]
   params: {
     name: parVirtualMachineName
     location: parLocation
