@@ -1,60 +1,65 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "parLocation": {
-      "value": "germanywestcentral"
-    },
-    "parLocationCode": {
-      "value": "gwc"
-    },
-    "parCompanyPrefix": {
-      "value": "alz"
-    },
-    "parTags": {
-      "value": {
-        "Environment": "canary"
-      }
-    },
-    "parVirtualMachineSize": {
-      "value": "Standard_B1s"
-    },
-    "parVirtualMachineName": {
-      "value": "vm-opns"
-    },
-	"parAdminUser": {
-      "value": "azureuser"
-    },
-    "parVirtualNetworkResourceId": {
-      "value": ""
-    },
-    "parUntrustedSubnetCIDR": {
-      "value": "10.10.251.0/24"
-    },
-    "parTrustedSubnetCIDR": {
-      "value": "10.10.250.0/24"
-    },
-    "parUntrustedSubnetName": {
-      "value": "OPNS-Untrusted"
-    },
-    "parTrustedSubnetName": {
-      "value": "OPNS-Trusted"
-    },
-    "PublicIPAddressSku": {
-      "value": "Standard"
-    },
-    "parOpnScriptURI": {
-      "value": "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense/scripts/"
-    },
-    "parShellScriptName": {
-      "value": "configureopnsense.sh"
-    },
-    "parOpnVersion": {
-      "value": "24.7"
-    },
-    "parWALinuxVersion": {
-      "value": "2.11.1.4"
-    }
-    
-  }
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"parLocation": {
+			"value": "germanywestcentral"
+		},
+		"parLocationCode": {
+			"value": "gwc"
+		},
+		"parCompanyPrefix": {
+			"value": "alz"
+		},
+		"parTags": {
+			"value": {
+				"Environment": "canary"
+			}
+		},
+		"parTopLevelManagementGroupPrefix": {
+			"value": "alz"
+		},
+		"parTopLevelManagementGroupSuffix": {
+			"value": "-canary"
+		},
+		"parVirtualMachineSize": {
+			"value": "Standard_B1s"
+		},
+		"parVirtualMachineName": {
+			"value": "vm-opns"
+		},
+		"parAdminUser": {
+			"value": "azureuser"
+		},
+		"parVirtualNetworkResourceId": {
+			"value": ""
+		},
+		"parUntrustedSubnetCIDR": {
+			"value": "10.10.251.0/24"
+		},
+		"parTrustedSubnetCIDR": {
+			"value": "10.10.250.0/24"
+		},
+		"parUntrustedSubnetName": {
+			"value": "OPNS-Untrusted"
+		},
+		"parTrustedSubnetName": {
+			"value": "OPNS-Trusted"
+		},
+		"PublicIPAddressSku": {
+			"value": "Standard"
+		},
+		"parOpnScriptURI": {
+			"value": "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense/scripts/"
+		},
+		"parShellScriptName": {
+			"value": "configureopnsense.sh"
+		},
+		"parOpnVersion": {
+			"value": "24.7"
+		},
+		"parWALinuxVersion": {
+			"value": "2.11.1.4"
+		}
+	}
 }
