@@ -1,0 +1,12 @@
+{
+  "name": "Exemption-Deploy-VM-Monitoring-FreeBSD",
+  "type": "Microsoft.Authorization/policyExemptions",
+  "apiVersion": "2022-07-01-preview",
+  "properties": {
+    "description": "Exempt FreeBSD - Azure Monitor for the virtual machines (VMs) in the specified scope.",
+    "displayName": "Exempt - Enable Azure Monitor for FreeBSD VMs",
+	"policyDefinitionReferenceIds": [
+			"DeployAzureMonitoringAgentLinuxVMWithUAI",
+			"dependencyagentextension_linux_vm_ama_deploy"],
+  }
+}

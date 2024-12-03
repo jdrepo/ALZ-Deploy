@@ -1,0 +1,12 @@
+{
+  "name": "Exemption-Audit-TrustedLaunch-FreeBSD",
+  "type": "Microsoft.Authorization/policyExemptions",
+  "apiVersion": "2022-07-01-preview",
+  "properties": {
+    "description": "Exempt FreeBSD - Trusted Launch improves security of a Virtual Machine which requires VM SKU, OS Disk & OS Image to support it (Gen 2). To learn more about Trusted Launch, visit https://aka.ms/trustedlaunch.",
+    "displayName": "Exempt - Audit virtual machines for Trusted Launch support - FreeBSD",
+	"policyDefinitionReferenceIds": [
+			"audittrustedlaunchenabled"
+			],
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Exemption-Deploy-MDEndpoints-FreeBSD",
+  "type": "Microsoft.Authorization/policyExemptions",
+  "apiVersion": "2022-07-01-preview",
+  "properties": {
+    "description": "Exempt FreeBSD - Deploy Microsoft Defender for Endpoint agent on applicable images.",
+    "displayName": "Exempt - [Preview]: Deploy Microsoft Defender for Endpoint agent on FreeBSD",
+	"policyDefinitionReferenceIds": [
+			"microsoftDefenderForEndpointLinuxAgentDeploy"
+			],
+  }
+}

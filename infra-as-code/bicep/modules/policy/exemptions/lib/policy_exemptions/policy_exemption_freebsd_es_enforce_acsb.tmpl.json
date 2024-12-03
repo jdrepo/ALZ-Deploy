@@ -1,0 +1,13 @@
+{
+  "name": "Exemption-Enforce-ACSB-FreeBSD",
+  "type": "Microsoft.Authorization/policyExemptions",
+  "apiVersion": "2022-07-01-preview",
+  "properties": {
+    "description": "Exempt FreeBSD - This initiative assignment enables Azure Compute Security Baseline compliance auditing for Windows and Linux virtual machines.",
+    "displayName": "Exempt - Enforce Azure Compute Security Baseline compliance auditing - FreeBSD",
+	"policyDefinitionReferenceIds": [
+			"GcLinux",
+			"LinAcsb"
+			],
+  }
+}

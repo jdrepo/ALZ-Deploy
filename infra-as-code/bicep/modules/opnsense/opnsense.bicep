@@ -27,6 +27,15 @@ type subnetOptionsType = ({
 @sys.description('Prefix value which will be prepended to all resource names.')
 param parCompanyPrefix string = 'alz'
 
+@description('Prefix for management group hierarchy.')
+@minLength(2)
+@maxLength(10)
+param parTopLevelManagementGroupPrefix string = 'alz'
+
+@description('Optional suffix for management group names/IDs.')
+@maxLength(10)
+param parTopLevelManagementGroupSuffix string = ''
+
 @sys.description('Tags you would like to be applied to all resources in this module.')
 param parTags object = {}
 
@@ -86,9 +95,8 @@ param parLocationCode string = 'gwc'
 @sys.description('Admin User for OPNSense.')
 param parAdminUser string = 'azureuser'
 
-// @sys.description('Admin Password for OPNSense - temporary.')
-// #disable-next-line secure-secrets-in-params
-// param parAdminPassword string
+@description('Optional. Virtual machine time zone')
+param parTimeZone string = 'W. Europe Standard Time'
 
 param parTimeNow string = utcNow('u')
 
@@ -115,6 +123,36 @@ var varGwcSerialConsoleIps = [
   '98.67.183.186'
 ]
 
+// Management Groups Variables - Used For Policy Exemptions
+var varManagementGroupIds = {
+  intRoot: '${parTopLevelManagementGroupPrefix}${parTopLevelManagementGroupSuffix}'
+  platform: '${parTopLevelManagementGroupPrefix}-platform${parTopLevelManagementGroupSuffix}'
+}
+
+var varPolicyExemptionDeployVMMonitoring = {
+  definitionId: '/providers/Microsoft.Management/managementGroups/${varManagementGroupIds.platform}/providers/Microsoft.Authorization/policyAssignments/Deploy-VM-Monitoring'
+  libDefinition: loadJsonContent('../policy/exemptions/lib/policy_exemptions/policy_exemption_freebsd_es_deploy_vm_monitor.tmpl.json')
+}
+
+var varPolicyExemptionDeployMDEndpoints = {
+  definitionId: '/providers/Microsoft.Management/managementGroups/${varManagementGroupIds.intRoot}/providers/Microsoft.Authorization/policyAssignments/deploy-mdendpoints'
+  libDefinition: loadJsonContent('../policy/exemptions/lib/policy_exemptions/policy_exemption_freebsd_es_deploy_mdeendpoints.tmpl.json')
+}
+
+var varPolicyExemptionEnforceACSB = {
+  definitionId: '/providers/Microsoft.Management/managementGroups/${varManagementGroupIds.intRoot}/providers/Microsoft.Authorization/policyAssignments/enforce-acsb'
+  libDefinition: loadJsonContent('../policy/exemptions/lib/policy_exemptions/policy_exemption_freebsd_es_enforce_acsb.tmpl.json')
+}
+
+var varPolicyExemptionAuditTrustedLaunch = {
+  definitionId: '/providers/Microsoft.Management/managementGroups/${varManagementGroupIds.intRoot}/providers/Microsoft.Authorization/policyAssignments/audit-trustedlaunch'
+  libDefinition: loadJsonContent('../policy/exemptions/lib/policy_exemptions/policy_exemption_freebsd_es_audit_trustedlaunch.tmpl.json')
+}
+
+var varPolicyExemptionDeployMDfCConfig = {
+  definitionId: '/providers/Microsoft.Management/managementGroups/${varManagementGroupIds.intRoot}/providers/Microsoft.Authorization/policyAssignments/deploy-mdfc-config-h224'
+  libDefinition: loadJsonContent('../policy/exemptions/lib/policy_exemptions/policy_exemption_freebsd_es_deploy_mdfc_config.json')
+}
 
 /*** EXISTING RESOURCES ***/
 
@@ -260,8 +298,10 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
     name: parVirtualMachineName
     location: parLocation
     adminUsername: parAdminUser
-    // adminPassword: varAdminPassword
     adminPassword: resKv.getSecret('${parVirtualMachineName}-password')
+    secureBootEnabled: false
+    vTpmEnabled: false
+    timeZone: parTimeZone
     imageReference: {
       publisher: 'thefreebsdfoundation'
       offer: 'freebsd-14_1'
@@ -316,7 +356,7 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
     }
     osType: 'Linux'
     vmSize: parVirtualMachineSize
-    zone: 0
+    zone: 1
     bootDiagnostics: true
     bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
   }
@@ -355,6 +395,7 @@ module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
     tags: parTags
     location: parLocation
     allowBlobPublicAccess: false
+    skuName: 'Standard_ZRS'
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
@@ -398,3 +439,71 @@ module modKvPassword '../keyVaultSecret/keyVaultSecret.bicep' = {
     parExpireDate: dateTimeAdd(parTimeNow,'P90D')
   }
 }
+
+
+module modPolicyExemptionDeployMDEndpoints '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-deployMDEndpoints'
+  params: {
+    name: varPolicyExemptionDeployMDEndpoints.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionDeployMDEndpoints.definitionId
+    displayName: varPolicyExemptionDeployMDEndpoints.libDefinition.properties.displayName
+    description: varPolicyExemptionDeployMDEndpoints.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionDeployMDEndpoints.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modOpnSense.outputs.resourceId
+  }
+}
+
+module modPolicyExemptionDeployVMMonitoring '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-deployVMMonitoring'
+  params: {
+    name: varPolicyExemptionDeployVMMonitoring.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionDeployVMMonitoring.definitionId
+    displayName: varPolicyExemptionDeployVMMonitoring.libDefinition.properties.displayName
+    description: varPolicyExemptionDeployVMMonitoring.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionDeployVMMonitoring.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modOpnSense.outputs.resourceId
+  }
+}
+
+module modPolicyExemptionEnforceACSB '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-enforceACSB'
+  params: {
+    name: varPolicyExemptionEnforceACSB.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionEnforceACSB.definitionId
+    displayName: varPolicyExemptionEnforceACSB.libDefinition.properties.displayName
+    description: varPolicyExemptionEnforceACSB.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionEnforceACSB.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modOpnSense.outputs.resourceId
+  }
+}
+
+module modPolicyExemptionAuditTrustedLaunch '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-auditTrustedLaunch'
+  params: {
+    name: varPolicyExemptionAuditTrustedLaunch.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionAuditTrustedLaunch.definitionId
+    displayName: varPolicyExemptionAuditTrustedLaunch.libDefinition.properties.displayName
+    description: varPolicyExemptionAuditTrustedLaunch.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionAuditTrustedLaunch.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modOpnSense.outputs.resourceId
+  }
+}
+
+module modPolicyExemptionDeployMDfCConfig '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-deployMDfCConfig'
+  params: {
+    name: varPolicyExemptionDeployMDfCConfig.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionDeployMDfCConfig.definitionId
+    displayName: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.displayName
+    description: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modOpnSense.outputs.resourceId
+  }
+}
+
+
