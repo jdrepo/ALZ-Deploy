@@ -8,13 +8,6 @@
     "parTopLevelManagementGroupSuffix": {
       "value": "-canary"
     },
-    "parTopLevelPolicyAssignmentSovereigntyGlobal": {
-      "value": {
-        "parTopLevelSovereigntyGlobalPoliciesEnable": false,
-        "parListOfAllowedLocations": [],
-        "parPolicyEffect": "Deny"
-      }
-    },
     "parPlatformMgAlzDefaultsEnable": {
       "value": true
     },
@@ -35,14 +28,6 @@
 	},
 	"parHubNetworkResourceId": {
       "value": ""
-    },
-    "parPolicyAssignmentSovereigntyConfidential": {
-      "value": {
-        "parAllowedResourceTypes": [],
-        "parListOfAllowedLocations": [],
-        "parAllowedVirtualMachineSKUs": [],
-        "parPolicyEffect": "Deny"
-      }
     },
     "parExcludedPolicyAssignments": {
       "value": []
