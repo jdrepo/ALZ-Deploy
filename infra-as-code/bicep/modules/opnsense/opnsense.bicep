@@ -427,6 +427,20 @@ resource resKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: take(('kv-${parLocationCode}-001-${parTags.Environment}-${parCompanyPrefix}-${take(uniqueString(resourceGroup().name),4)}'),24)
 }
 
+// Key Encryption Key for DES
+
+module modKekDes '../../../../../bicep-registry-modules/avm/res/key-vault/vault/key/main.bicep' =  {
+  name: '${_dep}-kek-des'
+  params: {
+    name: 'des-kek'
+    keyVaultName: modKv.outputs.name
+    tags: parTags
+  }
+}
+
+// Disk Encryption Set 
+
+
 module modIdDes 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'  =  {
   name: '${_dep}-${varDesUserAssignedIdentityName}'
   params: {
@@ -438,7 +452,7 @@ module modIdDes 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0
 module modDes 'br/public:avm/res/compute/disk-encryption-set:0.3.0' = {
   name: '${_dep}-${varDesName}'
   params: {
-    keyName: 'kek1'
+    keyName: modKekDes.outputs.name
     keyVaultResourceId: modKv.outputs.resourceId
     name: varDesName
     encryptionType: 'EncryptionAtRestWithPlatformAndCustomerKeys'
