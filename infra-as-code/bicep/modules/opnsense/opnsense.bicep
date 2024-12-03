@@ -396,7 +396,7 @@ module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
     tags: parTags
     location: parLocation
     allowBlobPublicAccess: false
-    skuName: 'Standard_ZRS'
+    skuName: 'Standard_LRS'
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
