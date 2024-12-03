@@ -108,7 +108,8 @@ var varEnvironment = parTags.?Environment ?? 'canary'
 var varPublicIPAddressName = 'pip-${parLocationCode}-${parVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varTrustedNicName = 'nic-${parLocationCode}-trusted-${parVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varUntrustedNicName = 'nic-${parLocationCode}-untrusted-${parVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
-// var varAdminPassword = parAdminPassword ?? guid(subscription().id,resourceGroup().id)
+var varDesUserAssignedIdentityName = 'id-${parLocationCode}-des-${parCompanyPrefix}-${varEnvironment}'
+var varDesName = 'des-${parLocationCode}-001-${parCompanyPrefix}-${varEnvironment}'
 
 var varNsgName = 'nsg-${parLocationCode}-opnsense-${parCompanyPrefix}-${varEnvironment}'
 
@@ -424,6 +425,30 @@ resource resKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
     modKv
   ]
   name: take(('kv-${parLocationCode}-001-${parTags.Environment}-${parCompanyPrefix}-${take(uniqueString(resourceGroup().name),4)}'),24)
+}
+
+module modIdDes 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'  =  {
+  name: '${_dep}-${varDesUserAssignedIdentityName}'
+  params: {
+    name: varDesUserAssignedIdentityName
+    location: parLocation
+    tags: parTags
+  }}
+
+module modDes 'br/public:avm/res/compute/disk-encryption-set:0.3.0' = {
+  name: '${_dep}-${varDesName}'
+  params: {
+    keyName: 'kek1'
+    keyVaultResourceId: modKv.outputs.resourceId
+    name: varDesName
+    encryptionType: 'EncryptionAtRestWithPlatformAndCustomerKeys'
+    rotationToLatestKeyVersionEnabled: true
+    managedIdentities: {
+      userAssignedResourceIds: [modIdDes.outputs.resourceId]
+    }
+    location: parLocation
+    tags: parTags
+  }
 }
 
 module modKvPassword '../keyVaultSecret/keyVaultSecret.bicep' = {
