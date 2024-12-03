@@ -72,8 +72,9 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
     location: parLocation
     tags: parTags
     name: 'vm-${parLocationCode}-dc-01'
+    secureBootEnabled: true
+    vTpmEnabled: true
     adminUsername: parAdminUserName
-    //adminPassword: parAdminPassword
     adminPassword: resKv.getSecret(varPasswordSecretName)
     timeZone: parTimeZone
     imageReference: {
