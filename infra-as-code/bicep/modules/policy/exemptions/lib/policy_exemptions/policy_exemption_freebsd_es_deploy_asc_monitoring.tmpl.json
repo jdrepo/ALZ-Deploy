@@ -1,0 +1,16 @@
+{
+  "name": "Exemption-Deploy-ASC-Monitoring-FreeBSD",
+  "type": "Microsoft.Authorization/policyExemptions",
+  "apiVersion": "2022-07-01-preview",
+  "properties": {
+    "description": "Exempt FreeBSD - Enable Monitoring in Microsoft Defender for Cloud.",
+    "displayName": "Exempt - Enable Monitoring in Microsoft Defender for Cloud on FreeBSD",
+	"policyDefinitionReferenceIds": [
+			"gcLinuxDiskEncryptionMonitoring",
+			"LinuxVirtualMachineShouldUseSignedAndTrustedBootComponentEffect",
+			"serverVulnerabilityAssessment",
+			"serverSqlDbVulnerabilityAssesmentMonitoring",
+			"nextGenerationFirewallMonitoring"
+			],
+  }
+}

@@ -155,6 +155,11 @@ var varPolicyExemptionDeployMDfCConfig = {
   libDefinition: loadJsonContent('../policy/exemptions/lib/policy_exemptions/policy_exemption_freebsd_es_deploy_mdfc_config.json')
 }
 
+var varPolicyExemptionDeployASCMonitoring = {
+  definitionId: '/providers/Microsoft.Management/managementGroups/${varManagementGroupIds.intRoot}/providers/Microsoft.Authorization/policyAssignments/deploy-asc-monitoring'
+  libDefinition: loadJsonContent('../policy/exemptions/lib/policy_exemptions/policy_exemption_freebsd_es_deploy_asc_monitoring.tmpl.json')
+}
+
 /*** EXISTING RESOURCES ***/
 
 @sys.description('Existing connectivity virtual network, as deployed by the platform team into landing zone.')
@@ -346,6 +351,7 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
       caching: 'ReadWrite'
       createOption: 'FromImage'
       managedDisk: {
+        diskEncryptionSetResourceId: modDes.outputs.resourceId
         storageAccountType: 'StandardSSD_LRS'
       }
     }
@@ -542,6 +548,19 @@ module modPolicyExemptionDeployMDfCConfig '../policy/exemptions/policy-exemption
     displayName: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.displayName
     description: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.description
     policyDefinitionReferenceIds: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modOpnSense.outputs.resourceId
+  }
+}
+
+module modPolicyExemptionDeployASCMonitoring '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-deploy-asc-monitoring'
+  params: {
+    name: varPolicyExemptionDeployASCMonitoring.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionDeployASCMonitoring.definitionId
+    displayName: varPolicyExemptionDeployASCMonitoring.libDefinition.properties.displayName
+    description: varPolicyExemptionDeployASCMonitoring.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionDeployASCMonitoring.libDefinition.properties.policyDefinitionReferenceIds
     resourceId: modOpnSense.outputs.resourceId
   }
 }
