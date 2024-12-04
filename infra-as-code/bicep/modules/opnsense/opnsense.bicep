@@ -432,9 +432,10 @@ resource resKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 module modKekDes '../../../../../bicep-registry-modules/avm/res/key-vault/vault/key/main.bicep' =  {
   name: '${_dep}-kek-des'
   params: {
-    name: 'des-kek'
+    name: 'kek-des'
     keyVaultName: modKv.outputs.name
     tags: parTags
+    kty: 'RSA'
   }
 }
 
