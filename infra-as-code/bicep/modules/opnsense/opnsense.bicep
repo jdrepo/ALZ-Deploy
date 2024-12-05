@@ -423,6 +423,13 @@ module modKv '../keyVault/keyVault.bicep' = {
     parTags: parTags
     parSecretDeployEnabled: true
     parVirtualNetworkRules: []
+    parRoleAssignments: [
+      {
+        principalId: modIdDes.outputs.principalId
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'Key Vault Crypto Service Encryption User'
+      }
+    ]
   }
 }
 

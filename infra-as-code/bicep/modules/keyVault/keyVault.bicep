@@ -17,6 +17,10 @@ param parLocation string = resourceGroup().location
 @sys.description('Virtual network rules.')
 param parVirtualNetworkRules array = []
 
+@description('Optional. Array of role assignments to create.')
+param parRoleAssignments array = []
+
+
 @sys.description('Region code for resource naming.')
 param parLocationCode string = 'gwc'
 
@@ -30,7 +34,18 @@ param parSecretDeployEnabled bool = false
 
 var _dep = deployment().name
 
-
+var varRoleAssigments = parSecretDeployEnabled ? concat( parRoleAssignments, [ 
+  parSecretDeployEnabled ? { 
+    roleDefinitionIdOrName: 'Key Vault Secrets Officer'
+    principalId: modSecretDeployIdentity.outputs.principalId
+    principalType: 'ServicePrincipal'
+  }:{}
+  parSecretDeployEnabled ? { 
+    roleDefinitionIdOrName: 'Key Vault Contributor'
+    principalId: modSecretDeployIdentity.outputs.principalId
+    principalType: 'ServicePrincipal' 
+  }:{}
+]):parRoleAssignments
 
 /*** NEW RESOURCES ***/
 
@@ -119,18 +134,7 @@ module modKeyVault 'br/public:avm/res/key-vault/vault:0.9.0' = {
     enablePurgeProtection: true
     enableSoftDelete: true
     softDeleteRetentionInDays: 90
-    roleAssignments: parSecretDeployEnabled ? [ 
-      parSecretDeployEnabled ? { 
-        roleDefinitionIdOrName: 'Key Vault Secrets Officer'
-        principalId: modSecretDeployIdentity.outputs.principalId
-        principalType: 'ServicePrincipal'
-      }:{}
-      parSecretDeployEnabled ? { 
-        roleDefinitionIdOrName: 'Key Vault Contributor'
-        principalId: modSecretDeployIdentity.outputs.principalId
-        principalType: 'ServicePrincipal' 
-      }:{}
-    ]:[]
+    roleAssignments: varRoleAssigments
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
