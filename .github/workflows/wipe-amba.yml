@@ -1,0 +1,87 @@
+name: 84. Wipe AMBA from ALZ environment 
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      ambaRelease:
+        default: "2024-09-02"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz"
+        required: true
+        type: string
+      location:
+        default: "germanywestcentral"
+        type: string
+      wipeAfterDeploy:
+        default: false
+        type: boolean
+
+  workflow_call:
+    inputs:
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      ambaRelease:
+        default: "2024-09-02"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz"
+        required: true
+        type: string
+    secrets:
+      AZURE_CLIENT_ID:
+        required: false
+      AZURE_TENANT_ID:
+        required: false
+      AZURE_SUBSCRIPTION_ID:
+        required: false
+
+
+env:
+  ManagementGroupPrefix: ${{inputs.managementGroupPrefix}}
+  ManagementGroupSuffix: "-${{inputs.environment}}"
+  runNumber: ${{ github.run_number }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:  
+  wipe:
+    runs-on: ubuntu-latest
+    name: Cleaning up AMBA deployments
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Checkout AMBA Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/azure-monitor-baseline-alerts
+          ref: ${{ env.ambaRelease }}
+          path: azure-monitor-baseline-alerts
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+      - name: Cleaning up AMBA deployments
+        uses: azure/powershell@v2
+        with:
+          inlineScript: | 
+            # azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Maintenance.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -cleanItems Amba-Alz -WhatIf             
+            # azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false -WhatIf
+            ./scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false
+          azPSVersion: "latest"
+
+
+     
