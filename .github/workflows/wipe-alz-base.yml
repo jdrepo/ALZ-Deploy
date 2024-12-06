@@ -71,45 +71,45 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
-      # - name: Cleaning up ALZ deployments
-      #   uses: azure/powershell@v2
-      #   with:
-      #     inlineScript: | 
-      #       ./scripts/Wipe-ESLZAzTenantUnattended.ps1 -tenantRootGroupID ${{ secrets.AZURE_TENANT_ID }} -intermediateRootGroupID "${{ env.ManagementGroupPrefix}}${{ env.ManagementGroupSuffix}}" -resetMdfcTierOnSubs:$true
-      #     azPSVersion: "latest" 
-      - name: Test AZ PS
+      - name: Cleaning up ALZ deployments
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            Get-AzContext
-             # Get the latest stable API version
-            $roleAssignmentsApiVersions = ((Get-AzResourceProvider -ProviderNamespace Microsoft.Authorization).ResourceTypes | Where-Object ResourceTypeName -eq roleAssignments).ApiVersions
-            $latestRoleAssignmentsApiVersions = $roleAssignmentsApiVersions | Where-Object {$_ -notlike '*-preview'} | Sort-Object -Descending | Select-Object -First 1
-            Write-Information "Using Role Assignments API Version : $($latestRoleAssignmentsApiVersions)" -InformationAction Continue
-
-            $getRequestPath = "/subscriptions/6df8b678-c437-42a8-bb01-f88df1188e8e/providers/Microsoft.Authorization/roleAssignments?api-version=$($latestRoleAssignmentsApiVersions)"
-            $getResponse = Invoke-AzRestMethod -Method "GET" -Path $getRequestPath
-            $getResponse
-            $roleAssignments = ($getResponse.Content | ConvertFrom-Json).value
-            $roleAssignments
-
-            # Check for valid response
-            if ($getResponse.StatusCode -ne "200") {
-                throw $getResponse.Content
-            }
-            try {
-                # If invalid response, $roleAssignments will be null and throw an error
-                $roleAssignments.GetType() | Out-Null
-            }
-            catch {
-                throw $getResponse.Content
-            }
-            $principalsRequestUri = "https://graph.microsoft.com/v1.0/directoryObjects/microsoft.graph.getByIds"
-            $principalsRequestBody = @{
-                ids = $roleAssignments.properties.principalId
-            } | ConvertTo-Json -Depth 10
-            $principalsResponse = Invoke-AzRestMethod -Method "POST" -Uri $principalsRequestUri -Payload $principalsRequestBody -WhatIf:$false    
-            $principalResonse
-            $principalIds = ($principalsResponse.Content | ConvertFrom-Json).value.id
-            Connect-AzAccount -Identity
+            ./scripts/Wipe-ESLZAzTenantUnattended.ps1 -tenantRootGroupID ${{ secrets.AZURE_TENANT_ID }} -intermediateRootGroupID "${{ env.ManagementGroupPrefix}}${{ env.ManagementGroupSuffix}}" -resetMdfcTierOnSubs:$true
           azPSVersion: "latest" 
+      # - name: Test AZ PS
+      #   uses: azure/powershell@v2
+      #   with:
+      #     inlineScript: | 
+      #       Get-AzContext
+      #        # Get the latest stable API version
+      #       $roleAssignmentsApiVersions = ((Get-AzResourceProvider -ProviderNamespace Microsoft.Authorization).ResourceTypes | Where-Object ResourceTypeName -eq roleAssignments).ApiVersions
+      #       $latestRoleAssignmentsApiVersions = $roleAssignmentsApiVersions | Where-Object {$_ -notlike '*-preview'} | Sort-Object -Descending | Select-Object -First 1
+      #       Write-Information "Using Role Assignments API Version : $($latestRoleAssignmentsApiVersions)" -InformationAction Continue
+
+      #       $getRequestPath = "/subscriptions/6df8b678-c437-42a8-bb01-f88df1188e8e/providers/Microsoft.Authorization/roleAssignments?api-version=$($latestRoleAssignmentsApiVersions)"
+      #       $getResponse = Invoke-AzRestMethod -Method "GET" -Path $getRequestPath
+      #       $getResponse
+      #       $roleAssignments = ($getResponse.Content | ConvertFrom-Json).value
+      #       $roleAssignments
+
+      #       # Check for valid response
+      #       if ($getResponse.StatusCode -ne "200") {
+      #           throw $getResponse.Content
+      #       }
+      #       try {
+      #           # If invalid response, $roleAssignments will be null and throw an error
+      #           $roleAssignments.GetType() | Out-Null
+      #       }
+      #       catch {
+      #           throw $getResponse.Content
+      #       }
+      #       $principalsRequestUri = "https://graph.microsoft.com/v1.0/directoryObjects/microsoft.graph.getByIds"
+      #       $principalsRequestBody = @{
+      #           ids = $roleAssignments.properties.principalId
+      #       } | ConvertTo-Json -Depth 10
+      #       $principalsResponse = Invoke-AzRestMethod -Method "POST" -Uri $principalsRequestUri -Payload $principalsRequestBody -WhatIf:$false    
+      #       $principalResonse
+      #       $principalIds = ($principalsResponse.Content | ConvertFrom-Json).value.id
+      #       Connect-AzAccount -Identity
+          # azPSVersion: "latest" 
