@@ -81,5 +81,10 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            Get-AzContext 
+            Get-AzContext
+            $principalsRequestUri = "https://graph.microsoft.com/v1.0/directoryObjects/microsoft.graph.getByIds"
+            $principalsRequestBody = @{
+                ids = $roleAssignments.properties.principalId
+            } | ConvertTo-Json -Depth 10
+            $principalsResponse = Invoke-AzRestMethod -Method "POST" -Uri $principalsRequestUri -Payload $principalsRequestBody -WhatIf:$false    
           azPSVersion: "latest" 
