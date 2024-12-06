@@ -89,7 +89,9 @@ jobs:
 
             $getRequestPath = "/subscriptions/6df8b678-c437-42a8-bb01-f88df1188e8e/providers/Microsoft.Authorization/roleAssignments?api-version=$($latestRoleAssignmentsApiVersions)"
             $getResponse = Invoke-AzRestMethod -Method "GET" -Path $getRequestPath
+            $getResponse
             $roleAssignments = ($getResponse.Content | ConvertFrom-Json).value
+            $roleAssignments
 
             # Check for valid response
             if ($getResponse.StatusCode -ne "200") {
@@ -107,6 +109,6 @@ jobs:
                 ids = $roleAssignments.properties.principalId
             } | ConvertTo-Json -Depth 10
             $principalsResponse = Invoke-AzRestMethod -Method "POST" -Uri $principalsRequestUri -Payload $principalsRequestBody -WhatIf:$false    
+            $principalResonse
             $principalIds = ($principalsResponse.Content | ConvertFrom-Json).value.id
-            Write-Host ":principalId: $principalIds"
           azPSVersion: "latest" 
