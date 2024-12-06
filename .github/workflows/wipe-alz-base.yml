@@ -71,9 +71,15 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
-      - name: Cleaning up ALZ deployments
+      # - name: Cleaning up ALZ deployments
+      #   uses: azure/powershell@v2
+      #   with:
+      #     inlineScript: | 
+      #       ./scripts/Wipe-ESLZAzTenantUnattended.ps1 -tenantRootGroupID ${{ secrets.AZURE_TENANT_ID }} -intermediateRootGroupID "${{ env.ManagementGroupPrefix}}${{ env.ManagementGroupSuffix}}" -resetMdfcTierOnSubs:$true
+      #     azPSVersion: "latest" 
+      - name: Test AZ PS
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            ./scripts/Wipe-ESLZAzTenantUnattended.ps1 -tenantRootGroupID ${{ secrets.AZURE_TENANT_ID }} -intermediateRootGroupID "${{ env.ManagementGroupPrefix}}${{ env.ManagementGroupSuffix}}" -resetMdfcTierOnSubs:$true
+            Get-AzContext 
           azPSVersion: "latest" 
