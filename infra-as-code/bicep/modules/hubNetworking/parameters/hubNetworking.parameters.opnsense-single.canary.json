@@ -246,10 +246,10 @@
       }
     },
 	"parOpnSenseTrustedSubnetNsgName": {
-	  "value": "nsg-gwc-opnsense-alz-canary"
+	  "value": "nsg-trusted-gwc-opnsense-alz-canary"
 	},
 	"parOpnSenseUntrustedSubnetNsgName": {
-	  "value": "nsg-gwc-opnsense-alz-canary"
+	  "value": "nsg-untrusted-gwc-opnsense-alz-canary"
 	},
 	"parOpnSenseEnabled": {
       "value": true
