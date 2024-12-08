@@ -202,6 +202,7 @@ else {
 # }
 
 # Remove orphaned/identity not found RBAC role assignments from each subscription
+# Call before long running tasks because of ID token valid time of only 5 minutes
 Write-Host "Before - Removing Oprhaned/Identity Not Found Role Assignments for all subscriptions: $($intermediateRootGroupChildSubscriptions.subID)" -ForegroundColor Yellow
 Invoke-RemoveOrphanedRoleAssignment -SubscriptionId $intermediateRootGroupChildSubscriptions.subID
 
