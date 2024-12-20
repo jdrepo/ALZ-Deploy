@@ -53,6 +53,11 @@ var varGwcSerialConsoleIps = [
   '98.67.183.186'
 ]
 
+var varPrepareDisksSriptUri = 'https://raw.githubusercontent.com/jensdiedrich/vmdeploy/main/prepareDisks.ps1'
+
+
+
+
 /*** EXISTING SUBSCRIPTION RESOURCES ***/
 
 @sys.description('Existing resource group that holds identity network.')
@@ -115,8 +120,10 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
     ]
     osDisk: {
       caching: 'ReadWrite'
+      createOption: 'FromImage'
       diskSizeGB: 35
       managedDisk: {
+        diskEncryptionSetResourceId: modDes.outputs.resourceId
         storageAccountType: 'StandardSSD_LRS'
       }
     }
@@ -126,6 +133,7 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
         createOption: 'Empty'
         diskSizeGB: 8
         managedDisk: {
+          diskEncryptionSetResourceId: modDes.outputs.resourceId
           storageAccountType: 'StandardSSD_LRS'
         }
       }
@@ -145,6 +153,18 @@ resource resDc1 'Microsoft.Compute/virtualMachines@2024-07-01' existing = {
   name: varDc1Name
   dependsOn: [modDc1]
 }
+
+module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main.bicep' = {
+  name: '${_dep}-prepare-disks-dc1'
+  params: {
+    location: parLocation
+    tags: parTags
+    runCommandName: 'PrepareDisks'
+    vmName: modDc1.outputs.name
+    scriptUri: varPrepareDisksSriptUri
+  }
+}
+
 module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
   name: '${_dep}-sabootdiag'
   params: {
