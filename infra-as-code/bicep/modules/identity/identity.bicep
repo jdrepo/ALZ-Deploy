@@ -166,7 +166,7 @@ module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main
 }
 
 module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
-  name: '${_dep}-sabootdiag'
+  name: '${_dep}-sa-boot-diag'
   params: {
     name: take(('sa${parLocationCode}bdiag${take(uniqueString(resourceGroup().name),4)}${parTags.Environment}${parCompanyPrefix}'),24)
     tags: parTags
@@ -182,8 +182,30 @@ module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
           value: ip
         }
       ]
+    } 
+  }
+}
+
+module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' = {
+  name: '${_dep}-sa-deploy-artifacts'
+  params: {
+    name: take(('sa${parLocationCode}deploy${take(uniqueString(resourceGroup().name),4)}${parTags.Environment}${parCompanyPrefix}'),24)
+    tags: parTags
+    location: parLocation
+    allowBlobPublicAccess: false
+    skuName: 'Standard_LRS'
+    networkAcls: {
+      bypass: 'AzureServices'
+      defaultAction: 'Deny'
+      virtualNetworkRules: []
     }
-    
+    blobServices: {
+      containers: [
+        {
+          name: 'scripts'
+        }
+      ]
+    }
   }
 }
 
