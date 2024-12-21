@@ -59,8 +59,8 @@ var varExpireDate = dateTimeAdd(parTimeNow,'P90D')
 
 /*** NEW RESOURCES ***/
 
-module modDeployKvSecret 'br/public:avm/res/resources/deployment-script:0.5.0' = {
-  name: '${_dep}-deployKvSecret'
+module modDeployKvSecretScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
+  name: '${_dep}-deployKvSecretScript'
   params: {
     tags: parTags
     location: parLocation
