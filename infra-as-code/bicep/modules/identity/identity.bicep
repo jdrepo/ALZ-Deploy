@@ -41,6 +41,7 @@ var varEnvironment = parTags.?Environment ?? 'canary'
 var varDc1Name = 'vm-${parLocationCode}-dc-01'
 var varDesUserAssignedIdentityName = 'id-${parLocationCode}-des-${parCompanyPrefix}-${varEnvironment}'
 var varDesName = 'des-${parLocationCode}-001-${parCompanyPrefix}-${varEnvironment}'
+var varSaUserAssignedIdentityName = 'id-${parLocationCode}-sa-${parCompanyPrefix}-${varEnvironment}'
 
 var varGwcSerialConsoleIps = [
   '20.52.94.114'
@@ -55,7 +56,11 @@ var varGwcSerialConsoleIps = [
 
 var varPrepareDisksSriptUri = 'https://raw.githubusercontent.com/jensdiedrich/vmdeploy/main/prepareDisks.ps1'
 
+var varContainersToCreate = {
+  data: [ 'prepareDisks.ps1', 'sample2.txt', 'sample3.txt' ]
+}
 
+var varContainersToCreateFormatted = replace(string(varContainersToCreate), '"', '\\"')
 
 
 /*** EXISTING SUBSCRIPTION RESOURCES ***/
@@ -206,10 +211,46 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
         }
       ]
     }
+    roleAssignments: [
+      {
+        principalId: modIdSa.outputs.principalId
+        roleDefinitionIdOrName: 'Storage Blob Data Contributor'
+      }
+    ]
   }
 }
 
 
+module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'  =  {
+  name: '${_dep}-${varSaUserAssignedIdentityName}'
+  params: {
+    name: varSaUserAssignedIdentityName
+    location: parLocation
+    tags: parTags
+  }}
+
+
+// module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
+//   name: '${_dep}-copy-deploy-artifacts'
+//   dependsOn: [
+//     modSaDeployArtifacts
+//   ]
+//   params: {
+//     tags: parTags
+//     location: parLocation
+//     name: 'copy-deploy-artifacts-to-sa'
+//     kind: 'AzurePowerShell'
+//     retentionInterval: 'PT1H'
+//     azPowerShellVersion: '12.3'
+//     cleanupPreference: 'Always'
+//     managedIdentities: {
+//       userAssignedResourceIds: [
+//         modIdSa.outputs.resourceId
+//       ]
+//     }
+//     scriptContent: loadTextContent('createBlobStorageContainers.ps1')
+//   }
+// }
 module modKv '../keyVault/keyVault.bicep' = {
   name: '${_dep}-Kv'
   params: {
@@ -292,3 +333,5 @@ module modKvPassword '../keyVaultSecret/keyVaultSecret.bicep' = {
 output dc1ResourceId string = modDc1.outputs.resourceId
 output kv1ResourceId string = modKv.outputs.resourceId
 
+output containersToCreate object = varContainersToCreate
+output containersToCreateFormatted string = varContainersToCreateFormatted
