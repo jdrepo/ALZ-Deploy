@@ -1178,11 +1178,15 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
+            az account set -s "${{env.MgmtSubId}}"
+            logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
             az account set -s "${{env.ConnectivitySubId}}"
             hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
             hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
             echo "$hubNetworkResourceId"
             echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
+            echo "$logAnalyticsWorkspaceResourceId"
+            echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
       - name: Deploy Custom Policy Assignment - Validation
         id: deploy_custPolAssignment_validation
         uses: azure/arm-deploy@v2
@@ -1195,6 +1199,7 @@ jobs:
             infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
+            parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
           deploymentName: deploy_custPolAssign_validate-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -1210,6 +1215,7 @@ jobs:
             infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
+            parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
           deploymentName: deploy_custPolAssign_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -1240,11 +1246,15 @@ jobs:
           with:
             azcliversion: latest
             inlineScript: |
+              az account set -s "${{env.MgmtSubId}}"
+              logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
               az account set -s "${{env.ConnectivitySubId}}"
               hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
               hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
               echo "$hubNetworkResourceId"
               echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
+              echo "$logAnalyticsWorkspaceResourceId"
+              echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
         - name: Deploy Custom Policy Assignment - Deployment
           id: deploy_custPolAssignment_deployment
           uses: azure/arm-deploy@v2
@@ -1257,6 +1267,7 @@ jobs:
               infra-as-code/bicep/modules/policy/assignments/alzCustoms/parameters/alzCustomPolicyAssignments.parameters.${{inputs.environment}}.json
               parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
               parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
+              parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
             deploymentName: deploy_custPolAssign_validate-${{ env.runNumber }}
             failOnStdErr: false
   validate_preview_identityNetwork_rg:
