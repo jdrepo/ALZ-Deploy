@@ -13,7 +13,7 @@ Write-Host "`n Adding the current public ip to the key vault allow list"
 $publicIp = "$((Invoke-WebRequest -Uri https://ipv4.seeip.org/).content)"
 Write-Host "`n My public ip: "$publicIp
 Add-AzStorageAccountNetworkRule -Name $storageAccountName -IPAddressOrRange $publicIp -ResourceGroupName $resourceGroupName
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 30
 
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/main/infra-as-code/bicep/modules/identity/scripts/prepareDisks.ps1" -OutFile "prepareDisks.ps1"
 # Invoke-WebRequest -Uri "https://filesamples.com/samples/document/txt/sample2.txt" -OutFile "sample2.txt"
