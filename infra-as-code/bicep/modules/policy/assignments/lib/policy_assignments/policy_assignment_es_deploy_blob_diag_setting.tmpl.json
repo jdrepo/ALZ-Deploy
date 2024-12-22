@@ -1,0 +1,34 @@
+{
+	"name": "Deploy-Blob-Diag-Setting",
+	"type": "Microsoft.Authorization/policyAssignments",
+	"apiVersion": "2024-04-01",
+	"properties": {
+		"description": "Deploy Diagnostic Settings for Blob Services to Log Analytics workspace",
+		"displayName": "Deploy Diagnostic Settings for Blob Services",
+		"notScopes": [],
+		"parameters": {
+			"effect": {
+				"value": "DeployIfNotExists"
+			},
+			"profileName": {
+				"value": "setByPolicy-LogAnalytics"
+			},
+			"logAnalytics": {
+				"value": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/${parTopLevelManagementGroupPrefix}-mgmt/providers/Microsoft.OperationalInsights/workspaces/${parTopLevelManagementGroupPrefix}-la"
+			},
+			"metricsEnabled": {
+				"value": false
+			},
+			"logsEnabled": {
+				"value": true
+			}
+		},
+		"policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/b4fe1a3b-0715-4c6c-a5ea-ffc33cf823cb",
+		"scope": null,
+		"enforcementMode": "Default"
+	},
+	"location": null,
+	"identity": {
+		"type": "SystemAssigned"
+	}
+}

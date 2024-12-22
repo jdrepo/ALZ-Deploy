@@ -79,8 +79,10 @@ var varDeploymentNameWrappers = {
 
 var varModuleDeploymentNames = {
     modPolicyAssignmentIntRootDeployMdfcConfig: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployMDFCConfig-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolicyAssignmentIntRootDeployBlobServicesDiagSettingsToLogAnalytics: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployBlobServicesDiagSettingsToLogAnalytics-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentLzsCorpDenyPrivateDNSZones: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyPrivateDNSZones-corp-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyVnetPeeringtoNonApprovedVnets-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+
 
 }
 
@@ -100,6 +102,11 @@ var varPolicyAssignmentDenyVnetPeeringNonApprovedVNets = {
 var varPolicyAssignmentDeployMDFCConfig = {
   definitionId: '${varTopLevelManagementGroupResourceId}/providers/Microsoft.Authorization/policySetDefinitions/Deploy-MDFC-Config_20240319'
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deploy_mdfc_config.tmpl.json')
+}
+
+var varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics = {
+  definitionId: '${varTopLevelManagementGroupResourceId}/providers/Microsoft.Authorization/policyDefinitions/b4fe1a3b-0715-4c6c-a5ea-ffc33cf823cb'
+  libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deploy_blob_diag_setting.tmpl.json')
 }
 
 
@@ -216,6 +223,31 @@ module modPolicyAssignmentIntRootDeployMdfcConfig '../../../policy/assignments/p
   }
 }
 
+// Module - Policy Assignment - Deploy-Blob-Diag-Setting
+module modPolicyAssignmentIntRootDeployResourceDiag '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.libDefinition.name)) {
+  scope: managementGroup(varManagementGroupIds.intRoot)
+  name: varModuleDeploymentNames.modPolicyAssignmentIntRootDeployBlobServicesDiagSettingsToLogAnalytics
+  params: {
+    parPolicyAssignmentDefinitionId: varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.definitionId
+    parPolicyAssignmentName: varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.libDefinition.name
+    parPolicyAssignmentDisplayName: varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.libDefinition.properties.displayName
+    parPolicyAssignmentDescription: varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.libDefinition.properties.description
+    parPolicyAssignmentParameters: varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.libDefinition.properties.parameters
+    parPolicyAssignmentParameterOverrides: {
+      logAnalytics: {
+        value: parLogAnalyticsWorkspaceResourceId
+      }
+    }
+    parPolicyAssignmentIdentityType: varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.libDefinition.identity.type
+    parPolicyAssignmentEnforcementMode: parDisableAlzDefaultPolicies ? 'DoNotEnforce' : varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.libDefinition.properties.enforcementMode
+    parPolicyAssignmentIdentityRoleDefinitionIds: [
+      varRbacRoleDefinitionIds.logAnalyticsContributor
+      varRbacRoleDefinitionIds.monitoringContributor
+    ]
+    parTelemetryOptOut: parTelemetryOptOut
+  }
+}
+
 // Modules - Policy Assignments - Platform Management Group
 
 
@@ -243,6 +275,8 @@ module modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets '../../../policy/
     parTelemetryOptOut: parTelemetryOptOut
   }
 }
+
+
 
 // Modules - Policy Assignments - Management Management Group
 
