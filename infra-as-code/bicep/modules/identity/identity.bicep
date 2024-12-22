@@ -54,10 +54,10 @@ var varGwcSerialConsoleIps = [
   '98.67.183.186'
 ]
 
-var varPrepareDisksSriptUri = 'https://raw.githubusercontent.com/jensdiedrich/vmdeploy/main/prepareDisks.ps1'
+var varPrepareDisksSriptUri = 'https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/main/infra-as-code/bicep/modules/identity/scripts/prepareDisks.ps1'
 
 var varContainersToCreate = {
-  data: [ 'prepareDisks.ps1', 'sample2.txt', 'sample3.txt' ]
+  scripts: [ 'prepareDisks.ps1' ]
 }
 
 var varContainersToCreateFormatted = replace(string(varContainersToCreate), '"', '\\"')
@@ -230,27 +230,28 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
   }}
 
 
-// module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
-//   name: '${_dep}-copy-deploy-artifacts'
-//   dependsOn: [
-//     modSaDeployArtifacts
-//   ]
-//   params: {
-//     tags: parTags
-//     location: parLocation
-//     name: 'copy-deploy-artifacts-to-sa'
-//     kind: 'AzurePowerShell'
-//     retentionInterval: 'PT1H'
-//     azPowerShellVersion: '12.3'
-//     cleanupPreference: 'Always'
-//     managedIdentities: {
-//       userAssignedResourceIds: [
-//         modIdSa.outputs.resourceId
-//       ]
-//     }
-//     scriptContent: loadTextContent('createBlobStorageContainers.ps1')
-//   }
-// }
+module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
+  name: '${_dep}-copy-deploy-artifacts'
+  dependsOn: [
+    modSaDeployArtifacts
+  ]
+  params: {
+    tags: parTags
+    location: parLocation
+    name: 'copy-deploy-artifacts-to-sa'
+    kind: 'AzurePowerShell'
+    retentionInterval: 'PT1H'
+    azPowerShellVersion: '12.3'
+    cleanupPreference: 'Always'
+    managedIdentities: {
+      userAssignedResourceIds: [
+        modIdSa.outputs.resourceId
+      ]
+    }
+    arguments: '-storageAccountName ${modSaDeployArtifacts.outputs.name} -resourceGroupName ${resourceGroup().name} -containersToCreate \'${varContainersToCreateFormatted}\''
+    scriptContent: loadTextContent('createBlobStorageContainers.ps1')
+  }
+}
 module modKv '../keyVault/keyVault.bicep' = {
   name: '${_dep}-Kv'
   params: {
