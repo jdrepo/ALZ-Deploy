@@ -15,7 +15,7 @@ Write-Host "`n My public ip: "$publicIp
 Add-AzStorageAccountNetworkRule -Name $storageAccountName -IPAddressOrRange $publicIp -ResourceGroupName $resourceGroupName
 
 Write-Host "`n Start- Pause script because delayed network rule - Time: $(Get-Date)"
-Start-Sleep -Seconds 120
+Start-Sleep -Seconds 300
 Write-Host "`n Stop- Pause script because delayed network rule - Time: $(Get-Date)"
 
 
