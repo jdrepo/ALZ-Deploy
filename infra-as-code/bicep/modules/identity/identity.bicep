@@ -201,7 +201,7 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
     skuName: 'Standard_LRS'
     networkAcls: {
       bypass: 'AzureServices'
-      defaultAction: 'Allow'
+      defaultAction: 'Deny'
       virtualNetworkRules: []
     }
     blobServices: {
