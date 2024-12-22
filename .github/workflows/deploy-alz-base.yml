@@ -1179,6 +1179,7 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
+            logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
             logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name $logAnalyticsWorkspaceName --query id)
             az account set -s "${{env.ConnectivitySubId}}"
             hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
@@ -1247,6 +1248,7 @@ jobs:
             azcliversion: latest
             inlineScript: |
               az account set -s "${{env.MgmtSubId}}"
+              logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
               logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name $logAnalyticsWorkspaceName --query id)
               az account set -s "${{env.ConnectivitySubId}}"
               hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
