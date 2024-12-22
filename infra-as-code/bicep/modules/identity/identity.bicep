@@ -205,16 +205,19 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
       virtualNetworkRules: []
     }
     blobServices: {
-      containers: [
-        {
-          name: 'scripts'
-        }
-      ]
+      containerDeleteRetentionPolicyEnabled: true
+      deleteRetentionPolicyDays: 7
+      containerDeleteRetentionPolicyDays: 7
+      deleteRetentionPolicyEnabled: true
     }
     roleAssignments: [
       {
         principalId: modIdSa.outputs.principalId
         roleDefinitionIdOrName: 'Storage Blob Data Contributor'
+      }
+      {
+        principalId: modIdSa.outputs.principalId
+        roleDefinitionIdOrName: 'Storage Account Contributor'
       }
     ]
   }
