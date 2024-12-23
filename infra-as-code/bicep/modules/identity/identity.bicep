@@ -222,6 +222,10 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
         principalId: modIdSa.outputs.principalId
         roleDefinitionIdOrName: 'Storage Account Contributor'
       }
+      {
+        principalId: modIdSa.outputs.principalId
+        roleDefinitionIdOrName: 'Storage File Data Privileged Contributor'
+      }
     ]
   }
 }
@@ -257,6 +261,7 @@ module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-s
     subnetResourceIds: [
       resIdentityVirtualNetwork::identitySubnet.id
     ]
+    storageAccountResourceId: modSaDeployArtifacts.outputs.resourceId
     arguments: '-storageAccountName ${modSaDeployArtifacts.outputs.name} -resourceGroupName ${resourceGroup().name} -containersToCreate \'${varContainersToCreateFormatted}\''
     scriptContent: loadTextContent('createBlobStorageContainers.ps1')
   }
