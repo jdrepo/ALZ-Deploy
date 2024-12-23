@@ -18,6 +18,9 @@ type subnetOptionsType = ({
 
   @description('Name of the delegation to create for the subnet.')
   delegation: string?
+
+  @description('Service endpoints to create for the subnet.')
+  serviceEndpoints: array?
 })[]
 
 
@@ -64,13 +67,19 @@ param parIdentityNetworkAddressPrefix string = '10.20.0.0/16'
 
 
 
-@sys.description('The name, IP address range, network security group, route table and delegation serviceName for each subnet in the virtual networks.')
+@sys.description('The name, IP address range, network security group, route table, delegation serviceName and serviceEndpoints for each subnet in the virtual networks.')
 param parSubnets subnetOptionsType = [
   {
     name: 'identity-subnet1'
     addressPrefix: '10.20.1.0/24'
     networkSecurityGroupResourceId: ''
     routeTableResourceId: ''
+    serviceEndpoints: [
+      {
+        service: 'Microsoft.Storage'
+      }
+
+    ]
   }
 ]
 
@@ -110,6 +119,7 @@ var varSubnetProperties = [ for (subnet, i) in parSubnets : {
   addressPrefix: subnet.addressPrefix
   networkSecurityGroupResourceId:  '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${parIdentityNsgName}'
   routeTableResourceId: subnet.routeTableResourceId
+  serviceEndpoints: subnet.serviceEndpoints
 }
 ]
 
