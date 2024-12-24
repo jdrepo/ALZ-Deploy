@@ -246,6 +246,12 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
     tags: parTags
   }}
 
+  module modContainerSubnetNSG 'br/public:avm/res/network/network-security-group:0.5.0' = {
+    name: '${_dep}-container-subnet1-nsg'
+    params: {
+      name: 'nsg-${parLocation}-002-${parCompanyPrefix}'
+    }
+  }
   module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
     name: '${_dep}-container-subnet1'
     params: {
@@ -256,6 +262,7 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
           'Microsoft.Storage'
       ]
       delegation: 'Microsoft.ContainerInstance.containerGroups'
+      networkSecurityGroupResourceId: modContainerSubnetNSG.outputs.resourceId
     }
   }
 
