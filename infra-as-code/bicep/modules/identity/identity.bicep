@@ -247,7 +247,7 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
   }}
 
   module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
-    name: '${_dep}-${varSaUserAssignedIdentityName}'
+    name: '${_dep}-container-subnet1'
     params: {
       name: 'container-subnet1'
       virtualNetworkName: resIdentityVirtualNetwork.name
