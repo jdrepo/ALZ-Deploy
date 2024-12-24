@@ -9,16 +9,6 @@ $containers = $containersToCreate | ConvertFrom-Json -AsHashtable
 $stg = Get-AzStorageAccount -Name $storageAccountName -ResourceGroupName $resourceGroupName
 $context = $stg.Context
 
-Write-Host "`n Adding the current public ip to the key vault allow list"
-$publicIp = "$((Invoke-WebRequest -Uri https://ipv4.seeip.org/).content)"
-Write-Host "`n My public ip: "$publicIp
-Add-AzStorageAccountNetworkRule -Name $storageAccountName -IPAddressOrRange $publicIp -ResourceGroupName $resourceGroupName
-
-Write-Host "`n Start- Pause script because delayed network rule - Time: $(Get-Date)"
-Start-Sleep -Seconds 20
-Write-Host "`n Stop- Pause script because delayed network rule - Time: $(Get-Date)"
-
-
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/main/infra-as-code/bicep/modules/identity/scripts/prepareDisks.ps1" -OutFile "prepareDisks.ps1"
 # Invoke-WebRequest -Uri "https://filesamples.com/samples/document/txt/sample2.txt" -OutFile "sample2.txt"
 # Invoke-WebRequest -Uri "https://filesamples.com/samples/document/txt/sample3.txt" -OutFile "sample3.txt"
@@ -46,6 +36,3 @@ foreach ($container in $containers.keys) {
         Set-AzStorageBlobContent @Blob1HT
     }
 }
-
-Write-Host "`n Removing current public ip address from allow list"
-#Remove-AzStorageAccountNetworkRule -Name $storageAccountName -IPAddressOrRange $publicIp -ResourceGroupName $resourceGroupName
