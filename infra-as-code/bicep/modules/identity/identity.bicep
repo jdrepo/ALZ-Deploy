@@ -45,6 +45,7 @@ var varDc1Name = 'vm-${parLocationCode}-dc-01'
 var varDesUserAssignedIdentityName = 'id-${parLocationCode}-des-${parCompanyPrefix}-${varEnvironment}'
 var varDesName = 'des-${parLocationCode}-001-${parCompanyPrefix}-${varEnvironment}'
 var varSaUserAssignedIdentityName = 'id-${parLocationCode}-sa-${parCompanyPrefix}-${varEnvironment}'
+var varContainerSubnetNsgName = 'nsg-${parLocationCode}-container-${parCompanyPrefix}-${varEnvironment}'
 
 var varGwcSerialConsoleIps = [
   '20.52.94.114'
@@ -249,7 +250,7 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
   module modContainerSubnetNSG 'br/public:avm/res/network/network-security-group:0.5.0' = {
     name: '${_dep}-container-subnet1-nsg'
     params: {
-      name: 'nsg-${parLocation}-002-${parCompanyPrefix}'
+      name: varContainerSubnetNsgName
     }
   }
   module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
@@ -261,7 +262,7 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
       serviceEndpoints: [
           'Microsoft.Storage'
       ]
-      delegation: 'Microsoft.ContainerInstance.containerGroups'
+      delegation: 'Microsoft.ContainerInstance/containerGroups'
       networkSecurityGroupResourceId: modContainerSubnetNSG.outputs.resourceId
     }
   }
