@@ -16,8 +16,8 @@ type subnetOptionsType = ({
   @description('Id of Route Table to associate with subnet.')
   routeTableResourceId: string?
 
-  @description('Name of the delegation to create for the subnet.')
-  delegation: string?
+  @description('Delegations to create for the subnet.')
+  delegations: array?
 
   @description('Service endpoints to create for the subnet.')
   serviceEndpoints: array?
@@ -78,7 +78,25 @@ param parSubnets subnetOptionsType = [
       {
         service: 'Microsoft.Storage'
       }
-
+    ]
+  }
+  {
+    name: 'container-subnet1'
+    addressPrefix: '10.20.10.0/24'
+    networkSecurityGroupResourceId: ''
+    routeTableResourceId: ''
+    serviceEndpoints: [
+      {
+        service: 'Microsoft.Storage'
+      }
+    ]
+    delegations: [
+      {
+        name: 'Microsoft.ContainerInstance.containerGroups'
+        properties: {
+          serviceName: 'Microsoft.ContainerInstance/containerGroups'
+        }
+      }
     ]
   }
 ]

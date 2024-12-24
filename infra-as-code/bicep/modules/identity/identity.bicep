@@ -23,6 +23,9 @@ param parIdentityVnetResourceId string
 @sys.description('The identity subnet name that will host the VMs NIC')
 param parIdentitySubnetName string = 'identity-subnet1'
 
+@sys.description('The subnet name that will host container instances')
+param parContainerSubnetName string = 'container-subnet1'
+
 @sys.description('VM admin user name')
 @secure()
 param parAdminUserName string
@@ -82,6 +85,10 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
   // Identity network's subnet for the nic vms
   resource identitySubnet 'subnets' existing = {
     name: parIdentitySubnetName
+  }
+  // Delegated container network's subnet 
+  resource containerSubnet 'subnets' existing = {
+    name: parContainerSubnetName
   }
 }
 
@@ -203,7 +210,7 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
       bypass: 'AzureServices'
       defaultAction: 'Deny'
       virtualNetworkRules: [{
-        id: resIdentityVirtualNetwork::identitySubnet.id
+        id: resIdentityVirtualNetwork::containerSubnet.id
         action: 'Allow'
       }]
     }
