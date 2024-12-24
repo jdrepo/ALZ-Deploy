@@ -80,25 +80,25 @@ param parSubnets subnetOptionsType = [
       }
     ]
   }
-  {
-    name: 'container-subnet1'
-    addressPrefix: '10.20.10.0/24'
-    networkSecurityGroupResourceId: ''
-    routeTableResourceId: ''
-    serviceEndpoints: [
-      {
-        service: 'Microsoft.Storage'
-      }
-    ]
-    delegations: [
-      {
-        name: 'Microsoft.ContainerInstance.containerGroups'
-        properties: {
-          serviceName: 'Microsoft.ContainerInstance/containerGroups'
-        }
-      }
-    ]
-  }
+  // {
+  //   name: 'container-subnet1'
+  //   addressPrefix: '10.20.10.0/24'
+  //   networkSecurityGroupResourceId: ''
+  //   routeTableResourceId: ''
+  //   serviceEndpoints: [
+  //     {
+  //       service: 'Microsoft.Storage'
+  //     }
+  //   ]
+  //   delegations: [
+  //     {
+  //       name: 'Microsoft.ContainerInstance.containerGroups'
+  //       properties: {
+  //         serviceName: 'Microsoft.ContainerInstance/containerGroups'
+  //       }
+  //     }
+  //   ]
+  // }
 ]
 
 @sys.description('Array of DNS Server IP addresses for VNet.')

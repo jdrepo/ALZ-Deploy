@@ -246,6 +246,18 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
     tags: parTags
   }}
 
+  module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
+    name: '${_dep}-${varSaUserAssignedIdentityName}'
+    params: {
+      name: 'container-subnet1'
+      virtualNetworkName: resIdentityVirtualNetwork.name
+      addressPrefix: '10.20.10.0/28'
+      serviceEndpoints: [
+          'Microsoft.Storage'
+      ]
+      delegation: 'Microsoft.ContainerInstance.containerGroups'
+    }
+  }
 
 module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
   name: '${_dep}-copy-deploy-artifacts'
@@ -266,7 +278,7 @@ module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-s
       ]
     }
     subnetResourceIds: [
-      resIdentityVirtualNetwork::identitySubnet.id
+      modContainerSubnet.outputs.resourceId
     ]
     storageAccountResourceId: modSaDeployArtifacts.outputs.resourceId
     arguments: '-storageAccountName ${modSaDeployArtifacts.outputs.name} -resourceGroupName ${resourceGroup().name} -containersToCreate \'${varContainersToCreateFormatted}\''
