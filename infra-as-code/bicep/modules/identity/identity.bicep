@@ -211,7 +211,7 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
       bypass: 'AzureServices'
       defaultAction: 'Deny'
       virtualNetworkRules: [{
-        id: resIdentityVirtualNetwork::containerSubnet.id
+        id: modContainerSubnet.outputs.resourceId
         action: 'Allow'
       }]
     }
