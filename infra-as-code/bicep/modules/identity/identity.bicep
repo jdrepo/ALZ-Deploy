@@ -176,9 +176,12 @@ module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main
     tags: parTags
     runCommandName: 'PrepareDisks'
     vmName: modDc1.outputs.name
+    //scriptUri: '${modSaDeployArtifacts.outputs.name}.blob.core.windows.net/scripts/prepareDisks.ps1'
     scriptUri: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}/scripts/prepareDisks.ps1'
   }
 }
+
+
 
 module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
   name: '${_dep}-sa-boot-diag'
@@ -228,6 +231,11 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
       deleteRetentionPolicyDays: 7
       containerDeleteRetentionPolicyDays: 7
       deleteRetentionPolicyEnabled: true
+      containers: [{
+        name: 'scripts'
+        publicAccess: 'None'
+      }
+      ]
     }
     roleAssignments: [
       {
