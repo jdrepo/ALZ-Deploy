@@ -271,6 +271,9 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
   }
   module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
     name: '${_dep}-container-subnet1'
+    dependsOn: [
+      modIdentitySubnet
+    ]
     params: {
       name: 'container-subnet1'
       virtualNetworkName: resIdentityVirtualNetwork.name
