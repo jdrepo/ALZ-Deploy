@@ -18,7 +18,7 @@ resource res_vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
 }
 
 
-resource res_run_command 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
+resource res_run_command 'Microsoft.Compute/virtualMachines/runCommands@2024-07-01' = {
   name: runCommandName
   location: location
   tags: tags
