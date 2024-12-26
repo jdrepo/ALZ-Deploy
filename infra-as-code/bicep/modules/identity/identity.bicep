@@ -161,9 +161,6 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
     bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
     managedIdentities: {
       systemAssigned: true
-      userAssignedResourceIds: [
-        modIdSa.outputs.resourceId
-      ] 
     }
   }
 }
