@@ -61,7 +61,7 @@ var varGwcSerialConsoleIps = [
 var varPrepareDisksSriptUri = 'https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/main/infra-as-code/bicep/modules/identity/scripts/prepareDisks.ps1'
 
 var varContainersToCreate = {
-  scripts: [ 'prepareDisks.ps1' ]
+  scripts: [ 'prepareDisks.ps1','Deploy-DomainServices.ps1.zip' ]
 }
 
 var varContainersToCreateFormatted = replace(string(varContainersToCreate), '"', '\\"')
@@ -176,8 +176,7 @@ module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main
     tags: parTags
     runCommandName: 'PrepareDisks'
     vmName: modDc1.outputs.name
-    //scriptUri: varPrepareDisksSriptUri
-    scriptUri: 'https://sagwcdeploy6xkfcanaryalz.blob.core.windows.net/scripts/prepareDisks.ps1'
+    scriptUri: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}/scripts/prepareDisks.ps1'
   }
 }
 
