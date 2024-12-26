@@ -216,10 +216,16 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
-      virtualNetworkRules: [{
-        id: modContainerSubnet.outputs.resourceId
-        action: 'Allow'
-      }]
+      virtualNetworkRules: [
+        {
+          id: modContainerSubnet.outputs.resourceId
+          action: 'Allow'
+        }
+        {
+          id: resIdentityVirtualNetwork::identitySubnet.id
+          action: 'Allow'
+        }
+    ]
     }
     blobServices: {
       containerDeleteRetentionPolicyEnabled: true
