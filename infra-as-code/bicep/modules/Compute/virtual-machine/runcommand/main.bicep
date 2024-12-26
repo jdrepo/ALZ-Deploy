@@ -27,6 +27,9 @@ resource res_run_command 'Microsoft.Compute/virtualMachines/runCommands@2024-07-
     asyncExecution: false
     source: {
       scriptUri: scriptUri
+      scriptUriManagedIdentity: {
+        
+      }
     }
   }
 }
