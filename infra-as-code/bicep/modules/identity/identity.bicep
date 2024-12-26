@@ -159,16 +159,21 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
     bypassPlatformSafetyChecksOnUserSchedule: true
     bootDiagnostics: true
     bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
+    managedIdentities: {
+      systemAssigned: true
+      userAssignedResourceIds: [
+        modIdSa.outputs.resourceId
+      ] 
+    }
   }
 }
 
-resource resDc1 'Microsoft.Compute/virtualMachines@2024-07-01' existing = {
-  name: varDc1Name
-  dependsOn: [modDc1]
-}
 
 module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main.bicep' = {
   name: '${_dep}-prepare-disks-dc1'
+  dependsOn: [
+    modCopyDeployArtifacts2SaScript
+  ]
   params: {
     location: parLocation
     tags: parTags
