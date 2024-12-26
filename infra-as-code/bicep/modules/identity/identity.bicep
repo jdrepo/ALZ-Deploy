@@ -177,39 +177,38 @@ module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main
     tags: parTags
     runCommandName: 'PrepareDisks'
     vmName: modDc1.outputs.name
-    //scriptUri: '${modSaDeployArtifacts.outputs.name}.blob.core.windows.net/scripts/prepareDisks.ps1'
     scriptUri: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/prepareDisks.ps1'
   }
 }
 
-// module modDscDeployAds './dsc-dc.bicep' = {
-//   name: '${_dep}-dsc-deploy-ads'
-//   dependsOn: [modPrepareDisksDc1]
-//   params: {
-//     location: parLocation
-//     publisher: 'Microsoft.Powershell'
-//     type: 'DSC'
-//     typeHandlerVersion: '2.77'
-//     autoUpgradeMinorVersion: true
-//     enableAutomaticUpgrade: false
-//     name: 'Microsoft.Powershell.DSC'
-//     virtualMachineName: modDc1.outputs.name
-//     settings: {
-//       ModulesUrl: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip'
-//       ConfigurationFunction: 'Deploy-DomainServices.ps1\\Deploy-DomainServices'
-//       Properties: {
-//         domainFQDN: varActiveDirectoryDomainName
-//         adminCredential: {
-//           UserName: parAdminUserName
-//           Password: 'PrivateSettingsRef:adminPassword'
-//         }
-//         ADDSFilePath: 'E:'
-//         DNSForwarder: ['168.63.129.16']
-//       }
-//     }
-//     adminPassword: resKv.getSecret('${varDc1Name}-password')
-//   }
-// }
+module modDscDeployAds './dsc-dc.bicep' = {
+  name: '${_dep}-dsc-deploy-ads'
+  dependsOn: [modPrepareDisksDc1]
+  params: {
+    location: parLocation
+    publisher: 'Microsoft.Powershell'
+    type: 'DSC'
+    typeHandlerVersion: '2.77'
+    autoUpgradeMinorVersion: true
+    enableAutomaticUpgrade: false
+    name: 'Microsoft.Powershell.DSC'
+    virtualMachineName: modDc1.outputs.name
+    settings: {
+      ModulesUrl: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip'
+      ConfigurationFunction: 'Deploy-DomainServices.ps1\\Deploy-DomainServices'
+      Properties: {
+        domainFQDN: varActiveDirectoryDomainName
+        adminCredential: {
+          UserName: parAdminUserName
+          Password: 'PrivateSettingsRef:adminPassword'
+        }
+        ADDSFilePath: 'E:'
+        DNSForwarder: ['168.63.129.16']
+      }
+    }
+    adminPassword: resKv.getSecret('${varDc1Name}-password')
+  }
+}
 
 module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
   name: '${_dep}-sa-boot-diag'
