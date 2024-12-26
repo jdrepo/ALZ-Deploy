@@ -283,6 +283,19 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
     }
   }
 
+  module modIdentitySubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
+    name: '${_dep}-identity-subnet-storage-access'
+    params: {
+      name: resIdentityVirtualNetwork::identitySubnet.name
+      virtualNetworkName: resIdentityVirtualNetwork.name
+      addressPrefix: resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix
+      serviceEndpoints: [
+        'Microsoft.Storage'
+      ]
+      networkSecurityGroupResourceId: resIdentityVirtualNetwork::identitySubnet.properties.networkSecurityGroup.id
+    }
+  }
+
 module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
   name: '${_dep}-copy-deploy-artifacts'
   dependsOn: [
