@@ -10,7 +10,7 @@ $stg = Get-AzStorageAccount -Name $storageAccountName -ResourceGroupName $resour
 $context = $stg.Context
 
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/main/infra-as-code/bicep/modules/identity/scripts/prepareDisks.ps1" -OutFile "prepareDisks.ps1"
-# Invoke-WebRequest -Uri "https://filesamples.com/samples/document/txt/sample2.txt" -OutFile "sample2.txt"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/main/infra-as-code/bicep/modules/identity/scripts/Deploy-DomainServices.ps1.zip" -OutFile "Deploy-DomainServices.ps1.zip"
 # Invoke-WebRequest -Uri "https://filesamples.com/samples/document/txt/sample3.txt" -OutFile "sample3.txt"
 
 
