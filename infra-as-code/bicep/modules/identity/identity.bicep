@@ -177,7 +177,7 @@ module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main
     runCommandName: 'PrepareDisks'
     vmName: modDc1.outputs.name
     //scriptUri: '${modSaDeployArtifacts.outputs.name}.blob.core.windows.net/scripts/prepareDisks.ps1'
-    scriptUri: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}/scripts/prepareDisks.ps1'
+    scriptUri: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/prepareDisks.ps1'
   }
 }
 
