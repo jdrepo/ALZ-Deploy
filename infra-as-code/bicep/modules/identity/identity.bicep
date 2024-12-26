@@ -174,7 +174,8 @@ module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main
     tags: parTags
     runCommandName: 'PrepareDisks'
     vmName: modDc1.outputs.name
-    scriptUri: varPrepareDisksSriptUri
+    //scriptUri: varPrepareDisksSriptUri
+    scriptUri: 'https://sagwcdeploy6xkfcanaryalz.blob.core.windows.net/scripts/prepareDisks.ps1'
   }
 }
 
@@ -233,6 +234,10 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
       {
         principalId: modIdSa.outputs.principalId
         roleDefinitionIdOrName: 'Storage File Data Privileged Contributor'
+      }
+      {
+        principalId: modDc1.outputs.systemAssignedMIPrincipalId
+        roleDefinitionIdOrName: 'Storage Blob Data Reader'
       }
     ]
   }
