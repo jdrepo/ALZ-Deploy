@@ -63,9 +63,10 @@ resource extension 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
     forceUpdateTag: !empty(forceUpdateTag) ? forceUpdateTag : null
     settings: !empty(settings) ? settings : null
     protectedSettings: {
+      configurationUrlSasToken: configurationUrlSasToken
       Items: {
         adminPassword: adminPassword
-        configurationUrlSasToken: configurationUrlSasToken
+        
       }
     }
     suppressFailures: supressFailures

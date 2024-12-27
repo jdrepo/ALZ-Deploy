@@ -460,3 +460,5 @@ output kv1ResourceId string = modKv.outputs.resourceId
 
 output containersToCreate object = varContainersToCreate
 output containersToCreateFormatted string = varContainersToCreateFormatted
+output varDscSas string = varDscSas
+output dscUrl string = '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip?${varDscSas}'
