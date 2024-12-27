@@ -214,7 +214,7 @@ module modDscDeployAds './dsc-dc.bicep' = {
     virtualMachineName: modDc1.outputs.name
     settings: {
       ModulesUrl: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip'
-      SasToken: varDscSas
+      SasToken: '?${varDscSas}'
       ConfigurationFunction: 'Deploy-DomainServices.ps1\\Deploy-DomainServices'
       Properties: {
         domainFQDN: varActiveDirectoryDomainName
