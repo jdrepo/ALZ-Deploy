@@ -183,7 +183,7 @@ module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main
 
 var sasConfig = {
   // canonicalizedResource: '/blob/${storageAccount.name}/mycontainer' // Entire container
-  canonicalizedResource: '/blob/${resSaDeployArtifacts.name}scripts/Deploy-DomainServices.ps1.zip'
+  canonicalizedResource: '/blob/${resSaDeployArtifacts.name}/scripts/Deploy-DomainServices.ps1.zip'
   signedResource: 'b'
   signedPermission: 'r'
   signedExpiry: dateTimeAdd(parTimeNow, 'PT1H')
@@ -197,7 +197,7 @@ resource resSaDeployArtifacts 'Microsoft.Storage/storageAccounts@2023-05-01' exi
 }
 
 // Use sasConfig to generate a Service SAS token
-output sasToken string = listServiceSas(resSaDeployArtifacts.name,resSaDeployArtifacts.apiVersion,sasConfig).serviceSasToken
+output sasToken string = resSaDeployArtifacts.listServiceSas(resSaDeployArtifacts.apiVersion,sasConfig).serviceSasToken
 
 // module modDscDeployAds './dsc-dc.bicep' = {
 //   name: '${_dep}-dsc-deploy-ads'
