@@ -42,6 +42,9 @@ param enableAutomaticUpgrade bool
 @description('Optional. Tags of the resource.')
 param tags object?
 
+@description('Optional. Specifies the SAS token to access the URL defined by configuration.url.')
+param configurationUrlSasToken string = ''
+
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
   name: virtualMachineName
 }
@@ -62,6 +65,7 @@ resource extension 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
     protectedSettings: {
       Items: {
         adminPassword: adminPassword
+        configurationUrlSasToken: configurationUrlSasToken
       }
     }
     suppressFailures: supressFailures
