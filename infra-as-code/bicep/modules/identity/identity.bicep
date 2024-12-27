@@ -226,7 +226,7 @@ module modDscDeployAds './dsc-dc.bicep' = {
       }
     }
     adminPassword: resKv.getSecret('${varDc1Name}-password')
-    configurationUrlSasToken: varDscSas
+    configurationUrlSasToken: '?${varDscSas}'
   }
 }
 
