@@ -181,34 +181,52 @@ module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main
   }
 }
 
-module modDscDeployAds './dsc-dc.bicep' = {
-  name: '${_dep}-dsc-deploy-ads'
-  dependsOn: [modPrepareDisksDc1]
-  params: {
-    location: parLocation
-    publisher: 'Microsoft.Powershell'
-    type: 'DSC'
-    typeHandlerVersion: '2.77'
-    autoUpgradeMinorVersion: true
-    enableAutomaticUpgrade: false
-    name: 'Microsoft.Powershell.DSC'
-    virtualMachineName: modDc1.outputs.name
-    settings: {
-      ModulesUrl: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip'
-      ConfigurationFunction: 'Deploy-DomainServices.ps1\\Deploy-DomainServices'
-      Properties: {
-        domainFQDN: varActiveDirectoryDomainName
-        adminCredential: {
-          UserName: parAdminUserName
-          Password: 'PrivateSettingsRef:adminPassword'
-        }
-        ADDSFilePath: 'E:'
-        DNSForwarder: ['168.63.129.16']
-      }
-    }
-    adminPassword: resKv.getSecret('${varDc1Name}-password')
-  }
+var sasConfig = {
+  // canonicalizedResource: '/blob/${storageAccount.name}/mycontainer' // Entire container
+  canonicalizedResource: '/blob/${resSaDeployArtifacts.name}scripts/Deploy-DomainServices.ps1.zip'
+  signedResource: 'b'
+  signedPermission: 'r'
+  signedExpiry: dateTimeAdd(parTimeNow, 'PT1H')
+  signedProtocol: 'https'
+  keyToSign: 'key1'
+
 }
+
+resource resSaDeployArtifacts 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
+  name: take(('sa${parLocationCode}deploy${take(uniqueString(resourceGroup().name),4)}${parTags.Environment}${parCompanyPrefix}'),24)
+}
+
+// Use sasConfig to generate a Service SAS token
+output sasToken string = listServiceSas(resSaDeployArtifacts.name,resSaDeployArtifacts.apiVersion,sasConfig).serviceSasToken
+
+// module modDscDeployAds './dsc-dc.bicep' = {
+//   name: '${_dep}-dsc-deploy-ads'
+//   dependsOn: [modPrepareDisksDc1]
+//   params: {
+//     location: parLocation
+//     publisher: 'Microsoft.Powershell'
+//     type: 'DSC'
+//     typeHandlerVersion: '2.77'
+//     autoUpgradeMinorVersion: true
+//     enableAutomaticUpgrade: false
+//     name: 'Microsoft.Powershell.DSC'
+//     virtualMachineName: modDc1.outputs.name
+//     settings: {
+//       ModulesUrl: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip'
+//       ConfigurationFunction: 'Deploy-DomainServices.ps1\\Deploy-DomainServices'
+//       Properties: {
+//         domainFQDN: varActiveDirectoryDomainName
+//         adminCredential: {
+//           UserName: parAdminUserName
+//           Password: 'PrivateSettingsRef:adminPassword'
+//         }
+//         ADDSFilePath: 'E:'
+//         DNSForwarder: ['168.63.129.16']
+//       }
+//     }
+//     adminPassword: resKv.getSecret('${varDc1Name}-password')
+//   }
+// }
 
 module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
   name: '${_dep}-sa-boot-diag'
