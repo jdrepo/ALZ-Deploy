@@ -75,9 +75,9 @@ param parSubnets subnetOptionsType = [
     networkSecurityGroupResourceId: ''
     routeTableResourceId: ''
     serviceEndpoints: [
-      {
-        service: 'Microsoft.Storage'
-      }
+      //{
+        'Microsoft.Storage'
+     // }
     ]
   }
   // {
