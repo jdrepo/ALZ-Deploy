@@ -49,6 +49,28 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' existing 
   name: virtualMachineName
 }
 
+// resource extension 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
+//   name: name
+//   parent: virtualMachine
+//   location: location
+//   tags: tags
+//   properties: {
+//     publisher: publisher
+//     type: type
+//     typeHandlerVersion: typeHandlerVersion
+//     autoUpgradeMinorVersion: autoUpgradeMinorVersion
+//     enableAutomaticUpgrade: enableAutomaticUpgrade
+//     forceUpdateTag: !empty(forceUpdateTag) ? forceUpdateTag : null
+//     settings: !empty(settings) ? settings : null
+//     protectedSettings: {
+//      Items: {
+//         adminPassword: adminPassword
+//       }
+//     }
+//     suppressFailures: supressFailures
+//   }
+// }
+
 resource extension 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
   name: name
   parent: virtualMachine
@@ -64,12 +86,12 @@ resource extension 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
     settings: !empty(settings) ? settings : null
     protectedSettings: {
       configurationUrlSasToken: configurationUrlSasToken
-     // Items: {
       configurationArguments: {
-        adminPassword: adminPassword
+        Items: {
+          adminPassword: adminPassword
+        }
       }
     }
-    suppressFailures: supressFailures
   }
 }
 
