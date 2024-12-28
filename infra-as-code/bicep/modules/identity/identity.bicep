@@ -250,15 +250,16 @@ module modDscDeployAds './dsc-dc.bicep' = {
       }
       configurationArguments: {
         domainFQDN: varActiveDirectoryDomainName
-        adminCredential: {
-          UserName: parAdminUserName
-          Password: 'PrivateSettingsRef:adminPassword'
-        }
+        // adminCredential: {
+        //   UserName: parAdminUserName
+        //   Password: 'PrivateSettingsRef:adminPassword'
+        // }
         ADDSFilePath: 'E:'
         DNSForwarder: ['168.63.129.16']
       }
     }
     adminPassword: resKv.getSecret('${varDc1Name}-password')
+    adminUserName: parAdminUserName
     configurationUrlSasToken: '?${varDscSas}'
   }
 }

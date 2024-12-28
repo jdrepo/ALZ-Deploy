@@ -33,6 +33,10 @@ param settings object = {}
 @secure()
 param adminPassword string
 
+@description('Required. Admin user for domain controller.')
+@secure()
+param adminUserName string
+
 @description('Optional. Indicates whether failures stemming from the extension will be suppressed (Operational failures such as not connecting to the VM will not be suppressed regardless of this value). The default is false.')
 param supressFailures bool = false
 
@@ -87,8 +91,9 @@ resource extension 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
     protectedSettings: {
       configurationUrlSasToken: configurationUrlSasToken
       configurationArguments: {
-        Items: {
-          adminPassword: adminPassword
+        adminCredential: {
+          UserName: adminUserName
+          Password: adminPassword
         }
       }
     }
