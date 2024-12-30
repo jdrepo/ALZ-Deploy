@@ -17,7 +17,7 @@ type subnetOptionsType = ({
   routeTableResourceId: string?
 
   @description('Delegations to create for the subnet.')
-  delegations: array?
+  delegations: string?
 
   @description('Service endpoints to create for the subnet.')
   serviceEndpoints: array?
@@ -75,30 +75,10 @@ param parSubnets subnetOptionsType = [
     networkSecurityGroupResourceId: ''
     routeTableResourceId: ''
     serviceEndpoints: [
-      //{
         'Microsoft.Storage'
-     // }
     ]
+    delegations: ''
   }
-  // {
-  //   name: 'container-subnet1'
-  //   addressPrefix: '10.20.10.0/24'
-  //   networkSecurityGroupResourceId: ''
-  //   routeTableResourceId: ''
-  //   serviceEndpoints: [
-  //     {
-  //       service: 'Microsoft.Storage'
-  //     }
-  //   ]
-  //   delegations: [
-  //     {
-  //       name: 'Microsoft.ContainerInstance.containerGroups'
-  //       properties: {
-  //         serviceName: 'Microsoft.ContainerInstance/containerGroups'
-  //       }
-  //     }
-  //   ]
-  // }
 ]
 
 @sys.description('Array of DNS Server IP addresses for VNet.')
