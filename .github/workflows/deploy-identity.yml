@@ -45,6 +45,8 @@ on:
     secrets:
       IDENTITY_SUB_ID:
         required: false
+      CONNECTIVITY_SUB_ID:
+        required: false
       AZURE_CLIENT_ID:
         required: false
       AZURE_TENANT_ID:
@@ -55,7 +57,9 @@ env:
   ManagementGroupPrefix: ${{inputs.managementGroupPrefix}}
   ManagementGroupSuffix: "-${{inputs.environment}}"
   IdentitySubscriptionId: ${{secrets.IDENTITY_SUB_ID}}
+  ConnectivitySubscriptionId: ${{secrets.CONNECTIVITY_SUB_ID}}
   IdentityNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-identity-001"
+  HubNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-networking-001"
   Location: ${{inputs.location}}
   runNumber: ${{ github.run_number }}
 
@@ -95,6 +99,11 @@ jobs:
           identityNetworkResourceId=$(az network vnet show --resource-group ${{ env.IdentityNetworkResourceGroupName }} --name $identityNetworkName --query id)
           echo "$identityNetworkResourceId"
           echo "identityNetworkResourceId=$identityNetworkResourceId" >> $GITHUB_OUTPUT
+          az account set -s "${{env.ConnectivitySubscriptionId}}"
+          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+          hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+          echo "$hubNetworkResourceId"
+          echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
     - name: Deploy Identity - Validation
       id: deploy_identity_validation
       uses: azure/arm-deploy@v2
@@ -107,6 +116,7 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
+            parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -123,6 +133,7 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
+            parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -160,6 +171,11 @@ jobs:
           identityNetworkResourceId=$(az network vnet show --resource-group ${{ env.IdentityNetworkResourceGroupName }} --name $identityNetworkName --query id)
           echo "$identityNetworkResourceId"
           echo "identityNetworkResourceId=$identityNetworkResourceId" >> $GITHUB_OUTPUT
+          az account set -s "${{env.ConnectivitySubscriptionId}}"
+          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+          hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+          echo "$hubNetworkResourceId"
+          echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
     - name: Deploy Identity
       id: deploy_identity
       uses: azure/arm-deploy@v2
@@ -172,6 +188,7 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
+            parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity-${{ env.runNumber }}
           failOnStdErr: false
