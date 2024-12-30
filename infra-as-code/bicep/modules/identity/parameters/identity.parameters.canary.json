@@ -8,6 +8,36 @@
 	"parCompanyPrefix": {
       "value": "alz"
     },
+    "parIdentityNetworkName": {
+			"value": "vnet-gwc-identity-alz-canary"
+		},
+    "parIdentityNetworkAddressPrefix": {
+			"value": "10.20.0.0/16"
+		},
+    "parSubnets": {
+			"value": [
+				{
+					"name": "identity-subnet1",
+					"addressPrefix": "10.20.1.0/24",
+					"networkSecurityGroupName": "nsg-gwc-001-alz-canary",
+					"routeTableResourceId": "",
+					"serviceEndpoints": [
+						"Microsoft.Storage"
+					],
+          "delegations": ""
+				},
+        {
+					"name": "container-subnet1",
+					"addressPrefix": "10.20.10.0/28",
+					"networkSecurityGroupName": "nsg-gwc-container-alz-canary",
+					"routeTableResourceId": "",
+					"serviceEndpoints": [
+						"Microsoft.Storage"
+					],
+          "delegations" : "Microsoft.ContainerInstance/containerGroups"
+				}
+			]
+		},
 	"parTags": {
       "value": {
         "Environment": "canary"
@@ -21,6 +51,15 @@
     },
     "parIdentitySubnetName": {
       "value": "identity-subnet1"
-    }
+    },
+    "parIdentityNsgName": {
+			"value": "nsg-gwc-001-alz-canary"
+		},
+    "parContainerNsgName": {
+			"value": "nsg-gwc-container-alz-canary"
+		},
+    "parHubNetworkResourceId": {
+			"value": ""
+		}
   }
 }
