@@ -1,5 +1,5 @@
-metadata name = 'Virtual Machine Extensions'
-metadata description = 'This module deploys a Virtual Machine Extension.'
+metadata name = 'Active Directory Deployment'
+metadata description = 'This module deploys the first Active Directory Domain Controller.'
 metadata owner = 'Azure/module-maintainers'
 
 @description('Conditional. The name of the parent virtual machine that extension is provisioned for. Required if the template is used in a standalone deployment.')
@@ -37,9 +37,6 @@ param adminPassword string
 @secure()
 param adminUserName string
 
-@description('Optional. Indicates whether failures stemming from the extension will be suppressed (Operational failures such as not connecting to the VM will not be suppressed regardless of this value). The default is false.')
-param supressFailures bool = false
-
 @description('Required. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available.')
 param enableAutomaticUpgrade bool
 
@@ -53,29 +50,9 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' existing 
   name: virtualMachineName
 }
 
-// resource extension 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
-//   name: name
-//   parent: virtualMachine
-//   location: location
-//   tags: tags
-//   properties: {
-//     publisher: publisher
-//     type: type
-//     typeHandlerVersion: typeHandlerVersion
-//     autoUpgradeMinorVersion: autoUpgradeMinorVersion
-//     enableAutomaticUpgrade: enableAutomaticUpgrade
-//     forceUpdateTag: !empty(forceUpdateTag) ? forceUpdateTag : null
-//     settings: !empty(settings) ? settings : null
-//     protectedSettings: {
-//      Items: {
-//         adminPassword: adminPassword
-//       }
-//     }
-//     suppressFailures: supressFailures
-//   }
-// }
 
-resource extension 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
+
+resource extension 'Microsoft.Compute/virtualMachines/extensions@2024-07-01' = {
   name: name
   parent: virtualMachine
   location: location
