@@ -298,35 +298,6 @@ resource resSaDeployArtifacts 'Microsoft.Storage/storageAccounts@2023-05-01' exi
   )
 }
 
-// module modDscDeployAds './dsc-dc.bicep' = {
-//   name: '${_dep}-dsc-deploy-ads'
-//   dependsOn: [modPrepareDisksDc1]
-//   params: {
-//     location: parLocation
-//     publisher: 'Microsoft.Powershell'
-//     type: 'DSC'
-//     typeHandlerVersion: '2.77'
-//     autoUpgradeMinorVersion: true
-//     enableAutomaticUpgrade: false
-//     name: 'Microsoft.Powershell.DSC'
-//     virtualMachineName: modDc1.outputs.name
-//     settings: {
-//       ModulesUrl: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip'
-//       SasToken: '?${varDscSas}'
-//       ConfigurationFunction: 'Deploy-DomainServices.ps1\\Deploy-DomainServices'
-//       Properties: {
-//         domainFQDN: varActiveDirectoryDomainName
-//         adminCredential: {
-//           UserName: parAdminUserName
-//           Password: 'PrivateSettingsRef:adminPassword'
-//         }
-//         ADDSFilePath: 'E:'
-//         DNSForwarder: ['168.63.129.16']
-//       }
-//     }
-//     adminPassword: resKv.getSecret('${varDc1Name}-password')
-//   }
-// }
 
 module modDscDeployAds './dsc-dc.bicep' = {
   name: '${_dep}-dsc-deploy-ads'
@@ -472,18 +443,6 @@ module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network
   }
 }
 
-// module modIdentitySubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
-//   name: '${_dep}-identity-subnet-storage-access'
-//   params: {
-//     name: resIdentityVirtualNetwork::identitySubnet.name
-//     virtualNetworkName: resIdentityVirtualNetwork.name
-//     addressPrefix: resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix
-//     serviceEndpoints: [
-//       'Microsoft.Storage'
-//     ]
-//     networkSecurityGroupResourceId: resIdentityVirtualNetwork::identitySubnet.properties.networkSecurityGroup.id
-//   }
-// }
 
 module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = {
   name: 'deploy-Identity-VNet-SetDNS'
@@ -519,35 +478,35 @@ module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' =
   }
 }
 
-//optional: can be deployed instead of identity network deployment job
-// module modIdentityVNet 'br/public:avm/res/network/virtual-network:0.5.1' = {
-//   name: 'deploy-Identity-VNet'
-//   params: {
-//     name: parIdentityNetworkName
-//     location: parLocation
-//     tags: parTags
-//     dnsServers: []
-//     addressPrefixes: [
-//       parIdentityNetworkAddressPrefix
-//     ]
-//     lock: {
-//       name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
-//       kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
-//     }
-//     subnets: varSubnetProperties
-//     peerings: [
-//       {
-//         remoteVirtualNetworkResourceId: parHubNetworkResourceId
-//         allowForwardedTraffic: true
-//         allowGatewayTransit: false
-//         allowVirtualNetworkAccess: true
-//         remotePeeringAllowForwardedTraffic: true
-//         remotePeeringAllowVirtualNetworkAccess: true
-//         remotePeeringEnabled: true
-//       }
-//     ]
-//   }
-// }
+// optional: can be deployed instead of identity network deployment job
+module modIdentityVNet 'br/public:avm/res/network/virtual-network:0.5.1' = {
+  name: 'deploy-Identity-VNet'
+  params: {
+    name: parIdentityNetworkName
+    location: parLocation
+    tags: parTags
+    dnsServers: []
+    addressPrefixes: [
+      parIdentityNetworkAddressPrefix
+    ]
+    lock: {
+      name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
+      kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
+    }
+    subnets: varSubnetProperties
+    peerings: [
+      {
+        remoteVirtualNetworkResourceId: parHubNetworkResourceId
+        allowForwardedTraffic: true
+        allowGatewayTransit: false
+        allowVirtualNetworkAccess: true
+        remotePeeringAllowForwardedTraffic: true
+        remotePeeringAllowVirtualNetworkAccess: true
+        remotePeeringEnabled: true
+      }
+    ]
+  }
+}
 
 module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
   name: '${_dep}-copy-deploy-artifacts'
