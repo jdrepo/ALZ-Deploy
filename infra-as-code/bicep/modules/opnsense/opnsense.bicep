@@ -61,6 +61,12 @@ param parUntrustedSubnetName string = 'OPNS-Untrusted'
 @sys.description('Trusted-Subnet Name.')
 param parTrustedSubnetName string = 'OPNS-Trusted'
 
+@sys.description('Name of Route table to create for the default route of Hub.')
+param parHubRouteTableName string = '${parCompanyPrefix}-hub-routetable'
+
+@sys.description('Switch to enable/disable BGP Propagation on route table.')
+param parDisableBgpRoutePropagation bool = false
+
 @sys.description('Specify Public IP SKU either Basic (lowest cost) or Standard (Required for HA LB)"')
 @allowed([
   'Basic'
@@ -386,6 +392,25 @@ module modKvPassword '../keyVaultSecret/keyVaultSecret.bicep' = {
   }
 }
 
+module modHubRouteTable 'br/public:avm/res/network/route-table:0.4.0' = {
+  name: '${_dep}-hub-route-table'
+  params: {
+    name: parHubRouteTableName
+    disableBgpRoutePropagation: parDisableBgpRoutePropagation
+    location: parLocation
+    tags: parTags
+    routes: [{
+      name: 'default'
+      properties: {
+        addressPrefix: '0.0.0.0/0'
+        nextHopType: 'VirtualAppliance'
+        nextHopIpAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,3)
+      }
+    }
+    ]
+  }
+}
+
 
 module modPolicyExemptionDeployMDEndpoints '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
   name: '${_dep}-policy-exemption-deployMDEndpoints'
@@ -464,5 +489,6 @@ module modPolicyExemptionDeployASCMonitoring '../policy/exemptions/policy-exempt
     resourceId: modOpnSense.outputs.resourceId
   }
 }
+
 
 

@@ -46,6 +46,12 @@
 		"parTrustedSubnetName": {
 			"value": "OPNS-Trusted"
 		},
+		"parHubRouteTableName": {
+			"value": "rt-gwc-hub-alz-canary"
+		},
+		"parDisableBgpRoutePropagation": {
+			"value": false
+		},
 		"PublicIPAddressSku": {
 			"value": "Standard"
 		},
