@@ -55,12 +55,6 @@ param parVirtualMachineName string
 @sys.description('Existing Virtual Network Resource Id.')
 param parVirtualNetworkResourceId string
 
-@sys.description('Untrusted-Subnet Address Space.')
-param parUntrustedSubnetCIDR string = '10.10.251.0/24'
-
-@sys.description('Trusted-Subnet Address Space.')
-param parTrustedSubnetCIDR string = '10.10.250.0/24'
-
 @sys.description('Untrusted-Subnet Name.')
 param parUntrustedSubnetName string = 'OPNS-Untrusted'
 
@@ -191,43 +185,6 @@ module modPublicIp 'br/public:avm/res/network/public-ip-address:0.7.0' = {
     skuTier: 'Regional'
   }
 }
-
-// module modTrustedNic 'br/public:avm/res/network/network-interface:0.4.0' = {
-//   name: '${_dep}-trustednic'
-//   params: {
-//     name: varTrustedNicName
-//     location: parLocation
-//     tags: parTags
-//     enableIPForwarding: true
-//     ipConfigurations: [
-//       {
-//         name: 'ipconfig01'
-//         subnetResourceId: modTrustedSubnet.outputs.resourceId
-//         privateIPAllocationMethod: 'Static'
-//         privateIPAddress: '10.10.250.4'
-//       }
-//     ]
-//   }
-// }
-
-// module modUntrustedNic 'br/public:avm/res/network/network-interface:0.4.0' = {
-//   name: '${_dep}-untrustednic'
-//   params: {
-//     name: varUntrustedNicName
-//     location: parLocation
-//     tags: parTags
-//     enableIPForwarding: true
-//     ipConfigurations: [
-//       {
-//         name: 'ipconfig01'
-//         subnetResourceId: modUntrustedSubnet.outputs.resourceId
-//         privateIPAllocationMethod: 'Static'
-//         privateIPAddress: '10.10.251.4'
-//         publicIPAddressResourceId: modPublicIp.outputs.resourceId
-//       }
-//     ]
-//   }
-// }
 
 // module modOpnSense 
 
