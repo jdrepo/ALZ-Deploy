@@ -20,7 +20,7 @@
 					"name": "identity-subnet1",
 					"addressPrefix": "10.20.1.0/24",
 					"networkSecurityGroupName": "nsg-gwc-001-alz-canary",
-					"routeTableResourceId": "",
+					"routeTableResourceName": "rt-gwc-identity-alz-canary",
 					"serviceEndpoints": [
 						"Microsoft.Storage"
 					],
@@ -30,7 +30,7 @@
 					"name": "container-subnet1",
 					"addressPrefix": "10.20.10.0/28",
 					"networkSecurityGroupName": "nsg-gwc-container-alz-canary",
-					"routeTableResourceId": "",
+					"routeTableResourceName": "",
 					"serviceEndpoints": [
 						"Microsoft.Storage"
 					],

@@ -13,8 +13,8 @@ type subnetOptionsType = ({
   @description('Name of Network Security Group to associate with subnet.')
   networkSecurityGroupName: string?
 
-  @description('Id of Route Table to associate with subnet.')
-  routeTableResourceId: string?
+  @description('Name of Route Table to associate with subnet.')
+  routeTableResourceName: string?
 
   @description('Delegations to create for the subnet.')
   delegations: string?
@@ -91,7 +91,7 @@ param parSubnets subnetOptionsType = [
     name: 'identity-subnet1'
     addressPrefix: '10.20.1.0/24'
     networkSecurityGroupName: parIdentityNsgName
-    routeTableResourceId: ''
+    routeTableResourceName: ''
     serviceEndpoints: [
         'Microsoft.Storage'
     ]
@@ -101,7 +101,7 @@ param parSubnets subnetOptionsType = [
     name: 'container-subnet1'
     addressPrefix: '10.20.10.0/28'
     networkSecurityGroupName: parContainerNsgName
-    routeTableResourceId: ''
+    routeTableResourceName: ''
     serviceEndpoints: [
         'Microsoft.Storage'
     ]
@@ -134,7 +134,7 @@ var varSubnetProperties = [ for (subnet, i) in parSubnets : {
   name: subnet.name
   addressPrefix: subnet.addressPrefix
   networkSecurityGroupResourceId:  '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${subnet.networkSecurityGroupName}'
-  routeTableResourceId: subnet.routeTableResourceId
+  routeTableResourceId: !empty(subnet.routeTableResourceName) ? '${resourceGroup().id}/providers/Microsoft.Network/routeTables/${subnet.routeTableResourceName}' : ''
   serviceEndpoints: subnet.serviceEndpoints
   delegation: subnet.delegations
 }
@@ -146,7 +146,6 @@ var varDc1Name = 'vm-${parLocationCode}-dc-01'
 var varDesUserAssignedIdentityName = 'id-${parLocationCode}-des-${parCompanyPrefix}-${varEnvironment}'
 var varDesName = 'des-${parLocationCode}-001-${parCompanyPrefix}-${varEnvironment}'
 var varSaUserAssignedIdentityName = 'id-${parLocationCode}-sa-${parCompanyPrefix}-${varEnvironment}'
-var varContainerSubnetNsgName = 'nsg-${parLocationCode}-container-${parCompanyPrefix}-${varEnvironment}'
 var varActiveDirectoryDomainName = 'alz-${varEnvironment}.lokal'
 
 var varGwcSerialConsoleIps = [
@@ -175,9 +174,6 @@ var varDscSas = resSaDeployArtifacts.listServiceSas(resSaDeployArtifacts.apiVers
   keyToSign: 'key1'
 }).serviceSasToken
 
-// // Use sasConfig1 to generate a Service SAS token
-// var varSasToken1 = resSaDeployArtifacts.listServiceSas(resSaDeployArtifacts.apiVersion,sasConfig1).serviceSasToken
-
 /*** EXISTING SUBSCRIPTION RESOURCES ***/
 
 @sys.description('Existing resource group that holds identity network.')
@@ -203,6 +199,7 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
     name: parContainerSubnetName
   }
 }
+
 
 /*** NEW RESOURCES ***/
 
@@ -364,8 +361,8 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
       defaultAction: 'Deny'
       virtualNetworkRules: [
         {
+          //id: modIdentityVNet.outputs.subnetResourceIds[1]
           id: modContainerSubnet.outputs.resourceId
-          //id: resIdentityVirtualNetwork::containerSubnet.id
           action: 'Allow'
         }
         {
@@ -423,18 +420,13 @@ module modContainerSubnetNSG 'br/public:avm/res/network/network-security-group:0
   }
 }
 
-module modIdentitySubnetNSG 'br/public:avm/res/network/network-security-group:0.5.0' = {
-  name: '${_dep}-identity-subnet1-nsg'
-  params: {
-    name: parIdentityNsgName
-  }
-}
+
 module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
   name: '${_dep}-container-subnet1'
   params: {
     name: 'container-subnet1'
     virtualNetworkName: resIdentityVirtualNetwork.name
-    addressPrefix: '10.20.10.0/28'
+    addressPrefix: parSubnets[1].addressPrefix
     serviceEndpoints: [
       'Microsoft.Storage'
     ]
@@ -443,12 +435,10 @@ module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network
   }
 }
 
-
 module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = {
   name: 'deploy-Identity-VNet-SetDNS'
   dependsOn: [
     modContainerSubnetNSG
-    modIdentitySubnetNSG
     modDscDeployAds
   ]
   params: {
@@ -478,35 +468,35 @@ module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' =
   }
 }
 
-// optional: can be deployed instead of identity network deployment job
-module modIdentityVNet 'br/public:avm/res/network/virtual-network:0.5.1' = {
-  name: 'deploy-Identity-VNet'
-  params: {
-    name: parIdentityNetworkName
-    location: parLocation
-    tags: parTags
-    dnsServers: []
-    addressPrefixes: [
-      parIdentityNetworkAddressPrefix
-    ]
-    lock: {
-      name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
-      kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
-    }
-    subnets: varSubnetProperties
-    peerings: [
-      {
-        remoteVirtualNetworkResourceId: parHubNetworkResourceId
-        allowForwardedTraffic: true
-        allowGatewayTransit: false
-        allowVirtualNetworkAccess: true
-        remotePeeringAllowForwardedTraffic: true
-        remotePeeringAllowVirtualNetworkAccess: true
-        remotePeeringEnabled: true
-      }
-    ]
-  }
-}
+// optional: can be deployed instead of identity network deployment job, don´t remove
+// module modIdentityVNet 'br/public:avm/res/network/virtual-network:0.5.1' = {
+//   name: 'deploy-Identity-VNet'
+//   params: {
+//     name: parIdentityNetworkName
+//     location: parLocation
+//     tags: parTags
+//     dnsServers: []
+//     addressPrefixes: [
+//       parIdentityNetworkAddressPrefix
+//     ]
+//     lock: {
+//       name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
+//       kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
+//     }
+//     subnets: varSubnetProperties
+//     peerings: [
+//       {
+//         remoteVirtualNetworkResourceId: parHubNetworkResourceId
+//         allowForwardedTraffic: true
+//         allowGatewayTransit: false
+//         allowVirtualNetworkAccess: true
+//         remotePeeringAllowForwardedTraffic: true
+//         remotePeeringAllowVirtualNetworkAccess: true
+//         remotePeeringEnabled: true
+//       }
+//     ]
+//   }
+// }
 
 module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
   name: '${_dep}-copy-deploy-artifacts'
@@ -612,6 +602,7 @@ module modKvPassword '../keyVaultSecret/keyVaultSecret.bicep' = {
     parExpireDate: dateTimeAdd(parTimeNow, 'P90D')
   }
 }
+
 
 output dc1ResourceId string = modDc1.outputs.resourceId
 output kv1ResourceId string = modKv.outputs.resourceId

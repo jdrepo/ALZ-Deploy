@@ -101,6 +101,9 @@ param parVirtualNetworkLock lockType = {
 @sys.description('Name of Route table to create for the default route of Identity Network.')
 param parIdentityRouteTableName string = '${parCompanyPrefix}-identity-routetable'
 
+@sys.description('The trusted ip address of NVA for outbound access.')
+param parNvaTrustedIp string = ''
+
 @sys.description('''Resource Lock Configuration for the Identity Route Table.
 
 - `kind` - The lock settings of the service which can be CanNotDelete, ReadOnly, or None.
@@ -116,13 +119,19 @@ var varSubnetProperties = [ for (subnet, i) in parSubnets : {
   name: subnet.name
   addressPrefix: subnet.addressPrefix
   networkSecurityGroupResourceId:  '${resourceGroup().id}/providers/Microsoft.Network/networkSecurityGroups/${parIdentityNsgName}'
-  routeTableResourceId: subnet.routeTableResourceId
+  routeTableResourceId: '${resourceGroup().id}/providers/Microsoft.Network/routeTables/${parIdentityRouteTableName}'
   serviceEndpoints: subnet.serviceEndpoints
 }
 ]
 
+var _dep = deployment().name
+
+
 module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
   name: 'deploy-Identity-VNet-AVM'
+  dependsOn: [
+    modIdentityRouteTable
+  ]
   params: {
     name: parIdentityNetworkName
     location: parLocation
@@ -150,12 +159,75 @@ module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
   }
 }
 
-module modNSG1 'br/public:avm/res/network/network-security-group:0.5.0' = {
-  name: 'deploy-NSG1'
+module modIdentitySubnetNsg 'br/public:avm/res/network/network-security-group:0.5.0' = {
+  name: '${_dep}-identity-subnet1-nsg'
   params: {
     name: parIdentityNsgName
+    location: parLocation
+    tags: parTags
+    securityRules: [
+      {
+        name: 'AllowLocal'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 101
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          destinationPortRange: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: 'VirtualNetwork'
+        }
+      }
+      {
+        name: 'DenyInternet'
+        properties: {
+          access: 'Deny'
+          direction: 'Outbound'
+          priority: 111
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          destinationPortRange: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: 'Internet'
+        }
+      }
+    ]
   }
 }
+
+// module modIdentitySubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = if (!empty(parNvaTrustedIp)) {
+//   name: '${_dep}-identity-subnet1'
+//   params: {
+//     name: parSubnets[0].name    
+//     virtualNetworkName: modIdentityVNetAVM.outputs.name
+//     addressPrefix: parSubnets[0].addressPrefix
+//     serviceEndpoints: [
+//       'Microsoft.Storage'
+//     ]
+//     networkSecurityGroupResourceId: modIdentitySubnetNsg.outputs.resourceId
+//     routeTableResourceId: modIdentityRouteTable.outputs.resourceId
+//   }
+// }
+
+module modIdentityRouteTable 'br/public:avm/res/network/route-table:0.4.0' =  {
+  name: '${_dep}-identity-route-table'
+  params: {
+    name: parIdentityRouteTableName
+    disableBgpRoutePropagation: false
+    location: parLocation
+    tags: parTags
+    routes: !empty(parNvaTrustedIp) ? [{
+      name: 'default'
+      properties: {
+        addressPrefix: '0.0.0.0/0'
+        nextHopType: 'VirtualAppliance'
+        nextHopIpAddress: parNvaTrustedIp
+      }
+    }] : []
+  }
+}
+
 
 output outIdentityVirtualNetworkName string = modIdentityVNetAVM.outputs.name
 output outIdentityVirtualNetworkId string = modIdentityVNetAVM.outputs.resourceId

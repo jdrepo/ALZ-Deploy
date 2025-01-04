@@ -39,6 +39,9 @@
 		"parIdentityRouteTableName": {
 			"value": "rt-gwc-identity-alz-canary"
 		},
+		"parNvaTrustedIp": {
+			"value": "10.10.250.4"
+		},
 		"parTags": {
 			"value": {
 				"Environment": "canary"
