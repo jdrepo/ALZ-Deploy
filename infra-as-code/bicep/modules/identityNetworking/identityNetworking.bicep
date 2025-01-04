@@ -180,11 +180,28 @@ module modIdentitySubnetNsg 'br/public:avm/res/network/network-security-group:0.
         }
       }
       {
+        name: 'AllowAzureKMS'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 110
+          protocol: 'Tcp'
+          sourceAddressPrefix: '*'
+          destinationPortRange: '1688'
+          sourcePortRange: '*'
+          destinationAddressPrefixes: [
+            '23.102.135.246/32'
+            '20.118.99.224/32'
+            '40.83.235.53/32'
+          ]
+        }
+      }
+      {
         name: 'DenyInternet'
         properties: {
           access: 'Deny'
           direction: 'Outbound'
-          priority: 111
+          priority: 4000
           protocol: '*'
           sourceAddressPrefix: '*'
           destinationPortRange: '*'
@@ -217,14 +234,37 @@ module modIdentityRouteTable 'br/public:avm/res/network/route-table:0.4.0' =  {
     disableBgpRoutePropagation: false
     location: parLocation
     tags: parTags
-    routes: !empty(parNvaTrustedIp) ? [{
-      name: 'default'
-      properties: {
-        addressPrefix: '0.0.0.0/0'
-        nextHopType: 'VirtualAppliance'
-        nextHopIpAddress: parNvaTrustedIp
+    routes: !empty(parNvaTrustedIp) ? [
+      {
+        name: 'default'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: parNvaTrustedIp
+        }
       }
-    }] : []
+      {
+        name: 'DirectRouteToKMS'
+        properties: {
+          addressPrefix: '23.102.135.246/32'
+          nextHopType: 'Internet'
+        }
+      }
+      {
+        name: 'DirectRouteToAZKMS01'
+        properties: {
+          addressPrefix: '20.118.99.224/32'
+          nextHopType: 'Internet'
+        }
+      }
+      {
+        name: 'DirectRouteToAZKMS02'
+        properties: {
+          addressPrefix: '40.83.235.53/32'
+          nextHopType: 'Internet'
+        }
+      }
+    ] : []
   }
 }
 
