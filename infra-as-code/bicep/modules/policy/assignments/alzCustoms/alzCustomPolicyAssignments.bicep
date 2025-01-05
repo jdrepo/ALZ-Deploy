@@ -286,6 +286,9 @@ module modPolicyAssignmentPlatformDeployVnetFlowLogs '../../../policy/assignment
     }
     parPolicyAssignmentIdentityType: varPolicyAssignmentDeployVnetFlowLog.libDefinition.identity.type
     parPolicyAssignmentEnforcementMode: parDisableAlzCustomPolicies ? 'DoNotEnforce' : varPolicyAssignmentDeployVnetFlowLog.libDefinition.properties.enforcementMode
+    parPolicyAssignmentIdentityRoleDefinitionIds: [
+      varRbacRoleDefinitionIds.contributor
+    ]
     parTelemetryOptOut: parTelemetryOptOut
   }
 }
