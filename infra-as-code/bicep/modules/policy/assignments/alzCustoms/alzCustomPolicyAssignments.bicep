@@ -265,7 +265,7 @@ module modPolicyAssignmentIntRootDeployResourceDiag '../../../policy/assignments
 // Modules - Policy Assignments - Platform Management Group
 // Module - Policy Assignment - Deploy-Vnet-Flow-Logs
 module modPolicyAssignmentPlatformDeployVnetFlowLogs '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployVnetFlowLog.libDefinition.name)) {
-  scope: managementGroup(varManagementGroupIds.platformIdentity)
+  scope: managementGroup(varManagementGroupIds.platform)
   name: varModuleDeploymentNames.modPolicyAssignmentPlatformDeployVnetFlowLog
   params: {
     parPolicyAssignmentDefinitionId: varPolicyAssignmentDeployVnetFlowLog.definitionId
