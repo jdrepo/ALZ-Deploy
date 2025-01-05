@@ -1,0 +1,37 @@
+{
+	"name": "Deploy-Vnet-Flow-Logs",
+	"type": "Microsoft.Authorization/policyAssignments",
+	"apiVersion": "2024-04-01",
+	"properties": {
+		"description": "Deploy a Flow Log resource with target virtual network",
+		"displayName": "Configures flow log for specific virtual network - custom",
+		"notScopes": [],
+		"parameters": {
+			"effect": {
+				"value": "DeployIfNotExists"
+			},
+			"vnetRegion": {
+				"value": "germanywestcentral"
+			},
+			"storageId": {
+				"value": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/${parTopLevelManagementGroupPrefix}-mgmt/providers/Microsoft.Storage/storageAccounts/${parTopLevelManagementGroupPrefix}-sa"
+			},
+			"networkWatcherRG": {
+				"value": "networkwatcherrg"
+			},
+			"networkWatcherName": {
+				"value": "networkwatcher_germanywestcentral"
+			},
+			"retentionDays": {
+				"value": "30"
+			}
+		},
+		"policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/cd6f7aff-2845-4dab-99f2-6d1754a754b0",
+		"scope": null,
+		"enforcementMode": "Default"
+	},
+	"location": null,
+	"identity": {
+		"type": "SystemAssigned"
+	}
+}

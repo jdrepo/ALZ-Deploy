@@ -1265,6 +1265,9 @@ jobs:
             az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
             logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name $logAnalyticsWorkspaceName --query id)
+            logStorageAccountResourceId=$(az storage account list --resource-group rg-alz-canary-logging-001 --query "[?contains(name,'sa')&&contains(name,'log') ].id" --output tsv)
+            networkWatcherResourceId=$(az network watcher list --query "[].id" --output tsv)
+            platformPrimaryLocation=$(jq -r .parameters.parLocation.value infra-as-code/bicep/modules/logging/parameters/customLogging.parameters.${{inputs.environment}}.json)
             az account set -s "${{env.ConnectivitySubId}}"
             hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
             hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
@@ -1272,6 +1275,12 @@ jobs:
             echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
             echo "$logAnalyticsWorkspaceResourceId"
             echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
+            echo "$logStorageAccountResourceId"
+            echo "logStorageAccountResourceId=$logStorageAccountResourceId" >> "$GITHUB_OUTPUT"
+            echo "$networkWatcherResourceId"
+            echo "networkWatcherResourceId=$networkWatcherResourceId" >> "$GITHUB_OUTPUT"
+            echo "$platformPrimaryLocation"
+            echo "platformPrimaryLocation=$platformPrimaryLocation" >> "$GITHUB_OUTPUT"
       - name: Deploy Custom Policy Assignment - Validation
         id: deploy_custPolAssignment_validation
         uses: azure/arm-deploy@v2
@@ -1285,6 +1294,9 @@ jobs:
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
+            parLogStorageAccountResourceId=${{steps.get_resources.outputs.logStorageAccountResourceId}}
+            parNetworkWatcherResourceId=${{steps.get_resources.outputs.networkWatcherResourceId}}
+            parPlatformPrimaryLocation=${{steps.get_resources.outputs.platformPrimaryLocation}}
           deploymentName: deploy_custPolAssign_validate-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -1301,6 +1313,9 @@ jobs:
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
             parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
+            parLogStorageAccountResourceId=${{steps.get_resources.outputs.logStorageAccountResourceId}}
+            parNetworkWatcherResourceId=${{steps.get_resources.outputs.networkWatcherResourceId}}
+            parPlatformPrimaryLocation=${{steps.get_resources.outputs.platformPrimaryLocation}}
           deploymentName: deploy_custPolAssign_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -1334,6 +1349,9 @@ jobs:
               az account set -s "${{env.MgmtSubId}}"
               logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
               logAnalyticsWorkspaceResourceId=$(az monitor log-analytics workspace show --resource-group ${{ env.LoggingResourceGroupName }} --name $logAnalyticsWorkspaceName --query id)
+              logStorageAccountResourceId=$(az storage account list --resource-group rg-alz-canary-logging-001 --query "[?contains(name,'sa')&&contains(name,'log') ].id" --output tsv)
+              networkWatcherResourceId=$(az network watcher list --query "[].id" --output tsv)
+              platformPrimaryLocation=$(jq -r .parameters.parLocation.value infra-as-code/bicep/modules/logging/parameters/customLogging.parameters.${{inputs.environment}}.json)
               az account set -s "${{env.ConnectivitySubId}}"
               hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
               hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
@@ -1341,6 +1359,12 @@ jobs:
               echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
               echo "$logAnalyticsWorkspaceResourceId"
               echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
+              echo "$logStorageAccountResourceId"
+              echo "logStorageAccountResourceId=$logStorageAccountResourceId" >> "$GITHUB_OUTPUT"
+              echo "$networkWatcherResourceId"
+              echo "networkWatcherResourceId=$networkWatcherResourceId" >> "$GITHUB_OUTPUT"
+              echo "$platformPrimaryLocation"
+              echo "platformPrimaryLocation=$platformPrimaryLocation" >> "$GITHUB_OUTPUT"
         - name: Deploy Custom Policy Assignment - Deployment
           id: deploy_custPolAssignment_deployment
           uses: azure/arm-deploy@v2
@@ -1354,6 +1378,9 @@ jobs:
               parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
               parMsDefenderForCloudEmailSecurityContact=${{env.DefenderForCloudEmailSecurityContact}}
               parLogAnalyticsWorkspaceResourceId=${{ steps.get_resources.outputs.logAnalyticsWorkspaceResourceId}}
+              parLogStorageAccountResourceId=${{steps.get_resources.outputs.logStorageAccountResourceId}}
+              parNetworkWatcherResourceId=${{steps.get_resources.outputs.networkWatcherResourceId}}
+              parPlatformPrimaryLocation=${{steps.get_resources.outputs.platformPrimaryLocation}}
             deploymentName: deploy_custPolAssign-deployment${{ env.runNumber }}
             failOnStdErr: false
   validate_preview_identityNetwork_rg:

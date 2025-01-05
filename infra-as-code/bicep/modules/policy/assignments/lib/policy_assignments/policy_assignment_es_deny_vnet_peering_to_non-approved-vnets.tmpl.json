@@ -12,7 +12,7 @@
 	  },		  
       "effect": {
         "value": "Deny"
-      },
+      }
     },
     "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/Deny-VNET-Peering-To-Non-Approved-VNETs",
     "scope": null,

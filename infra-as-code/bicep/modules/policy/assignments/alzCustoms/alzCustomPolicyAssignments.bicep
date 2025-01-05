@@ -60,7 +60,7 @@ param parTelemetryOptOut bool = false
 param parMsDefenderForCloudEmailSecurityContact string = 'security_contact@replace_me.com'
 
 @description('Location of Log Analytics Workspace & Automation Account.')
-param parLogAnalyticsWorkSpaceAndAutomationAccountLocation string = 'eastus'
+param parLogAnalyticsWorkSpaceAndAutomationAccountLocation string = 'germanywestcentral'
 
 @description('Resource ID of Log Analytics Workspace.')
 param parLogAnalyticsWorkspaceResourceId string = ''
@@ -68,6 +68,14 @@ param parLogAnalyticsWorkspaceResourceId string = ''
 @description('Disable all default ALZ policies.')
 param parDisableAlzDefaultPolicies bool = false
 
+@description('Location of Log Analytics Workspace & Automation Account.')
+param parPlatformPrimaryLocation string = 'germanywestcentral'
+
+@description('Resource ID of Logging Storage Account.')
+param parLogStorageAccountResourceId string = ''
+
+@description('Resource ID of Network Watcher Resource Id.')
+param parNetworkWatcherResourceId string = ''
 
 // **Variables**
 // Orchestration Module Variables
@@ -82,6 +90,8 @@ var varModuleDeploymentNames = {
     modPolicyAssignmentIntRootDeployBlobServicesDiagSettingsToLogAnalytics: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployBlobServicesDiagSettingsToLogAnalytics-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentLzsCorpDenyPrivateDNSZones: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyPrivateDNSZones-corp-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyVnetPeeringtoNonApprovedVnets-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolicyAssignmentPlatformDeployVnetFlowLog: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployVnetFlowLog-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+
 
 
 }
@@ -109,6 +119,10 @@ var varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics = {
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deploy_blob_diag_setting.tmpl.json')
 }
 
+var varPolicyAssignmentDeployVnetFlowLog = {
+  definitionId: '/providers/microsoft.authorization/policydefinitions/cd6f7aff-2845-4dab-99f2-6d1754a754b0'
+  libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deploy_vnet_flow_logs.tmpl.json')
+}
 
 // RBAC Role Definitions Variables - Used For Policy Assignments
 var varRbacRoleDefinitionIds = {
@@ -249,6 +263,32 @@ module modPolicyAssignmentIntRootDeployResourceDiag '../../../policy/assignments
 }
 
 // Modules - Policy Assignments - Platform Management Group
+// Module - Policy Assignment - Deploy-Vnet-Flow-Logs
+module modPolicyAssignmentPlatformDeployVnetFlowLogs '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployVnetFlowLog.libDefinition.name)) {
+  scope: managementGroup(varManagementGroupIds.platformIdentity)
+  name: varModuleDeploymentNames.modPolicyAssignmentPlatformDeployVnetFlowLog
+  params: {
+    parPolicyAssignmentDefinitionId: varPolicyAssignmentDeployVnetFlowLog.definitionId
+    parPolicyAssignmentName: varPolicyAssignmentDeployVnetFlowLog.libDefinition.name
+    parPolicyAssignmentDisplayName: varPolicyAssignmentDeployVnetFlowLog.libDefinition.properties.displayName
+    parPolicyAssignmentDescription: varPolicyAssignmentDeployVnetFlowLog.libDefinition.properties.description
+    parPolicyAssignmentParameters: varPolicyAssignmentDeployVnetFlowLog.libDefinition.properties.parameters
+    parPolicyAssignmentParameterOverrides: { 
+      vnetRegion: {
+        value: parPlatformPrimaryLocation
+      }
+      storageId: {
+        value: parLogStorageAccountResourceId
+      }
+      networkWatcherName: {
+        value: parNetworkWatcherResourceId
+      }
+    }
+    parPolicyAssignmentIdentityType: varPolicyAssignmentDeployVnetFlowLog.libDefinition.identity.type
+    parPolicyAssignmentEnforcementMode: parDisableAlzCustomPolicies ? 'DoNotEnforce' : varPolicyAssignmentDeployVnetFlowLog.libDefinition.properties.enforcementMode
+    parTelemetryOptOut: parTelemetryOptOut
+  }
+}
 
 
 // Modules - Policy Assignments - Connectivity Management Group
