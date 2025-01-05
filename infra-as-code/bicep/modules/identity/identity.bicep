@@ -218,8 +218,8 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
     imageReference: {
       offer: 'WindowsServer'
       publisher: 'MicrosoftWindowsServer'
-      //sku: '2025-datacenter-azure-edition-smalldisk'
-      sku: '2022-datacenter-azure-edition-smalldisk'
+      sku: '2025-datacenter-azure-edition-smalldisk'
+       //sku: '2022-datacenter-azure-edition-smalldisk'
       version: 'latest'
     }
     nicConfigurations: [
