@@ -105,6 +105,12 @@ Configuration Deploy-DomainServices
             Name = "RSAT-AD-AdminCenter"
             DependsOn = "[WindowsFeature]InstallADDSTools"
         }
+
+        OpticalDiskDriveLetter SetFirstOpticalDiskDriveLetterToZ
+        {
+            DiskId      = 1
+            DriveLetter = 'Z'
+        }
         WaitForDisk ADDataDisk
         {
              DiskId = $ADDiskId
@@ -170,4 +176,5 @@ function Get-NetBIOSName {
         }
     }
 }
+
 
