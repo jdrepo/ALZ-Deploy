@@ -271,19 +271,19 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
   }
 }
 
-module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main.bicep' = {
-  name: '${_dep}-prepare-disks-dc1'
-  dependsOn: [
-    modCopyDeployArtifacts2SaScript
-  ]
-  params: {
-    location: parLocation
-    tags: parTags
-    runCommandName: 'PrepareDisks'
-    vmName: modDc1.outputs.name
-    scriptUri: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/prepareDisks.ps1'
-  }
-}
+// module modPrepareDisksDc1 '../../modules/Compute/virtual-machine/runcommand/main.bicep' = {
+//   name: '${_dep}-prepare-disks-dc1'
+//   dependsOn: [
+//     modCopyDeployArtifacts2SaScript
+//   ]
+//   params: {
+//     location: parLocation
+//     tags: parTags
+//     runCommandName: 'PrepareDisks'
+//     vmName: modDc1.outputs.name
+//     scriptUri: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/prepareDisks.ps1'
+//   }
+// }
 
 resource resSaDeployArtifacts 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
   dependsOn: [
@@ -298,7 +298,8 @@ resource resSaDeployArtifacts 'Microsoft.Storage/storageAccounts@2023-05-01' exi
 
 module modDscDeployAds './dsc-dc.bicep' = {
   name: '${_dep}-dsc-deploy-ads'
-  dependsOn: [modPrepareDisksDc1,modCopyDeployArtifacts2SaScript]
+  //dependsOn: [modPrepareDisksDc1,modCopyDeployArtifacts2SaScript]
+  dependsOn: [modCopyDeployArtifacts2SaScript]
   params: {
     location: parLocation
     publisher: 'Microsoft.Powershell'
@@ -316,8 +317,10 @@ module modDscDeployAds './dsc-dc.bicep' = {
       }
       configurationArguments: {
         domainFQDN: varActiveDirectoryDomainName
-        ADDSFilePath: 'E:'
+        ADDSFilePath: 'E:\\'
+        ADDiskId: 2
         DNSForwarder: ['168.63.129.16']
+        ForestMode: 'WinThreshold'
       }
     }
     adminPassword: resKv.getSecret('${varDc1Name}-password')

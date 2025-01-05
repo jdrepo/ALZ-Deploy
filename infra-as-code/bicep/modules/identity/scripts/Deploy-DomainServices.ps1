@@ -1,4 +1,4 @@
-# 
+﻿# 
 
 # Install-PackageProvider -Name NuGet -Force
 # Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
@@ -7,6 +7,7 @@
 # Install-Module -name ComputerManagementDsc -force
 # Install-Module -name NetworkingDsc -force
 # Install-Module -Name DnsServerDsc -force
+# Install-Module -Name StorageDsc -force
 # Publish-AzVMDscConfiguration ".\Deploy-DomainServices.ps1" -OutputArchivePath ".\Deploy-DomainServices.ps1.zip" -Force
 
 Configuration Deploy-DomainServices
@@ -23,6 +24,12 @@ Configuration Deploy-DomainServices
         [String] $ADDSFilePath = "C:\Windows",
 
         [Parameter()]
+        [int] $ADDiskId = 0,
+
+        [Parameter()]
+        [String] $ForestMode = "WinThreshold",
+
+        [Parameter()]
         [Array] $DNSForwarder = @()
     )
 
@@ -31,6 +38,7 @@ Configuration Deploy-DomainServices
     Import-DscResource -ModuleName 'ComputerManagementDsc'
     Import-DscResource -ModuleName 'NetworkingDsc'
     Import-DscResource -ModuleName 'DnsServerDsc'
+    Import-DscResource -ModuleName 'StorageDsc'
 
     # Create the NetBIOS name and domain credentials based on the domain FQDN
     [String] $domainNetBIOSName = (Get-NetBIOSName -DomainFQDN $domainFQDN)
@@ -97,13 +105,25 @@ Configuration Deploy-DomainServices
             Name = "RSAT-AD-AdminCenter"
             DependsOn = "[WindowsFeature]InstallADDSTools"
         }
+        WaitForDisk ADDataDisk
+        {
+             DiskId = $ADDiskId
+             RetryIntervalSec = 60
+             RetryCount = 60
+        }
+
+        Disk ADDataDisk {
+            DiskId  = $ADDiskId
+            DriveLetter = $ADDSFilePath.Split(":")[0]
+            DependsOn   = "[WaitForDisk]ADDataDisk"
+        }
 
         ADDomain CreateADForest
         {
             DomainName = $domainFQDN
             Credential = $domainCredential
             SafemodeAdministratorPassword = $domainCredential
-            ForestMode = 'WinThreshold'
+            ForestMode = $ForestMode
             DatabasePath = "$ADDSFilePath\NTDS"
             LogPath = "$ADDSFilePath\NTDS"
             SysvolPath = "$ADDSFilePath\SYSVOL"
@@ -150,3 +170,4 @@ function Get-NetBIOSName {
         }
     }
 }
+
