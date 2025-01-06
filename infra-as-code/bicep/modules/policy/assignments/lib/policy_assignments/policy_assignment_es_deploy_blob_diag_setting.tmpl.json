@@ -4,7 +4,7 @@
 	"apiVersion": "2024-04-01",
 	"properties": {
 		"description": "Deploy Diagnostic Settings for Blob Services to Log Analytics workspace",
-		"displayName": "Deploy Diagnostic Settings for Blob Services",
+		"displayName": "Deploy Diagnostic Settings for Blob Services - custom",
 		"notScopes": [],
 		"parameters": {
 			"effect": {
