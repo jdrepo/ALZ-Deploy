@@ -126,7 +126,7 @@ var varPolicyAssignmentDeployVnetFlowLog = {
 }
 
 var varPolicyAssignAuditFlowLogsVnet = {
-  definitionId: '/providers/microsoft.authorization/policydefinitions/130fb88f-0fc9-4678-bfe1-31022d71c7d5'
+  definitionId: '/providers/Microsoft.Authorization/policyDefinitions/4c3c6c5f-0d47-4402-99b8-aa543dd8bcee'
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_audit_flow_logs_vnets.tmpl.json')
 }
 

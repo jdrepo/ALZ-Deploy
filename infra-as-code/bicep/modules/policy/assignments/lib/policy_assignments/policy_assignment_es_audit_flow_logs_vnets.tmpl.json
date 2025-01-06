@@ -11,7 +11,7 @@
         "value": "Audit"
       }
     },
-    "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/130fb88f-0fc9-4678-bfe1-31022d71c7d5",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/4c3c6c5f-0d47-4402-99b8-aa543dd8bcee",
     "scope": null,
     "enforcementMode": "Default"
   },
