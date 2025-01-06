@@ -88,6 +88,7 @@ var varDeploymentNameWrappers = {
 var varModuleDeploymentNames = {
     modPolicyAssignmentIntRootDeployMdfcConfig: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployMDFCConfig-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIntRootDeployBlobServicesDiagSettingsToLogAnalytics: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployBlobServicesDiagSettingsToLogAnalytics-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolicyAssignmentIntRootAuditFlowLogsVnet: take('${varDeploymentNameWrappers.basePrefix}-polAssi-auditFlowLogsVnet-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentLzsCorpDenyPrivateDNSZones: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyPrivateDNSZones-corp-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyVnetPeeringtoNonApprovedVnets-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentPlatformDeployVnetFlowLog: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployVnetFlowLog-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
@@ -122,6 +123,11 @@ var varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics = {
 var varPolicyAssignmentDeployVnetFlowLog = {
   definitionId: '/providers/microsoft.authorization/policydefinitions/cd6f7aff-2845-4dab-99f2-6d1754a754b0'
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deploy_vnet_flow_logs.tmpl.json')
+}
+
+var varPolicyAssignAuditFlowLogsVnet = {
+  definitionId: '/providers/microsoft.authorization/policydefinitions/130fb88f-0fc9-4678-bfe1-31022d71c7d5'
+  libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_audit_flow_logs_vnets.tmpl.json')
 }
 
 // RBAC Role Definitions Variables - Used For Policy Assignments
@@ -238,7 +244,7 @@ module modPolicyAssignmentIntRootDeployMdfcConfig '../../../policy/assignments/p
 }
 
 // Module - Policy Assignment - Deploy-Blob-Diag-Setting
-module modPolicyAssignmentIntRootDeployResourceDiag '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.libDefinition.name)) {
+module modPolicyAssignmentIntRootDeployBlobServicesDiagSettingsToLogAnalytics '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployBlobServicesDiagSettingsToLogAnalytics.libDefinition.name)) {
   scope: managementGroup(varManagementGroupIds.intRoot)
   name: varModuleDeploymentNames.modPolicyAssignmentIntRootDeployBlobServicesDiagSettingsToLogAnalytics
   params: {
@@ -261,6 +267,23 @@ module modPolicyAssignmentIntRootDeployResourceDiag '../../../policy/assignments
     parTelemetryOptOut: parTelemetryOptOut
   }
 }
+
+// Module - Policy Assignment - Audit-Flow-Logs-Vnet
+module modPolicyAssignmentIntRootAuditFlowLogsVnet '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignAuditFlowLogsVnet.libDefinition.name)) {
+  scope: managementGroup(varManagementGroupIds.intRoot)
+  name: varModuleDeploymentNames.modPolicyAssignmentIntRootAuditFlowLogsVnet
+  params: {
+    parPolicyAssignmentDefinitionId: varPolicyAssignAuditFlowLogsVnet.definitionId
+    parPolicyAssignmentName: varPolicyAssignAuditFlowLogsVnet.libDefinition.name
+    parPolicyAssignmentDisplayName: varPolicyAssignAuditFlowLogsVnet.libDefinition.properties.displayName
+    parPolicyAssignmentDescription: varPolicyAssignAuditFlowLogsVnet.libDefinition.properties.description
+    parPolicyAssignmentParameters: varPolicyAssignAuditFlowLogsVnet.libDefinition.properties.parameters
+    parPolicyAssignmentIdentityType: varPolicyAssignAuditFlowLogsVnet.libDefinition.identity.type
+    parPolicyAssignmentEnforcementMode: parDisableAlzDefaultPolicies ? 'DoNotEnforce' : varPolicyAssignAuditFlowLogsVnet.libDefinition.properties.enforcementMode
+    parTelemetryOptOut: parTelemetryOptOut
+  }
+}
+
 
 // Modules - Policy Assignments - Platform Management Group
 // Module - Policy Assignment - Deploy-Vnet-Flow-Logs
