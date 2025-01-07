@@ -7,7 +7,7 @@
     "displayName": "Every virtual network should have flow logs enabled - custom",
     "notScopes": [],
     "parameters": {
-      "EffectDisks": {
+      "effect": {
         "value": "Audit"
       }
     },
