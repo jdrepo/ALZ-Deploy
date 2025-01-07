@@ -66,6 +66,12 @@
 		},
 		"parWALinuxVersion": {
 			"value": "2.11.1.4"
+		},
+		"parOpnSenseTrustedSubnetNsgName": {
+		  "value": "nsg-trusted-gwc-opnsense-alz-canary"
+		},
+		"parOpnSenseUntrustedSubnetNsgName": {
+		  "value": "nsg-untrusted-gwc-opnsense-alz-canary"
 		}
 	}
 }

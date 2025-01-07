@@ -61,6 +61,18 @@ param parUntrustedSubnetName string = 'OPNS-Untrusted'
 @sys.description('Trusted-Subnet Name.')
 param parTrustedSubnetName string = 'OPNS-Trusted'
 
+@sys.description('Untrusted-Subnet Address Space.')
+param parUntrustedSubnetCIDR string
+
+@sys.description('Trusted-Subnet Address Space.')
+param parTrustedSubnetCIDR string 
+
+@sys.description('Name for OPNSense Trusted Subnet NSG.')
+param parOpnSenseTrustedSubnetNsgName string 
+
+@sys.description('Name for OPNSense Untrusted Subnet NSG.')
+param parOpnSenseUntrustedSubnetNsgName string
+
 @sys.description('Name of Route table to create for the default route of Hub.')
 param parHubRouteTableName string = '${parCompanyPrefix}-hub-routetable'
 
@@ -110,6 +122,7 @@ var varTrustedNicName = 'nic-${parLocationCode}-trusted-${parVirtualMachineName}
 var varUntrustedNicName = 'nic-${parLocationCode}-untrusted-${parVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varDesUserAssignedIdentityName = 'id-${parLocationCode}-des-${parCompanyPrefix}-${varEnvironment}'
 var varDesName = 'des-${parLocationCode}-001-${parCompanyPrefix}-${varEnvironment}'
+
 
 var varNsgName = 'nsg-${parLocationCode}-opnsense-${parCompanyPrefix}-${varEnvironment}'
 
@@ -177,6 +190,105 @@ resource resConnectivityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-1
 }
 
 /*** NEW RESOURCES ***/
+
+module modNsgOpnsTrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.0' =  {
+  name: 'deploy-nsg-OPNS-Trusted-Subnet'
+  params: {
+    name: parOpnSenseTrustedSubnetNsgName
+    tags: parTags
+    securityRules: [
+      {
+        name: 'In-Any'
+        properties: {
+          priority: 4096
+          sourceAddressPrefix: '*'
+          protocol: '*'
+          destinationPortRange: '*'
+          access: 'Allow'
+          direction: 'Inbound'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+        }
+      }
+      {
+        name: 'Out-Any'
+        properties: {
+          priority: 4096
+          sourceAddressPrefix: '*'
+          protocol: '*'
+          destinationPortRange: '*'
+          access: 'Allow'
+          direction: 'Outbound'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+        }
+      }
+    ]
+  }
+}
+
+module modNsgOpnsUntrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.0' = {
+  name: 'deploy-nsg-OPNS-Untrusted-Subnet'
+  params: {
+    name: parOpnSenseUntrustedSubnetNsgName
+    tags: parTags
+    securityRules: [
+      {
+        name: 'In-Any'
+        properties: {
+          priority: 4096
+          sourceAddressPrefix: '*'
+          protocol: '*'
+          destinationPortRange: '*'
+          access: 'Allow'
+          direction: 'Inbound'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+        }
+      }
+      {
+        name: 'Out-Any'
+        properties: {
+          priority: 4096
+          sourceAddressPrefix: '*'
+          protocol: '*'
+          destinationPortRange: '*'
+          access: 'Allow'
+          direction: 'Outbound'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+        }
+      }
+    ]
+  }
+}
+module modTrustedSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
+  name: '${_dep}-trusted-subnet'
+  params: {
+    name: parTrustedSubnetName
+    virtualNetworkName: resConnectivityVirtualNetwork.name
+    addressPrefix: parTrustedSubnetCIDR
+    networkSecurityGroupResourceId: modNsgOpnsTrustedSubnet.outputs.resourceId
+    serviceEndpoints: [
+      'Microsoft.Storage'
+      'Microsoft.KeyVault'
+    ]
+  }
+}
+
+module modUntrustedSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
+  name: '${_dep}-untrusted-subnet'
+  params: {
+    name: parUntrustedSubnetName
+    virtualNetworkName: resConnectivityVirtualNetwork.name
+    addressPrefix: parUntrustedSubnetCIDR
+    networkSecurityGroupResourceId: modNsgOpnsUntrustedSubnet.outputs.resourceId
+    serviceEndpoints: [
+      'Microsoft.Storage'
+      'Microsoft.KeyVault'
+    ]
+  }
+}
 
 
 

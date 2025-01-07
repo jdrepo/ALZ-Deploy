@@ -128,6 +128,7 @@ jobs:
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+          az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           az bicep build --file infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
@@ -842,7 +843,8 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          #template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetwork-validation-${{ env.runNumber }}
@@ -856,7 +858,8 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          #template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetwork-preview-${{ env.runNumber }}
@@ -892,7 +895,8 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          #template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetwork-deployment-${{ env.runNumber }}
