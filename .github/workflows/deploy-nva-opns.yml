@@ -1,4 +1,4 @@
-name: 3. Deploy NVA OpnSense to ALZ environment 
+name: 2. Deploy NVA OpnSense to ALZ environment 
 
 on:
   workflow_dispatch:
