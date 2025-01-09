@@ -79,13 +79,6 @@ param parHubRouteTableName string = '${parCompanyPrefix}-hub-routetable'
 @sys.description('Switch to enable/disable BGP Propagation on route table.')
 param parDisableBgpRoutePropagation bool = false
 
-@sys.description('Specify Public IP SKU either Basic (lowest cost) or Standard (Required for HA LB)"')
-@allowed([
-  'Basic'
-  'Standard'
-])
-param PublicIPAddressSku string = 'Standard'
-
 @sys.description('URI for Custom OPN Script and Config')
 param parOpnScriptURI string = 'https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense/scripts/'
 
@@ -122,9 +115,6 @@ var varTrustedNicName = 'nic-${parLocationCode}-trusted-${parVirtualMachineName}
 var varUntrustedNicName = 'nic-${parLocationCode}-untrusted-${parVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varDesUserAssignedIdentityName = 'id-${parLocationCode}-des-${parCompanyPrefix}-${varEnvironment}'
 var varDesName = 'des-${parLocationCode}-001-${parCompanyPrefix}-${varEnvironment}'
-
-
-var varNsgName = 'nsg-${parLocationCode}-opnsense-${parCompanyPrefix}-${varEnvironment}'
 
 var varGwcSerialConsoleIps = [
   '20.52.94.114'
@@ -192,7 +182,7 @@ resource resConnectivityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-1
 /*** NEW RESOURCES ***/
 
 module modNsgOpnsTrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.0' =  {
-  name: 'deploy-nsg-OPNS-Trusted-Subnet'
+  name: '${_dep}-nsg-OPNS-Trusted-Subnet'
   params: {
     name: parOpnSenseTrustedSubnetNsgName
     tags: parTags
@@ -228,7 +218,7 @@ module modNsgOpnsTrustedSubnet 'br/public:avm/res/network/network-security-group
 }
 
 module modNsgOpnsUntrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.0' = {
-  name: 'deploy-nsg-OPNS-Untrusted-Subnet'
+  name: '${_dep}-nsg-OPNS-Untrusted-Subnet'
   params: {
     name: parOpnSenseUntrustedSubnetNsgName
     tags: parTags
