@@ -128,7 +128,7 @@ jobs:
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-          az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.bicep
+          az bicep build --file infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep
