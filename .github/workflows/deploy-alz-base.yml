@@ -128,8 +128,7 @@ jobs:
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/logging/logging.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/orchestration/mgDiagSettingsAll/mgDiagSettingsAll.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-          az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
-          az bicep build --file infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
+          az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/orchestration/subPlacementAll/subPlacementAll.bicep
           az bicep build --file ALZ-Bicep/infra-as-code/bicep/modules/policy/assignments/alzDefaults/alzDefaultPolicyAssignments.bicep
@@ -813,9 +812,94 @@ jobs:
             parResourceGroupName=${{ env.HubPrivateDNSResourceGroupName }}
           deploymentName: deploy_privateDnsRg-${{ env.runNumber }}
           failOnStdErr: false
-  validate_preview_hubNetwork:
+  validate_preview_hubNetwork_nva_req:
     runs-on: ubuntu-latest
     needs: [deploy_privatedns_rg]
+    environment: ${{inputs.environment}}
+    name: Deploy Hub Network NVA Requirements - Validation and Preview
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy Hub Network NVA Requirements - Validation
+        id: deploy_hubNetwork_nva_req_validation
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+          deploymentName: deploy-hubNetworkNvaReq-validation-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+      - name: Deploy Hub Network NVA Requirements - Preview
+        id: deploy_hubNetwork_nva_req_preview
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+          deploymentName: deploy-hubNetworkNvaReq-preview-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"   
+  deploy_hubNetwork_nva_req:
+    runs-on: ubuntu-latest
+    needs: [validate_preview_hubNetwork_nva_req]
+    environment: ${{inputs.environment}}
+    name: Deploy Hub Network NVA Requirements - Deployment
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy Hub Network NAV Requirements - Deployment
+        id: deploy_hubNetwork_nva_req_deployment
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+          deploymentName: deploy-hubNetworkNvaReq-deployment-${{ env.runNumber }}
+          failOnStdErr: false
+  validate_preview_hubNetwork:
+    runs-on: ubuntu-latest
+    needs: [deploy_hubNetwork_nva_req]
     environment: ${{inputs.environment}}
     name: Deploy Hub Network - Validation and Preview
     steps:
