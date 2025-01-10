@@ -828,6 +828,8 @@ jobs:
           ref: ${{ env.alzBicepRelease }}
       - name: Show env
         run: env | sort
+      - name: Show inputs
+        run:  echo "${{ toJSON(github.event.inputs) }}"
       - name: Azure Login with OIDC
         uses: azure/login@v2
         with:
@@ -878,6 +880,8 @@ jobs:
           ref: ${{ env.alzBicepRelease }}
       - name: Show env
         run: env | sort
+      - name: Show inputs
+        run:  echo "${{ toJSON(github.event.inputs) }}"
       - name: Azure Login with OIDC
         uses: azure/login@v2
         with:
