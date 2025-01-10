@@ -909,11 +909,11 @@ jobs:
           inlineScript: |
             az account set -s "${{ env.ConnectivitySubId }}"
             opnSenseTrustedSubnetNsgName=$(jq -r .parameters.parOpnSenseTrustedSubnetNsgName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json)
-            opnSenseTrustedSubnetNsgResourceId=$(az network nsg show --resource-group ${{ env.LoggingResourceGroupName }} --name $opnSenseTrustedSubnetNsgName --query id)
+            opnSenseTrustedSubnetNsgResourceId=$(az network nsg show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $opnSenseTrustedSubnetNsgName --query id)
             echo "$opnSenseTrustedSubnetNsgResourceId"
             echo "opnSenseTrustedSubnetNsgResourceId=$opnSenseTrustedSubnetNsgResourceId" >> "$GITHUB_OUTPUT"
             opnSenseUntrustedSubnetNsgName=$(jq -r .parameters.parOpnSenseUntrustedSubnetNsgName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json)
-            opnSenseUntrustedSubnetNsgResourceId=$(az network nsg show --resource-group ${{ env.LoggingResourceGroupName }} --name $opnSenseUntrustedSubnetNsgName --query id)
+            opnSenseUntrustedSubnetNsgResourceId=$(az network nsg show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $opnSenseUntrustedSubnetNsgName --query id)
             echo "$opnSenseUntrustedSubnetNsgResourceId"
             echo "opnSenseUntrustedSubnetNsgResourceId=$opnSenseUntrustedSubnetNsgResourceId" >> "$GITHUB_OUTPUT"
   validate_preview_hubNetwork:
