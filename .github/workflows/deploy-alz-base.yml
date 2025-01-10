@@ -916,8 +916,8 @@ jobs:
             opnSenseUntrustedSubnetNsgResourceId=$(az network nsg show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $opnSenseUntrustedSubnetNsgName --query id)
             echo "$opnSenseUntrustedSubnetNsgResourceId"
             echo "opnSenseUntrustedSubnetNsgResourceId=$opnSenseUntrustedSubnetNsgResourceId" >> "$GITHUB_OUTPUT"
-            jq --arg id "$opnSenseTrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Trusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json)
-            jq --arg id "$opnSenseUntrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Untrusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json)
+            jq --arg id "$opnSenseTrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Trusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+            jq --arg id "$opnSenseUntrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Untrusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json
   validate_preview_hubNetwork:
     runs-on: ubuntu-latest
     needs: [deploy_hubNetwork_nva_req]
