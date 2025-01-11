@@ -918,6 +918,30 @@ jobs:
             echo "opnSenseUntrustedSubnetNsgResourceId=$opnSenseUntrustedSubnetNsgResourceId" >> "$GITHUB_OUTPUT"
             jq --arg id "$opnSenseTrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Trusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
             jq --arg id "$opnSenseUntrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Untrusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          if [[ -n "$(git diff --exit-code)" ]]; then
+            echo "Changes detected."
+            echo "::set-output name=has_changes::true"
+          else
+            echo "No changes detected."
+            echo "::set-output name=has_changes::false"
+          fi
+      - name: Commit and Push Changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          # configure user
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          # stage any file changes to be committed
+          git add .
+
+          # make commit with staged changes
+          git commit -m 'files changed'
+
+          # push the commit back up to source GitHub repository
+          git push
   validate_preview_hubNetwork:
     runs-on: ubuntu-latest
     needs: [deploy_hubNetwork_nva_req]
@@ -948,7 +972,6 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          #template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
