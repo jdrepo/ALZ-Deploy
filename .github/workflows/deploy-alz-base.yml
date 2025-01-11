@@ -916,8 +916,8 @@ jobs:
             opnSenseUntrustedSubnetNsgResourceId=$(az network nsg show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $opnSenseUntrustedSubnetNsgName --query id)
             echo "$opnSenseUntrustedSubnetNsgResourceId"
             echo "opnSenseUntrustedSubnetNsgResourceId=$opnSenseUntrustedSubnetNsgResourceId" >> "$GITHUB_OUTPUT"
-            jq --arg id "$opnSenseTrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Trusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
-            jq --arg id "$opnSenseUntrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Untrusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+            jq --arg id "$opnSenseTrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Trusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json > tmp1.json && mv tmp1.json infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+            jq --arg id "$opnSenseUntrustedSubnetNsgResourceId" '.parameters.parSubnets.value[] | select(.name == "OPNS-Untrusted") | .routeTableId = $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json > tmp2.json && mv tmp2.json infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
       - name: Check for Changes
         id: check_changes
         run: |
