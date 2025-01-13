@@ -844,7 +844,7 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.bicep
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.${{inputs.nva}}.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetworkNvaReq-validation-${{ env.runNumber }}
@@ -858,7 +858,7 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.bicep
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.${{inputs.nva}}.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetworkNvaReq-preview-${{ env.runNumber }}
@@ -896,7 +896,7 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
-          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.bicep
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingNva.${{inputs.nva}}.bicep
           parameters: >-
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetworkNvaReq-deployment-${{ env.runNumber }}
