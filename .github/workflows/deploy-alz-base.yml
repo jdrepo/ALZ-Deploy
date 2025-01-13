@@ -950,6 +950,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
@@ -1001,6 +1003,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
       - name: Checkout ALZ-Bicep Repo
         uses: actions/checkout@v4
         with:
