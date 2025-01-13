@@ -46,13 +46,13 @@
         {
           "name": "OPNS-Untrusted",
           "ipAddressRange": "10.10.251.0/24",
-          "networkSecurityGroupId": "/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/networkSecurityGroups/nsg-untrusted-gwc-opnsense-alz-canary",
+          "networkSecurityGroupId": "",
           "routeTableId": ""
         },
         {
           "name": "OPNS-Trusted",
           "ipAddressRange": "10.10.250.0/24",
-          "networkSecurityGroupId": "/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/networkSecurityGroups/nsg-trusted-gwc-opnsense-alz-canary",
+          "networkSecurityGroupId": "",
           "routeTableId": ""
         }
       ]
