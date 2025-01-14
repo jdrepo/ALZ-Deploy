@@ -58,7 +58,7 @@
       "value": ""
     },
     "parAzBastionEnabled": {
-      "value": true
+      "value": false
     },
     "parAzBastionName": {
       "value": "bas-gwc-alz-canary"
