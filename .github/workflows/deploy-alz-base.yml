@@ -1406,7 +1406,7 @@ jobs:
             networkWatcherResourceId=$(az network watcher list --query "[].id" --output tsv)
             platformPrimaryLocation=$(jq -r .parameters.parLocation.value infra-as-code/bicep/modules/logging/parameters/customLogging.parameters.${{inputs.environment}}.json)
             az account set -s "${{env.ConnectivitySubId}}"
-            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters..${{inputs.nva}}.${{inputs.environment}}.json) 
             hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
             echo "$hubNetworkResourceId"
             echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
@@ -1490,7 +1490,7 @@ jobs:
               networkWatcherResourceId=$(az network watcher list --query "[].id" --output tsv)
               platformPrimaryLocation=$(jq -r .parameters.parLocation.value infra-as-code/bicep/modules/logging/parameters/customLogging.parameters.${{inputs.environment}}.json)
               az account set -s "${{env.ConnectivitySubId}}"
-              hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+              hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json) 
               hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
               echo "$hubNetworkResourceId"
               echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
@@ -1632,7 +1632,7 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az account set -s "${{env.ConnectivitySubId}}"
-            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json) 
             hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
             echo "$hubNetworkResourceId"
             echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
@@ -1695,7 +1695,7 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az account set -s "${{env.ConnectivitySubId}}"
-            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.environment}}.json) 
+            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json) 
             hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
             echo "$hubNetworkResourceId"
             echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
