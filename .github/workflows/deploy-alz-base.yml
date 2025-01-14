@@ -1646,7 +1646,7 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           parameters: >-
-            infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json            
+            infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json            
             parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
           deploymentName: deploy_identityNetwork_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -1661,7 +1661,7 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           parameters: >-
-            infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json    
+            infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json    
             parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
           deploymentName: deploy_identityNetwork_preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -1709,7 +1709,7 @@ jobs:
           resourceGroupName: ${{ env.IdentityNetworkResourceGroupName }}
           template: infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           parameters: >-
-            infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json      
+            infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json      
             parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
           deploymentName: deploy_identityNetwork_deployment-${{ env.runNumber }}
           failOnStdErr: false

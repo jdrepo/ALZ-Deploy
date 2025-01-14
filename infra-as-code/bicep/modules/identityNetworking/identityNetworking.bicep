@@ -129,9 +129,8 @@ var _dep = deployment().name
 
 module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
   name: 'deploy-Identity-VNet-AVM'
-  dependsOn: [
-    modIdentityRouteTable
-  ]
+  dependsOn: !empty(parIdentityRouteTableName) ? [
+     modIdentityRouteTable ] : []
   params: {
     name: parIdentityNetworkName
     location: parLocation
@@ -159,7 +158,7 @@ module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
   }
 }
 
-module modIdentitySubnetNsg 'br/public:avm/res/network/network-security-group:0.5.0' = {
+module modIdentitySubnetNsg 'br/public:avm/res/network/network-security-group:0.5.0' =  {
   name: '${_dep}-identity-subnet1-nsg'
   params: {
     name: parIdentityNsgName
@@ -227,7 +226,7 @@ module modIdentitySubnetNsg 'br/public:avm/res/network/network-security-group:0.
 //   }
 // }
 
-module modIdentityRouteTable 'br/public:avm/res/network/route-table:0.4.0' =  {
+module modIdentityRouteTable 'br/public:avm/res/network/route-table:0.4.0' = if (!empty(parIdentityRouteTableName))  {
   name: '${_dep}-identity-route-table'
   params: {
     name: parIdentityRouteTableName
