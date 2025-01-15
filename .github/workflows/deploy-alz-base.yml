@@ -1149,9 +1149,9 @@ jobs:
         id: get_resources
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.67.0
           inlineScript: |
-            az account set -s 6df8b678-c437-42a8-bb01-f88df1188e8e
+            az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
             dataCollectionRuleVMInsightsName=$(jq -r .parameters.parDataCollectionRuleVMInsightsName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
             dataCollectionRuleChangeTrackingName=$(jq -r .parameters.parDataCollectionRuleChangeTrackingName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
@@ -1162,15 +1162,13 @@ jobs:
             dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleChangeTrackingName --query id )
             dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleMDFCSQLName --query id )
             userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name $userAssignedManagedIdentityName --query id)
-
-            az account set -s c1d4ca0c-0641-4f99-83b8-8a6f2c87a670
-
-            privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
             echo "$logAnalyticsWorkspaceResourceId"
             echo "$dataCollectionRuleVMInsightsId"
             echo "$dataCollectionRuleChangeTrackingResourceId"
             echo "$dataCollectionRuleMDFCSQLId"
             echo "$userAssignedManagedIdentityId"
+            az account set -s "${{ env.ConnectivitySubId }}            
+            privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
             echo "$privateDnsResourceGroupId"
             echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
             echo "dataCollectionRuleVMInsightsId=$dataCollectionRuleVMInsightsId" >> "$GITHUB_OUTPUT"
