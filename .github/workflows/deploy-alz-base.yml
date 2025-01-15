@@ -1167,7 +1167,7 @@ jobs:
             echo "$dataCollectionRuleChangeTrackingResourceId"
             echo "$dataCollectionRuleMDFCSQLId"
             echo "$userAssignedManagedIdentityId"
-            az account set -s "${{ env.ConnectivitySubId }}            
+            az account set -s "${{ env.ConnectivitySubId }}"            
             privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
             echo "$privateDnsResourceGroupId"
             echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
