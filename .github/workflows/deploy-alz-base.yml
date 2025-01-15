@@ -567,7 +567,7 @@ jobs:
         id: get_resources
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.67.0
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
@@ -627,7 +627,7 @@ jobs:
         id: get_resources
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.67.0
           inlineScript: |
             az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
