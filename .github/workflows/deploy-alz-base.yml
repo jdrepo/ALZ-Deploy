@@ -1246,7 +1246,7 @@ jobs:
           # "az account set -s "${{env.MgmtSubId}}"
           # "az account set -s "${{ env.ConnectivitySubId }}"
           inlineScript: |
-            az account set -s "${{env.MgmtSubId}}
+            az account set -s "${{env.MgmtSubId}}"
             logAnalyticsWorkspaceName=$(jq -r .parameters.parLogAnalyticsWorkspaceName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
             dataCollectionRuleVMInsightsName=$(jq -r .parameters.parDataCollectionRuleVMInsightsName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
             dataCollectionRuleChangeTrackingName=$(jq -r .parameters.parDataCollectionRuleChangeTrackingName.value infra-as-code/bicep/modules/logging/parameters/logging.parameters.${{inputs.environment}}.json)
@@ -1257,7 +1257,7 @@ jobs:
             dataCollectionRuleChangeTrackingResourceId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleChangeTrackingName --query id )
             dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleMDFCSQLName --query id )
             userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name $userAssignedManagedIdentityName --query id)
-            az account set -s "${{ env.ConnectivitySubId }}
+            az account set -s "${{ env.ConnectivitySubId }}"
             privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
             echo "$logAnalyticsWorkspaceResourceId"
             echo "$dataCollectionRuleVMInsightsId"
