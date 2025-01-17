@@ -1,5 +1,5 @@
 {
-  "name": "Audit-Flow-Logs-Vnet",
+  "name": "Audit-Traffic-Analytics",
   "type": "Microsoft.Authorization/policyAssignments",
   "apiVersion": "2024-04-01",
   "properties": {
