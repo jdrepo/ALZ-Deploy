@@ -89,9 +89,11 @@ var varModuleDeploymentNames = {
     modPolicyAssignmentIntRootDeployMdfcConfig: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployMDFCConfig-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIntRootDeployBlobServicesDiagSettingsToLogAnalytics: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployBlobServicesDiagSettingsToLogAnalytics-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIntRootAuditFlowLogsVnet: take('${varDeploymentNameWrappers.basePrefix}-polAssi-auditFlowLogsVnet-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolicyAssignmentIntRootAuditTrafficAnalytics: take('${varDeploymentNameWrappers.basePrefix}-polAssi-auditTrafficAnalytics-intRoot-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentLzsCorpDenyPrivateDNSZones: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyPrivateDNSZones-corp-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyVnetPeeringtoNonApprovedVnets-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentPlatformDeployVnetFlowLog: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployVnetFlowLog-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolicyAssignmentPlatformDeployTrafficAnalytics: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployTrafficAnalytics-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
 
 
 
@@ -128,6 +130,16 @@ var varPolicyAssignmentDeployVnetFlowLog = {
 var varPolicyAssignAuditFlowLogsVnet = {
   definitionId: '/providers/Microsoft.Authorization/policyDefinitions/4c3c6c5f-0d47-4402-99b8-aa543dd8bcee'
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_audit_flow_logs_vnets.tmpl.json')
+}
+
+var varPolicyAssignAuditTrafficAnalytics = {
+  definitionId: '/providers/Microsoft.Authorization/policyDefinitions/2f080164-9f4d-497e-9db6-416dc9f7b48a'
+  libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_audit_traffic_analytics.tmpl.json')
+}
+
+var varPolicyAssignmentDeployTrafficAnalytics = {
+  definitionId: '/providers/Microsoft.Authorization/policyDefinitions/3e9965dc-cc13-47ca-8259-a4252fd0cf7b'
+  libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deploy_traffic_analytics.tmpl.json')
 }
 
 // RBAC Role Definitions Variables - Used For Policy Assignments
@@ -284,6 +296,22 @@ module modPolicyAssignmentIntRootAuditFlowLogsVnet '../../../policy/assignments/
   }
 }
 
+// Module - Policy Assignment - Audit-Traffic-Analytics
+
+module modPolicyAssignmentIntRootAuditTrafficAnalytics '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignAuditTrafficAnalytics.libDefinition.name)) {
+  scope: managementGroup(varManagementGroupIds.intRoot)
+  name: varModuleDeploymentNames.modPolicyAssignmentIntRootAuditTrafficAnalytics
+  params: {
+    parPolicyAssignmentDefinitionId: varPolicyAssignAuditTrafficAnalytics.definitionId
+    parPolicyAssignmentName: varPolicyAssignAuditTrafficAnalytics.libDefinition.name
+    parPolicyAssignmentDisplayName: varPolicyAssignAuditTrafficAnalytics.libDefinition.properties.displayName
+    parPolicyAssignmentDescription: varPolicyAssignAuditTrafficAnalytics.libDefinition.properties.description
+    parPolicyAssignmentParameters: varPolicyAssignAuditTrafficAnalytics.libDefinition.properties.parameters
+    parPolicyAssignmentIdentityType: varPolicyAssignAuditTrafficAnalytics.libDefinition.identity.type
+    parPolicyAssignmentEnforcementMode: parDisableAlzDefaultPolicies ? 'DoNotEnforce' : varPolicyAssignAuditTrafficAnalytics.libDefinition.properties.enforcementMode
+    parTelemetryOptOut: parTelemetryOptOut
+  }
+}
 
 // Modules - Policy Assignments - Platform Management Group
 // Module - Policy Assignment - Deploy-Vnet-Flow-Logs
@@ -309,6 +337,42 @@ module modPolicyAssignmentPlatformDeployVnetFlowLogs '../../../policy/assignment
     }
     parPolicyAssignmentIdentityType: varPolicyAssignmentDeployVnetFlowLog.libDefinition.identity.type
     parPolicyAssignmentEnforcementMode: parDisableAlzCustomPolicies ? 'DoNotEnforce' : varPolicyAssignmentDeployVnetFlowLog.libDefinition.properties.enforcementMode
+    parPolicyAssignmentIdentityRoleDefinitionIds: [
+      varRbacRoleDefinitionIds.contributor
+    ]
+    parTelemetryOptOut: parTelemetryOptOut
+  }
+}
+
+// Module - Policy Assignment - Deploy-Vnet-Flow-Logs
+module modPolicyAssignmentPlatformDeployTrafficAnalytics '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployTrafficAnalytics.libDefinition.name)) {
+  scope: managementGroup(varManagementGroupIds.platform)
+  name: varModuleDeploymentNames.modPolicyAssignmentPlatformDeployTrafficAnalytics
+  params: {
+    parPolicyAssignmentDefinitionId: varPolicyAssignmentDeployTrafficAnalytics.definitionId
+    parPolicyAssignmentName: varPolicyAssignmentDeployTrafficAnalytics.libDefinition.name
+    parPolicyAssignmentDisplayName: varPolicyAssignmentDeployTrafficAnalytics.libDefinition.properties.displayName
+    parPolicyAssignmentDescription: varPolicyAssignmentDeployTrafficAnalytics.libDefinition.properties.description
+    parPolicyAssignmentParameters: varPolicyAssignmentDeployTrafficAnalytics.libDefinition.properties.parameters
+    parPolicyAssignmentParameterOverrides: { 
+      vnetRegion: {
+        value: parPlatformPrimaryLocation
+      }
+      storageId: {
+        value: parLogStorageAccountResourceId
+      }
+      networkWatcherName: {
+        value: parNetworkWatcherResourceId
+      }
+      workspaceResourceId: {
+        value: parLogAnalyticsWorkspaceResourceId
+      }
+      workspaceRegion: {
+        value: parPlatformPrimaryLocation
+      }
+    }
+    parPolicyAssignmentIdentityType: varPolicyAssignmentDeployTrafficAnalytics.libDefinition.identity.type
+    parPolicyAssignmentEnforcementMode: parDisableAlzCustomPolicies ? 'DoNotEnforce' : varPolicyAssignmentDeployTrafficAnalytics.libDefinition.properties.enforcementMode
     parPolicyAssignmentIdentityRoleDefinitionIds: [
       varRbacRoleDefinitionIds.contributor
     ]
