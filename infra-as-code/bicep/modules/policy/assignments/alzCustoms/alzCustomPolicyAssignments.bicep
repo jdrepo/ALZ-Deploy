@@ -77,6 +77,9 @@ param parLogStorageAccountResourceId string = ''
 @description('Resource ID of Network Watcher Resource Id.')
 param parNetworkWatcherResourceId string = ''
 
+@description('Specify the minimum number of days that a secret should remain usable prior to expiration.')
+param parSecretsMinimumDaysBeforeExpiration int = 90
+
 // **Variables**
 // Orchestration Module Variables
 var varDeploymentNameWrappers = {
@@ -94,6 +97,7 @@ var varModuleDeploymentNames = {
     modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets: take('${varDeploymentNameWrappers.basePrefix}-polAssi-denyVnetPeeringtoNonApprovedVnets-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentPlatformDeployVnetFlowLog: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployVnetFlowLog-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentPlatformDeployTrafficAnalytics: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployTrafficAnalytics-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolicyAssignmentIdentAuditKVSecretExpire: take('${varDeploymentNameWrappers.basePrefix}-polAssi-auditKVSecretExpire-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
 
 
 
@@ -140,6 +144,11 @@ var varPolicyAssignAuditTrafficAnalytics = {
 var varPolicyAssignmentDeployTrafficAnalytics = {
   definitionId: '/providers/Microsoft.Authorization/policyDefinitions/3e9965dc-cc13-47ca-8259-a4252fd0cf7b'
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deploy_traffic_analytics.tmpl.json')
+}
+
+var varPolicyAssignmentAuditKVSecretExpire = {
+  definitionId: '/providers/Microsoft.Authorization/policyDefinitions/b0eb591a-5e70-4534-a8bf-04b9c489584a'
+  libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_audit_keyvault_secret_expiration.tmpl.json')
 }
 
 // RBAC Role Definitions Variables - Used For Policy Assignments
@@ -406,6 +415,26 @@ module modPolicyAssignmentIdentDenyVnetPeeringNonApprovedVNets '../../../policy/
   }
 }
 
+// Module - Policy Assignment - Audit-KV-Secret-Expire
+module modPolicyAssignmentIdentAuditKeyVaultSecretExpiration '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentAuditKVSecretExpire.libDefinition.name)) {
+  scope: managementGroup(varManagementGroupIds.platformIdentity)
+  name: varModuleDeploymentNames.modPolicyAssignmentIdentAuditKVSecretExpire
+  params: {
+    parPolicyAssignmentDefinitionId: varPolicyAssignmentAuditKVSecretExpire.definitionId
+    parPolicyAssignmentName: varPolicyAssignmentAuditKVSecretExpire.libDefinition.name
+    parPolicyAssignmentDisplayName: varPolicyAssignmentAuditKVSecretExpire.libDefinition.properties.displayName
+    parPolicyAssignmentDescription: varPolicyAssignmentAuditKVSecretExpire.libDefinition.properties.description
+    parPolicyAssignmentParameters: varPolicyAssignmentAuditKVSecretExpire.libDefinition.properties.parameters
+    parPolicyAssignmentParameterOverrides: { 
+      minimumDaysBeforeExpiration: {
+        value: parSecretsMinimumDaysBeforeExpiration
+      }
+    }
+    parPolicyAssignmentIdentityType: varPolicyAssignmentAuditKVSecretExpire.libDefinition.identity.type
+    parPolicyAssignmentEnforcementMode: parDisableAlzDefaultPolicies ? 'DoNotEnforce' : varPolicyAssignmentAuditKVSecretExpire.libDefinition.properties.enforcementMode
+    parTelemetryOptOut: parTelemetryOptOut
+  }
+}
 
 
 // Modules - Policy Assignments - Management Management Group

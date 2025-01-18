@@ -38,6 +38,9 @@
     "parNetworkWatcherResourceId": {
       "value": ""
     },
+    "parSecretsMinimumDaysBeforeExpiration": {
+      "value": 30
+    },
     "parExcludedPolicyAssignments": {
       "value": []
     },
