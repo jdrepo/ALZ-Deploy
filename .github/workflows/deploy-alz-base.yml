@@ -1401,7 +1401,7 @@ jobs:
           subscriptionId: ${{ env.LoggingSubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.LoggingResourceGroupName }}
-          template: /infra-as-code/bicep/modules/logging/customLogging.bicep
+          template: infra-as-code/bicep/modules/logging/customLogging.bicep
           parameters: >-
             infra-as-code/bicep/modules/logging/parameters/customLogging.parameters.${{inputs.environment}}.json
           deploymentName: deploy_custom_logging-validation-${{ env.runNumber }}
@@ -1415,7 +1415,7 @@ jobs:
           subscriptionId: ${{ env.LoggingSubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.LoggingResourceGroupName }}
-          template: /infra-as-code/bicep/modules/logging/customLogging.bicep
+          template: infra-as-code/bicep/modules/logging/customLogging.bicep
           parameters: >-
             infra-as-code/bicep/modules/logging/parameters/customLogging.parameters.${{inputs.environment}}.json
           deploymentName: deploy_custom_logging-preview-${{ env.runNumber }}
@@ -1450,7 +1450,7 @@ jobs:
           subscriptionId: ${{ env.LoggingSubId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.LoggingResourceGroupName }}
-          template: /infra-as-code/bicep/modules/logging/customLogging.bicep
+          template: infra-as-code/bicep/modules/logging/customLogging.bicep
           parameters: >-
             infra-as-code/bicep/modules/logging/parameters/customLogging.parameters.${{inputs.environment}}.json
           deploymentName: deploy_custom_logging-deploy-${{ env.runNumber }}
