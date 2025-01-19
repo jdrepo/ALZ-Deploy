@@ -106,7 +106,7 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account set -s "${{env.IdentitySubscriptionId}}"
-          identityNetworkName=$(jq -r .parameters.parIdentityNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json) 
+          identityNetworkName=$(jq -r .parameters.parIdentityNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json) 
           identityNetworkResourceId=$(az network vnet show --resource-group ${{ env.IdentityNetworkResourceGroupName }} --name $identityNetworkName --query id)
           echo "$identityNetworkResourceId"
           echo "identityNetworkResourceId=$identityNetworkResourceId" >> $GITHUB_OUTPUT
@@ -178,7 +178,7 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account set -s "${{env.IdentitySubscriptionId}}"
-          identityNetworkName=$(jq -r .parameters.parIdentityNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.environment}}.json) 
+          identityNetworkName=$(jq -r .parameters.parIdentityNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json) 
           identityNetworkResourceId=$(az network vnet show --resource-group ${{ env.IdentityNetworkResourceGroupName }} --name $identityNetworkName --query id)
           echo "$identityNetworkResourceId"
           echo "identityNetworkResourceId=$identityNetworkResourceId" >> $GITHUB_OUTPUT
