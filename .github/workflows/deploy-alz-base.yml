@@ -1318,9 +1318,9 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: infra-as-code/bicep/modules/policy/exemptions/alzDefaultPolicyExemptions.bicep
+          template: ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/alzDefaultPolicyExemptions.bicep
           parameters: >-
-            infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExcemptions.parameters.${{inputs.environment}}.json
+            ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExcemptions.parameters.${{inputs.environment}}.json
           deploymentName: validate_default_policy_exemptions-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
