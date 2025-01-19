@@ -1331,9 +1331,9 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: infra-as-code/bicep/modules/policy/exemptions/alzDefaultPolicyExemptions.bicep
+          template: ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/alzDefaultPolicyExemptions.bicep
           parameters: >-
-            infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExcemptions.parameters.${{inputs.environment}}.json
+            ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExcemptions.parameters.${{inputs.environment}}.json
           deploymentName: preview_default_policy_exemptions-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -1365,9 +1365,9 @@ jobs:
           scope: managementgroup
           managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           region: ${{ env.Location }}
-          template: infra-as-code/bicep/modules/policy/exemptions/alzDefaultPolicyExemptions.bicep
+          template: ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/alzDefaultPolicyExemptions.bicep
           parameters: >-
-            infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExcemptions.parameters.${{inputs.environment}}.json
+            ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExcemptions.parameters.${{inputs.environment}}.json
           deploymentName: deploy_default_policy_exemptions-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_networkwatcher_rg:
