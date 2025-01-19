@@ -55,6 +55,7 @@ jobs:
       deploy: true
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
+      nva: ${{vars.NVA_CANARY}}
       wipeAfterDeploy: false
     secrets:
       IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_CANARY}}
