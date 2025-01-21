@@ -254,6 +254,9 @@ module modNsgOpnsUntrustedSubnet 'br/public:avm/res/network/network-security-gro
 }
 module modTrustedSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
   name: '${_dep}-trusted-subnet'
+  dependsOn: [
+    modUntrustedSubnet    // prevent parallel deployment errors
+  ]
   params: {
     name: parTrustedSubnetName
     virtualNetworkName: resConnectivityVirtualNetwork.name
