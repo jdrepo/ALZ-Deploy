@@ -14,7 +14,7 @@ jobs:
     uses: ./.github/workflows/deploy-alz-base.yml
     with:
       environment: "canary"
-      alzBicepRelease: "v0.19.4"
+      alzBicepRelease: "v0.20.0"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
