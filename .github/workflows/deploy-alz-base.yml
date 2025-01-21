@@ -13,9 +13,12 @@ on:
         required: true
         type: string
       alzBicepRelease:
-        default: "v0.19.4"
+        default: "v0.20.0"
         required: true
-        type: string
+        type: choice
+        options:
+          - "v0.19.4"
+          - "v0.20.0"
       managementGroupPrefix:
         default: "alz"
         required: true
@@ -30,6 +33,7 @@ on:
         options:
           - opnsense-single
           - no-nva
+          - azfirewall
       wipeAfterDeploy:
         default: false
         type: boolean

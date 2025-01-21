@@ -135,9 +135,6 @@
         "privatelink.wvd.microsoft.com"
       ]
     },
-    "parPrivateDnsZoneAutoMergeAzureBackupZone": {
-      "value": true
-    },
     "parVpnGatewayEnabled": {
       "value": false
     },
