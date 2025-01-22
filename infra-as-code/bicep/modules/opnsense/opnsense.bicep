@@ -134,7 +134,7 @@ var varManagementGroupIds = {
 }
 
 var varPolicyExemptionDeployVMMonitoring = {
-  definitionId: '/providers/Microsoft.Management/managementGroups/${varManagementGroupIds.platform}/providers/Microsoft.Authorization/policyAssignments/Deploy-VM-Monitoring'
+  definitionId: '/providers/Microsoft.Management/managementGroups/${varManagementGroupIds.platform}/providers/Microsoft.Authorization/policyAssignments/deploy-vm-monitor-24'
   libDefinition: loadJsonContent('../policy/exemptions/lib/policy_exemptions/policy_exemption_freebsd_es_deploy_vm_monitor.tmpl.json')
 }
 
