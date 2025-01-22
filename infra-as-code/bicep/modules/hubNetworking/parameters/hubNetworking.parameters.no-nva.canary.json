@@ -120,11 +120,9 @@
     "parPrivateDnsZones": {
       "value": [
         "privatelink.file.core.windows.net",
-        "privatelink.wvd.microsoft.com"
+        "privatelink.wvd.microsoft.com",
+        "privatelink.{regionCode}.backup.windowsazure.com"
       ]
-    },
-    "parPrivateDnsZoneAutoMergeAzureBackupZone": {
-      "value": true
     },
     "parVpnGatewayEnabled": {
       "value": false
