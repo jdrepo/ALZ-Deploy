@@ -34,7 +34,6 @@ on:
         required: true
         type: string
       ambaRelease:
-        default: "2024-09-02"
         required: true
         type: string
       managementGroupPrefix:
