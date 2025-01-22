@@ -20,16 +20,16 @@ jobs:
         AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
         AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
         AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
-  # alz-wipe-base-canary:
-  #   name: "Wipe ALZ Base Components - Canary"
-  #   needs: [alz-wipe-amba-canary]
-  #   uses: ./.github/workflows/wipe-alz-base.yml
-  #   with:
-  #     environment: "canary"
-  #     alzBicepRelease: "v0.20.0"
-  #     managementGroupPrefix: "alz"
-  #   secrets:
-  #     AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
-  #     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
-  #     AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
+  alz-wipe-base-canary:
+    name: "Wipe ALZ Base Components - Canary"
+    needs: [alz-wipe-amba-canary]
+    uses: ./.github/workflows/wipe-alz-base.yml
+    with:
+      environment: "canary"
+      alzBicepRelease: "v0.20.0"
+      managementGroupPrefix: "alz"
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
   

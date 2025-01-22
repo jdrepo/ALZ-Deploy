@@ -8,9 +8,14 @@ on:
         required: true
         type: string
       alzBicepRelease:
-        default: "v0.19.4"
+        default: "v0.20.0"
         required: true
-        type: string
+        type: choice
+        options:
+          - "v0.19.4"
+          - "v0.20.0"
+          - "v0.20.1"
+          - "v0.20.2"
       managementGroupPrefix:
         default: "alz"
         required: true
@@ -23,7 +28,6 @@ on:
         required: true
         type: string
       alzBicepRelease:
-        default: "v0.19.4"
         required: true
         type: string
       managementGroupPrefix:
