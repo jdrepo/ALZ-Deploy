@@ -56,6 +56,7 @@ jobs:
   wipe:
     runs-on: ubuntu-latest
     environment: wipe
+    name: Cleaning up ALZ Base
     steps:
       - run: echo "Here is where you'd perform the steps to wipe."
       - name: Checkout Repo
