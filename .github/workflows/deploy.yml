@@ -14,7 +14,7 @@ jobs:
     uses: ./.github/workflows/deploy-alz-base.yml
     with:
       environment: "canary"
-      alzBicepRelease: "v0.20.0"
+      alzBicepRelease: "v0.20.2"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
@@ -70,7 +70,7 @@ jobs:
     uses: ./.github/workflows/deploy-amba.yml
     with:
       environment: "canary"
-      ambaRelease: "2024-09-02"
+      ambaRelease: "2025-01-10"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
