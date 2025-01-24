@@ -70,7 +70,7 @@ jobs:
     uses: ./.github/workflows/deploy-amba.yml
     with:
       environment: "canary"
-      ambaRelease: "2025-01-10"
+      ambaRelease: "2025-01-10-hotfix"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
@@ -79,13 +79,14 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
+      AMBA_ACTIONGROUP_EMAIL: ${{ secrets.AMBA_ACTIONGROUP_EMAIL_CANARY}}
   alz-deploy-base-prod:
     needs: [alz-deploy-base-canary]
     name: "Deploy ALZ Base Components - Production"
     uses: ./.github/workflows/deploy-alz-base.yml
     with:
       environment: "prod"
-      alzBicepRelease: "v0.19.4"
+      alzBicepRelease: "v0.20.2"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
@@ -113,6 +114,8 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
+      AMBA_ACTIONGROUP_EMAIL: ${{ secrets.AMBA_ACTIONGROUP_EMAIL_PROD}}
+
 
 
 
