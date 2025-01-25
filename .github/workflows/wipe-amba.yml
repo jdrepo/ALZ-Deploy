@@ -82,9 +82,9 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            # azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Maintenance.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -cleanItems Amba-Alz -WhatIf             
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Maintenance.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -cleanItems Amba-Alz -WhatIf -Confirm:$false           
             # azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false -WhatIf
-            ./scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false
+            #./scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false
           azPSVersion: "latest"
 
 
