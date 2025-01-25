@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       ambaRelease:
-        default: "2024-09-02"
+        default: "2025-01-10-hotfix"
         required: true
         type: choice
         options:
