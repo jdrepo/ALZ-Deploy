@@ -158,7 +158,7 @@ jobs:
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Notification-Assets
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Alerting-ServiceHealth
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform${{ env.ManagementGroupSuffix }}" -policyName Alerting-HybridVM
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-{{ env.ManagementGroupSuffix }}" -policyName Alerting-VM
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform${{ env.ManagementGroupSuffix }}" -policyName Alerting-VM
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-connectivity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Connectivity
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-identity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Identity
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-management${{ env.ManagementGroupSuffix }}" -policyName Alerting-Management
@@ -196,9 +196,9 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            # azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Maintenance.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -cleanItems Amba-Alz -WhatIf             
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Maintenance.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -cleanItems Amba-Alz -WhatIf -Confirm:$false           
             # azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false -WhatIf
-            ./scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false
+            #./scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false
           azPSVersion: "latest"
 
 
