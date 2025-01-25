@@ -1174,7 +1174,7 @@ jobs:
             echo "$dataCollectionRuleMDFCSQLId"
             echo "$userAssignedManagedIdentityId"
             az account set -s "${{ env.ConnectivitySubId }}"            
-            privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
+            privateDnsResourceGroupId=$(az group show --name ${{ env.HubPrivateDNSResourceGroupName }} --query id)
             echo "$privateDnsResourceGroupId"
             echo "logAnalyticsWorkspaceResourceId=$logAnalyticsWorkspaceResourceId" >> "$GITHUB_OUTPUT"
             echo "dataCollectionRuleVMInsightsId=$dataCollectionRuleVMInsightsId" >> "$GITHUB_OUTPUT"
@@ -1262,7 +1262,7 @@ jobs:
             dataCollectionRuleMDFCSQLId=$(az monitor data-collection rule show --resource-group ${{ env.LoggingResourceGroupName }} --name $dataCollectionRuleMDFCSQLName --query id )
             userAssignedManagedIdentityId=$(az identity show --resource-group ${{ env.LoggingResourceGroupName }} --name $userAssignedManagedIdentityName --query id)
             az account set -s "${{ env.ConnectivitySubId }}"
-            privateDnsResourceGroupId=$(az group show --name ${{ env.HubNetworkResourceGroupName }} --query id)
+            privateDnsResourceGroupId=$(az group show --name ${{ env.HubPrivateDNSResourceGroupName }} --query id)
             echo "$logAnalyticsWorkspaceResourceId"
             echo "$dataCollectionRuleVMInsightsId"
             echo "$dataCollectionRuleChangeTrackingResourceId"
