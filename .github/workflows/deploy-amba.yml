@@ -155,19 +155,21 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Notification-Assets
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Alerting-ServiceHealth
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-connectivity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Connectivity
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-identity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Identity
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-management${{ env.ManagementGroupSuffix }}" -policyName Alerting-Management
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-KeyManagement
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-LoadBalancing
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-NetworkChanges
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-RecoveryServices
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-HybridVM
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-Storage
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-VM
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBARemediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-Web
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Notification-Assets
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Alerting-ServiceHealth
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform${{ env.ManagementGroupSuffix }}" -policyName Alerting-HybridVM
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-{{ env.ManagementGroupSuffix }}" -policyName Alerting-VM
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-connectivity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Connectivity
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-identity${{ env.ManagementGroupSuffix }}" -policyName Alerting-Identity
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform-management${{ env.ManagementGroupSuffix }}" -policyName Alerting-Management
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-KeyManagement
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-LoadBalancing
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-NetworkChanges
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-RecoveryServices
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-HybridVM
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-Storage
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-VM
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-Web
           azPSVersion: "latest"
   wipe:
     runs-on: ubuntu-latest
