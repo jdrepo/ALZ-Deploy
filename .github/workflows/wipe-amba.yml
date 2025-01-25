@@ -24,9 +24,6 @@ on:
       location:
         default: "germanywestcentral"
         type: string
-      wipeAfterDeploy:
-        default: false
-        type: boolean
 
   workflow_call:
     inputs:
