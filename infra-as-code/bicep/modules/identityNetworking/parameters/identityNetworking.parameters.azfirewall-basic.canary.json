@@ -1,0 +1,69 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"parLocation": {
+			"value": "germanywestcentral"
+		},
+		"parCompanyPrefix": {
+			"value": "alz"
+		},
+		"parIdentityNetworkName": {
+			"value": "vnet-gwc-identity-alz-canary"
+		},
+		"parIdentityNetworkAddressPrefix": {
+			"value": "10.20.0.0/16"
+		},
+		"parSubnets": {
+			"value": [
+				{
+					"name": "identity-subnet1",
+					"addressPrefix": "10.20.1.0/24",
+					"networkSecurityGroupResourceId": "",
+					"routeTableResourceId": "",
+					"serviceEndpoints": [
+						"Microsoft.Storage"
+					]
+				}
+			]
+		},
+		"parDnsServerIps": {
+			"value": []
+		},
+		"parHubNetworkResourceId": {
+			"value": ""
+		},
+		"parIdentityNsgName": {
+			"value": "nsg-gwc-001-alz-canary"
+		},
+		"parIdentityRouteTableName": {
+			"value": "rt-gwc-identity-alz-canary"
+		},
+		"parNvaTrustedIp": {
+			"value": "10.10.254.4"
+		},
+		"parTags": {
+			"value": {
+				"Environment": "canary"
+			}
+		},
+		"parGlobalResourceLock": {
+			"value": {
+				"kind": "None",
+				"notes": "This lock was created by the ALZ Bicep Identity Networking Module."
+			}
+		},
+		"parVirtualNetworkLock": {
+			"value": {
+				"kind": "None",
+				"notes": "This lock was created by the ALZ Bicep Identity Networking Module."
+			}
+		},
+		"parIdentityRouteTableLock": {
+			"value": {
+				"kind": "None",
+				"notes": "This lock was created by the ALZ Bicep Hub Networking Module."
+			}
+		}
+	}
+}
