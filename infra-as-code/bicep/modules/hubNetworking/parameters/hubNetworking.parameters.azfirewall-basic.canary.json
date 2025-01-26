@@ -94,7 +94,11 @@
       "value": "Alert"
     },
     "parAzFirewallAvailabilityZones": {
-      "value": []
+      "value": [
+        "1",
+        "2",
+        "3"
+      ]
     },
     "parAzErGatewayAvailabilityZones": {
       "value": []
