@@ -81,7 +81,7 @@ jobs:
         with:
           inlineScript: | 
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Maintenance.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -cleanItems Amba-Alz -Confirm:$false           
-            # azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false -WhatIf
+            # azure-monitor-baseline-alerts/patterns/alz/scripts/Old scripts/Start-AMBACleanup.ps1" -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false -WhatIf
             #./scripts/Start-AMBACleanup.ps1 -pseudoRootManagementGroup ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -Confirm:$false
           azPSVersion: "latest"
 
