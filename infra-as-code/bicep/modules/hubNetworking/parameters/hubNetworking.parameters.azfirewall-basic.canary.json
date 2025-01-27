@@ -87,6 +87,9 @@
     "parAzFirewallPoliciesName": {
       "value": "azfwpol-gwc-alz-canary"
     },
+    "parAzFirewallPoliciesEnabled": {
+      "value": false
+    },
     "parAzFirewallTier": {
       "value": "Basic"
     },
