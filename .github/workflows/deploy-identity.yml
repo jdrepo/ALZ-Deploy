@@ -20,11 +20,11 @@ on:
         type: string
       nva:
         description: 'NVA solution'
-        default: 'opnsense-single'
         type: choice
         options:
           - opnsense-single
           - no-nva
+          - azfirewall-basic
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -48,7 +48,6 @@ on:
         type: string
       nva:
         description: 'NVA solution'
-        default: 'opnsense-single'
         type: string
       wipeAfterDeploy:
         default: false
