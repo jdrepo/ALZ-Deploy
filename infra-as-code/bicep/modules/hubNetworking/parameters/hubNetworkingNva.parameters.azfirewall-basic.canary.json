@@ -9,6 +9,12 @@
 		},
     "parLocation": {
       "value": "germanywestcentral"
+    },
+    "parAzFirewallPolicyTier": {
+      "value": "Basic"
+    },
+    "parAzFirewallPoliciesName": {
+      "value": "azfwpol-gwc-alz-canary"
     }
   }
 }
