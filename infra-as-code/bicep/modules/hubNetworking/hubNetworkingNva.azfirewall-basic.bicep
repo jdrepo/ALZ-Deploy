@@ -53,22 +53,24 @@ module modFirewallPolicy 'br/public:avm/res/network/firewall-policy:0.2.0' = {
             ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
             rules: [
               {
-                name: 'Allow-HTTPS'
+                name: 'Allow-KMS'
                 description: ''
                 ruleType: 'NetworkRule'
                 destinationAddresses: [
-                  '*'
+                  '20.118.99.224'
+                  '40.83.235.53'
+                  '23.102.135.246'
                 ]
                 destinationFqdns: []
                 destinationIpGroups: []
                 destinationPorts: [
-                  '443'
+                  '1688'
                 ]
                 ipProtocols: [
                   'TCP'
                 ]
                 sourceAddresses: [
-                  '10.20.1.0/24'
+                  '*'
                 ]
                 sourceIpGroups: []
               }
