@@ -30,7 +30,7 @@ on:
         type: string
       nva:
         description: 'NVA solution'
-        default: 'azfirewall'
+        default: 'azfirewall-basic'
         type: choice
         options:
           - opnsense-single
