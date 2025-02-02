@@ -25,6 +25,8 @@ var varDeploymentNameWrappers = {
 
 var varModuleDeploymentNames = {
     modPolicyExemptionPlatformAuditKVSecretExpire: take('${varDeploymentNameWrappers.basePrefix}-polExempt-auditKVSecretExpire-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolicyExemptionPlatformDeployFWDiag: take('${varDeploymentNameWrappers.basePrefix}-polExempt-DeployFWDiag-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+
 
 
 
@@ -32,12 +34,16 @@ var varModuleDeploymentNames = {
 
 // Policy Exemptions Modules Variables
 
-
-
 var varPolicyExemptionAuditKVSecretExpire = {
   assignmentId: '/providers/microsoft.management/managementgroups/alz-platform-canary/providers/microsoft.authorization/policyassignments/enforce-gr-keyvault'
   libDefinition: loadJsonContent('./lib/policy_exemptions/policy_exemption_es_audit_keyvault_secret_expiration_tmpl.json')
 }
+
+var varPolicyExemptionDeployFWDiag = {
+  assignmentId: '/providers/microsoft.management/managementgroups/alz-canary/providers/microsoft.authorization/policyassignments/deploy-diag-logs'
+  libDefinition: loadJsonContent('./lib/policy_exemptions/policy_exemption_es_deploy_firewall_diag-settings_tmpl.json')
+}
+
 
 // // RBAC Role Definitions Variables - Used For Policy Assignments
 // var varRbacRoleDefinitionIds = {
@@ -107,6 +113,20 @@ module modPolicyExemptionPlatformAuditKeyVaultSecretExpiration '../../../../../.
   }
 }
 
+// Module - Policy Exemption - Deploy-FW-Diag-Settings
+module modPolicyExemptionPlatformPolicyExemptionDeployFWDiag '../../../../../../ALZ-Bicep/infra-as-code/bicep/modules/policy/exemptions/policyExemptions.bicep' = {
+  scope: managementGroup(varManagementGroupIds.platform)
+  name: varModuleDeploymentNames.modPolicyExemptionPlatformDeployFWDiag
+  params: {
+    parPolicyAssignmentId: varPolicyExemptionDeployFWDiag.assignmentId
+    parExemptionCategory: varPolicyExemptionDeployFWDiag.libDefinition.properties.ExemptionCategory
+    parDescription: varPolicyExemptionDeployFWDiag.libDefinition.properties.description
+    parAssignmentScopeValidation: varPolicyExemptionDeployFWDiag.libDefinition.properties.assignmentScopeValidation
+    parPolicyDefinitionReferenceIds: varPolicyExemptionDeployFWDiag.libDefinition.properties.policyDefinitionReferenceIds
+    parExemptionName: varPolicyExemptionDeployFWDiag.libDefinition.name
+    parExemptionDisplayName: varPolicyExemptionDeployFWDiag.libDefinition.properties.displayName
+  }
+}
 
 // Modules - Policy Exemptions - Connectivity Management Group
 

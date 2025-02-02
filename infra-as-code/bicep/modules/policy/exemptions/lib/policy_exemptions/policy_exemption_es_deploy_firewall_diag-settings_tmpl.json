@@ -1,0 +1,15 @@
+{
+    "name": "Exemption-Deploy-FW-Diag",
+    "type": "Microsoft.Authorization/policyExemptions",
+    "apiVersion": "2022-07-01-preview",
+    "properties": {
+      "description": "Enable logging by category group for Firewalls (microsoft.network/azurefirewalls) to Log Analytics",
+      "displayName": "Exemption-Enable logging by category group for Firewalls (microsoft.network/azurefirewalls) to Log Analytics",
+      "policyAssignmentId" : "/providers/microsoft.management/managementgroups/alz-canary/providers/microsoft.authorization/policyassignments/deploy-diag-logs",
+      "assignmentScopeValidation" : "Default",
+      "ExemptionCategory" : "Waiver",
+      "policyDefinitionReferenceIds": [
+              "network-azurefirewalls"
+              ]
+    }
+  }

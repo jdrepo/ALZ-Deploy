@@ -1,0 +1,37 @@
+{
+	"name": "Deploy-Diag-Firewall",
+	"type": "Microsoft.Authorization/policyAssignments",
+	"apiVersion": "2024-04-01",
+	"properties": {
+		"description": "Deploy Diagnostics settings for Azure Firewall",
+		"displayName": "Deploy Diagnostics settings for Azure Firewall",
+		"notScopes": [],
+		"parameters": {
+			"logAnalytics": {
+				"value": "law-alz"
+			},
+			"logAnalyticsDestinationType": {
+				"value": "Dedicated"
+			},
+			"effect": {
+				"value": "DeployIfNotExists"
+			},
+			"profileName": {
+				"value": "setbypolicy"
+			},
+			"metricsEnabled": {
+				"value": "False"
+			},
+			"logsEnabled": {
+				"value": "True"
+			}
+		},
+		"policyDefinitionId": "${varTopLevelManagementGroupResourceId}/providers/Microsoft.Authorization/policyDefinitions/Deploy-Diagnostics-Firewall",
+		"scope": null,
+		"enforcementMode": "Default"
+	},
+	"location": null,
+	"identity": {
+		"type": "SystemAssigned"
+	}
+}

@@ -98,6 +98,8 @@ var varModuleDeploymentNames = {
     modPolicyAssignmentPlatformDeployVnetFlowLog: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployVnetFlowLog-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentPlatformDeployTrafficAnalytics: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployTrafficAnalytics-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIdentAuditKVSecretExpire: take('${varDeploymentNameWrappers.basePrefix}-polAssi-auditKVSecretExpire-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolicyAssignmentPlatformDeployDiagFirewall: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployDiagnosticsFirewall-conn-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+
 
 
 
@@ -149,6 +151,10 @@ var varPolicyAssignmentDeployTrafficAnalytics = {
 var varPolicyAssignmentAuditKVSecretExpire = {
   definitionId: '/providers/Microsoft.Authorization/policyDefinitions/b0eb591a-5e70-4534-a8bf-04b9c489584a'
   libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_audit_keyvault_secret_expiration.tmpl.json')
+}
+var varPolicyAssignmentDeployDiagFirewall = {
+  definitionId: '${varTopLevelManagementGroupResourceId}/providers/Microsoft.Authorization/policyDefinitions/Deploy-Diagnostics-Firewall'
+  libDefinition: loadJsonContent('../../../policy/assignments/lib/policy_assignments/policy_assignment_es_deploy_diag_firewall.tmpl.json')
 }
 
 // RBAC Role Definitions Variables - Used For Policy Assignments
@@ -323,6 +329,32 @@ module modPolicyAssignmentIntRootAuditTrafficAnalytics '../../../policy/assignme
 }
 
 // Modules - Policy Assignments - Platform Management Group
+
+// Module - Policy Assignment - Deploy-Diagnostics-Firewall
+module modPolicyAssignmentPlatformDeployDiagFirewall '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployDiagFirewall.libDefinition.name)) {
+  scope: managementGroup(varManagementGroupIds.platform)
+  name: varModuleDeploymentNames.modPolicyAssignmentPlatformDeployDiagFirewall
+  params: {
+    parPolicyAssignmentDefinitionId: varPolicyAssignmentDeployDiagFirewall.definitionId
+    parPolicyAssignmentName: varPolicyAssignmentDeployDiagFirewall.libDefinition.name
+    parPolicyAssignmentDisplayName: varPolicyAssignmentDeployDiagFirewall.libDefinition.properties.displayName
+    parPolicyAssignmentDescription: varPolicyAssignmentDeployDiagFirewall.libDefinition.properties.description
+    parPolicyAssignmentParameters: varPolicyAssignmentDeployDiagFirewall.libDefinition.properties.parameters
+    parPolicyAssignmentParameterOverrides: {
+      logAnalytics: {
+        value: parLogAnalyticsWorkspaceResourceId
+      }
+    }
+    parPolicyAssignmentIdentityType: varPolicyAssignmentDeployMDFCConfig.libDefinition.identity.type
+    parPolicyAssignmentIdentityRoleDefinitionIds: [
+      varRbacRoleDefinitionIds.logAnalyticsContributor
+      varRbacRoleDefinitionIds.monitoringContributor
+    ]
+    parPolicyAssignmentEnforcementMode: parDisableAlzDefaultPolicies ? 'DoNotEnforce' : varPolicyAssignmentDeployMDFCConfig.libDefinition.properties.enforcementMode
+    parTelemetryOptOut: parTelemetryOptOut
+  }
+}
+
 // Module - Policy Assignment - Deploy-Vnet-Flow-Logs
 module modPolicyAssignmentPlatformDeployVnetFlowLogs '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployVnetFlowLog.libDefinition.name)) {
   scope: managementGroup(varManagementGroupIds.platform)
@@ -391,6 +423,8 @@ module modPolicyAssignmentPlatformDeployTrafficAnalytics '../../../policy/assign
 
 
 // Modules - Policy Assignments - Connectivity Management Group
+
+
 
 
 // Modules - Policy Assignments - Identity Management Group
