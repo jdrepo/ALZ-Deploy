@@ -63,87 +63,73 @@ permissions:
   contents: read
 
 jobs:
-  onprem_rg_validation_preview:
+  onprem_validation_preview:
     runs-on: ubuntu-latest
     environment: ${{inputs.environment}}
-    name: Onprem RG - Validation and Preview
+    name: Onprem - Validation and Preview
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v4
-      with:
-        path: 'ALZ-Deploy'
-    - name: Checkout Repo bicep-registry-modules
-      uses: actions/checkout@v4
-      with:
-          repository: Azure/bicep-registry-modules
-          path: 'bicep-registry-modules'
-    - name: Azure Login with OIDC
-      uses: azure/login@v2
-      with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    - name: Onprem RG - Validation
-      id: onprem_rg_validation
-      uses: azure/arm-deploy@v2
-      with:
-        scope: subscription
-        subscriptionId: ${{ env.onpremSubscriptionId }}
-        region: ${{ env.Location }}
-        template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-        parameters: >-
-          infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
-          parResourceGroupName=${{ env.onpremResourceGroupName }}
-        deploymentName: onprem-rg-validation-${{ env.runNumber }}
-        failOnStdErr: false
-        deploymentMode: Validate
-    - name: Onprem RG - Preview
-      id: onprem_rg_preview
-      uses: azure/arm-deploy@v2
-      with:
-        scope: subscription
-        subscriptionId: ${{ env.onpremSubscriptionId }}
-        region: ${{ env.Location }}
-        template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
-        parameters: >- 
-          infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
-          parResourceGroupName=${{ env.onpremResourceGroupName }}
-        deploymentName: onprem-rg-preview-${{ env.runNumber }}
-        failOnStdErr: false
-        additionalArguments: "--what-if"
-  onprem_rg_deployment:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Onprem - Validation
+        id: onprem_validation
+        uses: azure/arm-deploy@v2
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.onpremSubscriptionId }}
+          region: ${{ env.Location }}
+          template: infra-as-code/bicep/modules/onprem/onprem.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
+            parResourceGroupName=${{ env.onpremResourceGroupName }}
+          deploymentName: onprem-validation-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+      - name: Onprem - Preview
+        id: onprem_preview
+        uses: azure/arm-deploy@v2
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.onpremSubscriptionId }}
+          region: ${{ env.Location }}
+          template: infra-as-code/bicep/modules/onprem/onprem.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
+            parResourceGroupName=${{ env.onpremResourceGroupName }}
+          deploymentName: onprem-preview-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"
+  onprem_deployment:
     if: ${{ inputs.deploy }}
     runs-on: ubuntu-latest
     environment: ${{inputs.environment}}
-    name: Onprem RG - Deployment
+    name: Onprem - Deployment
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
-      with:
-        path: 'ALZ-Deploy'
-    - name: Checkout Repo bicep-registry-modules
-      uses: actions/checkout@v4
-      with:
-          repository: Azure/bicep-registry-modules
-          path: 'bicep-registry-modules'
     - name: Azure Login with OIDC
       uses: azure/login@v2
       with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    - name: Onprem RG - Deployment
-      id: onprem_rg_deployment
+    - name: Onprem - Deployment
+      id: onprem_deployment
       uses: azure/arm-deploy@v2
       with:
         scope: subscription
         subscriptionId: ${{ env.onpremSubscriptionId }}
         region: ${{ env.Location }}
-        template: ALZ-Bicep/infra-as-code/bicep/modules/resourceGroup/resourceGroup.bicep
+        template: infra-as-code/bicep/modules/onprem/onprem.bicep
         parameters: >-
-          infra-as-code/bicep/modules/resourceGroup/parameters/resourceGroup.parameters.${{inputs.environment}}.json
+          infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
           parResourceGroupName=${{ env.onpremResourceGroupName }}
-        deploymentName: onprem-rg-deployment-${{ env.runNumber }}
+        deploymentName: onprem-deployment-${{ env.runNumber }}
         failOnStdErr: false
 
 
