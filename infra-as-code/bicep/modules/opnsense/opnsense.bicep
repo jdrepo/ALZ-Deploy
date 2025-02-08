@@ -318,7 +318,6 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
       sku: '14_1-release-amd64-gen2-zfs'
       version: 'latest'
     }
-
     nicConfigurations: [
       {
         tags: parTags
@@ -349,7 +348,6 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
         deleteOption: 'Delete'
       }
     ]
-    
     osDisk: {
       diskSizeGB: 30
       caching: 'ReadWrite'
