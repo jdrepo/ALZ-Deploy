@@ -436,10 +436,11 @@
     <rule>
       <type>pass</type>
       <ipprotocol>inet</ipprotocol>
-      <descr>Allow identity-subnet1 to any</descr>
+      <descr>Allow onprem-subnet1 to any</descr>
+	  <log>1</log>
       <interface>lan</interface>
       <source>
-        <network>identity_subnet1</network>
+        <network>onprem_subnet1</network>
       </source>
       <destination>
         <any/>
@@ -671,13 +672,13 @@
         <aliases>
           <alias uuid="bccd3501-0463-4e50-8843-d112766c9b30">
             <enabled>1</enabled>
-            <name>identity_subnet1</name>
+            <name>onprem_subnet1</name>
             <type>network</type>
             <proto/>
             <interface/>
             <counters>0</counters>
             <updatefreq/>
-            <content>10.20.1.0/24</content>
+            <content>172.22.10.0/24</content>
             <categories/>
             <description/>
           </alias>
@@ -1218,7 +1219,7 @@
       <rule>
         <interface>wan</interface>
         <source>
-          <network>identity_subnet1</network>
+          <network>onprem_subnet1</network>
         </source>
         <sourceport/>
         <target/>
@@ -1226,7 +1227,7 @@
           <any>1</any>
         </destination>
         <natport/>
-        <descr>External access for identity-subnet1</descr>
+        <descr>External access for onprem-subnet1</descr>
         <created/>
         <dstport/>
       </rule>
