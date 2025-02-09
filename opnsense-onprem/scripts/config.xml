@@ -334,6 +334,23 @@
       <type>none</type>
       <virtual>1</virtual>
     </lo0>
+    <enc0>
+      <internal_dynamic>1</internal_dynamic>
+      <enable>1</enable>
+      <if>enc0</if>
+      <descr>IPsec</descr>
+      <type>none</type>
+      <virtual>1</virtual>
+    </enc0>
+    <ipsec1>
+      <if>ipsec1</if>
+      <descr>IPsecAzure</descr>
+      <enable>1</enable>
+      <spoofmac/>
+      <mss>1350</mss>
+      <internal_dynamic>1</internal_dynamic>
+      <type>none</type>
+    </ipsec1>
   </interfaces>
   <snmpd>
     <syslocation/>
@@ -368,12 +385,12 @@
         <description>/firewall_rules_edit.php made changes</description>
       </created>
     </rule>
-	<rule>
+	  <rule>
       <type>pass</type>
       <interface>wan</interface>
       <ipprotocol>inet</ipprotocol>
       <statetype>keep state</statetype>
-	  <descr>Azure Bastion access</descr>
+	    <descr>Azure Bastion access</descr>
       <direction>in</direction>
       <protocol>tcp</protocol>
       <source>
@@ -382,6 +399,86 @@
       <destination>
         <network>wanip</network>
         <port>22</port>
+      </destination>
+      <updated>
+        <username>root@172.22.0.36</username>
+        <time>1503706250.2226</time>
+        <description>/firewall_rules_edit.php made changes</description>
+      </updated>
+      <created>
+        <username>root@172.22.0.36</username>
+        <time>1502150334.1255</time>
+        <description>/firewall_rules_edit.php made changes</description>
+      </created>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <interface>wan</interface>
+      <ipprotocol>inet</ipprotocol>
+      <statetype>keep state</statetype>
+	    <descr>IPsec ESP</descr>
+      <direction>in</direction>
+      <log>1</log>
+      <protocol>esp</protocol>
+      <source>
+        <any>1</any>
+      </source>
+      <destination>
+        <network>wanip</network>
+      </destination>
+      <updated>
+        <username>root@172.22.0.36</username>
+        <time>1503706250.2226</time>
+        <description>/firewall_rules_edit.php made changes</description>
+      </updated>
+      <created>
+        <username>root@172.22.0.36</username>
+        <time>1502150334.1255</time>
+        <description>/firewall_rules_edit.php made changes</description>
+      </created>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <interface>wan</interface>
+      <ipprotocol>inet</ipprotocol>
+      <statetype>keep state</statetype>
+	    <descr>IPsec ISAKMP</descr>
+      <direction>in</direction>
+      <log>1</log>
+      <protocol>udp</protocol>
+      <source>
+        <any>1</any>
+      </source>
+      <destination>
+        <network>wanip</network>
+        <port>500</port>
+      </destination>
+      <updated>
+        <username>root@172.22.0.36</username>
+        <time>1503706250.2226</time>
+        <description>/firewall_rules_edit.php made changes</description>
+      </updated>
+      <created>
+        <username>root@172.22.0.36</username>
+        <time>1502150334.1255</time>
+        <description>/firewall_rules_edit.php made changes</description>
+      </created>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <interface>wan</interface>
+      <ipprotocol>inet</ipprotocol>
+      <statetype>keep state</statetype>
+	    <descr>IPsec NAT-T</descr>
+      <direction>in</direction>
+      <log>1</log>
+      <protocol>tcp/udp</protocol>
+      <source>
+        <any>1</any>
+      </source>
+      <destination>
+        <network>wanip</network>
+        <port>4500</port>
       </destination>
       <updated>
         <username>root@172.22.0.36</username>
@@ -463,13 +560,26 @@
       <type>pass</type>
       <ipprotocol>inet</ipprotocol>
       <descr>Allow onprem-subnet1 to any</descr>
-	  <log>1</log>
+	    <log>1</log>
       <interface>lan</interface>
       <source>
         <network>onprem_subnet1</network>
       </source>
       <destination>
         <any/>
+      </destination>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Allow IPsec to onprem-subnet1</descr>
+	    <log>1</log>
+      <interface>ipsec1</interface>
+      <source>
+        <any>1</any>
+      </source>
+      <destination>
+        <address>onprem_subnet1</address>
       </destination>
     </rule>
   </filter>
@@ -957,7 +1067,32 @@
       <neighbors version="1.0.0"/>
       <vxlans version="1.0.2"/>
     </Interfaces>
-    <Gateways version="1.0.0"/>
+    <Gateways version="1.0.0">
+      <gateway_item uuid="b50eeb5a-033d-428d-a6e9-1a5481b171ef">
+        <disabled>0</disabled>
+        <name>VPNGW</name>
+        <descr/>
+        <interface>ipsec1</interface>
+        <ipprotocol>inet</ipprotocol>
+        <gateway>10.111.1.2</gateway>
+        <defaultgw>0</defaultgw>
+        <fargw>1</fargw>
+        <monitor_disable>1</monitor_disable>
+        <monitor_noroute>0</monitor_noroute>
+        <monitor/>
+        <force_down>0</force_down>
+        <priority>255</priority>
+        <weight>1</weight>
+        <latencylow/>
+        <latencyhigh/>
+        <losslow/>
+        <losshigh/>
+        <interval/>
+        <time_period/>
+        <loss_interval/>
+        <data_length/>
+      </gateway_item>
+    </Gateways>
     <quagga>
       <ospf version="1.0.5">
         <enabled>0</enabled>
@@ -1287,7 +1422,18 @@
     <gre/>
   </gres>
   <staticroutes version="1.0.0">
-    <route/>
+    <route>
+      <network>10.20.0.0/16</network>
+      <gateway>VPNGW</gateway>
+      <descr>Route Azure identity vnet</descr>
+      <disabled>0</disabled>
+    </route>
+    <route>
+      <network>10.10.0.0/16</network>
+      <gateway>VPNGW</gateway>
+      <descr>Route Azure identity vnet</descr>
+      <disabled>0</disabled>
+    </route>
   </staticroutes>
   <hasync version="1.0.1">
     <disablepreempt>0</disablepreempt>
@@ -1308,4 +1454,47 @@
   <wireless>
     <clone/>
   </wireless>
+  <ca/>
+  <ipsec>
+    <phase1>
+      <iketype>ikev2</iketype>
+      <interface>wan</interface>
+      <protocol>inet</protocol>
+      <myid_type>myaddress</myid_type>
+      <peerid_type>peeraddress</peerid_type>
+      <encryption-algorithm>
+        <name>aes</name>
+        <keylen>256</keylen>
+      </encryption-algorithm>
+      <lifetime>28800</lifetime>
+      <pre-shared-key>A1b2c3d4</pre-shared-key>
+      <authentication_method>pre_shared_key</authentication_method>
+      <descr>IPsec Azure</descr>
+      <nat_traversal>off</nat_traversal>
+      <auto>add</auto>
+      <dhgroup>2</dhgroup>
+      <hash-algorithm>sha256</hash-algorithm>
+      <noinstallpolicy>1</noinstallpolicy>
+      <private-key/>
+      <remote-gateway>4.3.2.1</remote-gateway>
+      <ikeid>1</ikeid>
+    </phase1>
+    <phase2>
+      <ikeid>1</ikeid>
+      <uniqid>67a8a1106049c</uniqid>
+      <mode>route-based</mode>
+      <lifetime>27000</lifetime>
+      <descr>Azure VNET</descr>
+      <protocol>esp</protocol>
+      <tunnel_local>10.111.1.1</tunnel_local>
+      <tunnel_remote>10.111.1.2</tunnel_remote>
+      <encryption-algorithm-option>
+        <name>aes256</name>
+      </encryption-algorithm-option>
+      <hash-algorithm-option>hmac_sha256</hash-algorithm-option>
+      <reqid>1</reqid>
+    </phase2>
+    <client/>
+    <enable>1</enable>
+  </ipsec>
 </opnsense>
