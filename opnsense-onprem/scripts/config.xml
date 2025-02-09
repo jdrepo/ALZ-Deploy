@@ -334,14 +334,6 @@
       <type>none</type>
       <virtual>1</virtual>
     </lo0>
-    <enc0>
-<internal_dynamic>1</internal_dynamic>
-<enable>1</enable>
-<if>enc0</if>
-<descr>IPsec</descr>
-<type>none</type>
-<virtual>1</virtual>
-</enc0>
   </interfaces>
   <snmpd>
     <syslocation/>
