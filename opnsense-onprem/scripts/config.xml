@@ -263,7 +263,7 @@
     <firmware version="1.0.1">
       <mirror/>
       <flavour/>
-      <plugins/>
+      <plugins>os-ddclient</plugins>
       <type/>
       <subscription/>
       <reboot/>
@@ -1326,6 +1326,35 @@
     <OpenVPNExport version="0.0.1">
       <servers/>
     </OpenVPNExport>
+    <DynDNS version="1.5.1">
+      <general>
+        <enabled>1</enabled>
+        <verbose>0</verbose>
+        <allowipv6>0</allowipv6>
+        <daemon_delay>300</daemon_delay>
+        <backend>opnsense</backend>
+      </general>
+      <accounts>
+        <account>
+          <enabled>1</enabled>
+          <service>duckdns</service>
+          <protocol/>
+          <server/>
+          <username/>
+          <password>ab67611e-bdc8-45e3-a3e8-e4cc9c26ab28</password>
+          <resourceId/>
+          <hostnames>onprem-canary.duckdns.org</hostnames>
+          <wildcard>0</wildcard>
+          <zone/>
+          <checkip>web_freedns</checkip>
+          <checkip_timeout>10</checkip_timeout>
+          <force_ssl>1</force_ssl>
+          <ttl>300</ttl>
+          <interface/>
+          <description/>
+        </account>
+      </accounts>
+      </DynDNS>
   </OPNsense>
   <cert uuid="5d837056-5378-4757-8306-0557102837bb">
     <refid>598102500f355</refid>
