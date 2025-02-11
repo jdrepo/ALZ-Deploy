@@ -36,6 +36,14 @@ on:
           - opnsense-single
           - no-nva
           - azfirewall-basic
+      vpngw:
+        description: 'VPN Gateway'
+        default: 'no-vpngw'
+        type: choice
+        options:
+          - vpngw-bgp
+          - vpngw-nobgp
+          - no-vpngw
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -60,6 +68,10 @@ on:
       nva:
         description: 'NVA solution'
         type: string
+      vpngw:
+        description: 'VPN Gateway type'
+        type: string
+        default: "vpngw-nobgp"
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -983,7 +995,7 @@ jobs:
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetwork-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -997,7 +1009,7 @@ jobs:
           resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
           template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetwork-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"   
@@ -1036,7 +1048,7 @@ jobs:
           #template: infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           template: ALZ-Bicep/infra-as-code/bicep/modules/hubNetworking/hubNetworking.bicep
           parameters: >-
-            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetwork-deployment-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_subPlacement:

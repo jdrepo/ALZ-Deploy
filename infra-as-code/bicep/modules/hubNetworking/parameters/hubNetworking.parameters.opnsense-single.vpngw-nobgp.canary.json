@@ -14,7 +14,7 @@
     "parHubNetworkAddressPrefix": {
       "value": "10.10.0.0/16"
     },
-	"parPrivateDnsZonesResourceGroup": {
+    "parPrivateDnsZonesResourceGroup": {
       "value": "rg-alz-canary-privatedns"
     },
     "parSubnets": {
@@ -42,6 +42,18 @@
           "ipAddressRange": "10.10.253.0/24",
           "networkSecurityGroupId": "",
           "routeTableId": ""
+        },
+        {
+          "name": "OPNS-Untrusted",
+          "ipAddressRange": "10.10.251.0/24",
+          "networkSecurityGroupId": "/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/networkSecurityGroups/nsg-untrusted-gwc-opnsense-alz-canary",
+          "routeTableId": ""
+        },
+        {
+          "name": "OPNS-Trusted",
+          "ipAddressRange": "10.10.250.0/24",
+          "networkSecurityGroupId": "/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/networkSecurityGroups/nsg-trusted-gwc-opnsense-alz-canary",
+          "routeTableId": ""
         }
       ]
     },
@@ -58,7 +70,7 @@
       "value": ""
     },
     "parAzBastionEnabled": {
-      "value": true
+      "value": false
     },
     "parAzBastionName": {
       "value": "bas-gwc-alz-canary"
@@ -79,7 +91,7 @@
       "value": "ddos-gwc-alz-canary"
     },
     "parAzFirewallEnabled": {
-      "value": true
+      "value": false
     },
     "parAzFirewallName": {
       "value": "azfw-gwc-alz-canary"
@@ -87,21 +99,14 @@
     "parAzFirewallPoliciesName": {
       "value": "azfwpol-gwc-alz-canary"
     },
-    "parAzFirewallPoliciesEnabled": {
-      "value": false
-    },
     "parAzFirewallTier": {
-      "value": "Basic"
+      "value": "Standard"
     },
     "parAzFirewallIntelMode": {
       "value": "Alert"
     },
     "parAzFirewallAvailabilityZones": {
-      "value": [
-        "1",
-        "2",
-        "3"
-      ]
+      "value": []
     },
     "parAzErGatewayAvailabilityZones": {
       "value": []
@@ -110,7 +115,7 @@
       "value": []
     },
     "parAzFirewallDnsProxyEnabled": {
-      "value": false
+      "value": true
     },
     "parAzFirewallDnsServers": {
       "value": []
@@ -132,7 +137,7 @@
       ]
     },
     "parVpnGatewayEnabled": {
-      "value": false
+      "value": true
     },
     "parVpnGatewayConfig": {
       "value": {
@@ -151,7 +156,9 @@
           "bgpPeeringAddress": "",
           "peerWeight": "5"
         },
-        "vpnClientConfiguration": {}
+        "vpnClientConfiguration": {},
+        "ipConfigurationName": "vnetGatewayConfig",
+        "ipConfigurationActiveActiveName": "vnetGatewayConfig2"
       }
     },
     "parExpressRouteGatewayEnabled": {
@@ -240,4 +247,3 @@
     }
   }
 }
-

@@ -79,7 +79,7 @@
       "value": "ddos-gwc-alz-canary"
     },
     "parAzFirewallEnabled": {
-      "value": false
+      "value": true
     },
     "parAzFirewallName": {
       "value": "azfw-gwc-alz-canary"
@@ -87,14 +87,21 @@
     "parAzFirewallPoliciesName": {
       "value": "azfwpol-gwc-alz-canary"
     },
+    "parAzFirewallPoliciesEnabled": {
+      "value": false
+    },
     "parAzFirewallTier": {
-      "value": "Standard"
+      "value": "Basic"
     },
     "parAzFirewallIntelMode": {
       "value": "Alert"
     },
     "parAzFirewallAvailabilityZones": {
-      "value": []
+      "value": [
+        "1",
+        "2",
+        "3"
+      ]
     },
     "parAzErGatewayAvailabilityZones": {
       "value": []
@@ -103,7 +110,7 @@
       "value": []
     },
     "parAzFirewallDnsProxyEnabled": {
-      "value": true
+      "value": false
     },
     "parAzFirewallDnsServers": {
       "value": []
@@ -144,7 +151,9 @@
           "bgpPeeringAddress": "",
           "peerWeight": "5"
         },
-        "vpnClientConfiguration": {}
+        "vpnClientConfiguration": {},
+        "ipConfigurationName": "vnetGatewayConfig",
+        "ipConfigurationActiveActiveName": "vnetGatewayConfig2"
       }
     },
     "parExpressRouteGatewayEnabled": {
