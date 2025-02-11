@@ -3,24 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "parTags": {
-      "value": {
-        "Environment": "canary"
-      }
+      "value": {}
     },
     "parLocation": {
       "value": "northeurope"
     },
     "parResourceGroupName": {
       "value": "rg-onprem"
-    },
-    "parLocationCode": {
-      "value": "neu"
-    },
-    "parTrustedSubnetName" : {
-      "value": "trustedSubnet"
-    },
-    "parUntrustedSubnetName" : {
-      "value": "untrustedSubnet"
     }
   }
 }
