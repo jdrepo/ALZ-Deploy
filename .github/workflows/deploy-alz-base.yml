@@ -246,20 +246,34 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # - name: Custom Policy Definitions - Validation
+      #   id: deploy_custom_policy_defs_validation
+      #   uses: azure/arm-deploy@v2
+      #   with:
+      #     scope: managementgroup
+      #     managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+      #     region: ${{ env.Location }}
+      #     template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
+      #     parameters: >-
+      #       infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json 
+      #       parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+      #     deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
+      #     failOnStdErr: false
+      #     deploymentMode: Validate
       - name: Custom Policy Definitions - Validation
         id: deploy_custom_policy_defs_validation
-        uses: azure/arm-deploy@v2
+        uses: azure/bicep-deploy@v2
         with:
+          type: deployment
+          operation: validate
+          name: deploy_custom_policy_defs_validation-${{ env.runNumber }}
+          location: ${{ env.Location }}
           scope: managementgroup
-          managementGroupId: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-          region: ${{ env.Location }}
-          template: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
+          management-group-id: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          template-file: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
           parameters: >-
             infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json 
             parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
-          deploymentName: deploy_custom_policy_defs_validation-${{ env.runNumber }}
-          failOnStdErr: false
-          deploymentMode: Validate
       - name: Custom Policy Definitions - Preview
         id: deploy_custom_policy_defs_preview
         uses: azure/arm-deploy@v2
