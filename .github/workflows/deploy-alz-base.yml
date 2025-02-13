@@ -268,7 +268,7 @@ jobs:
           operation: validate
           name: deploy_custom_policy_defs_validation-${{ env.runNumber }}
           location: ${{ env.Location }}
-          scope: managementgroup
+          scope: managementGroup
           management-group-id: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           template-file: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
           parameters-file: infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json 
