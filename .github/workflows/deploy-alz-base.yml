@@ -271,9 +271,8 @@ jobs:
           scope: managementgroup
           management-group-id: ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
           template-file: ALZ-Bicep/infra-as-code/bicep/modules/policy/definitions/customPolicyDefinitions.bicep
-          parameters: >-
-            infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json 
-            parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}
+          parameters-file: infra-as-code/bicep/modules/policy/definitions/parameters/customPolicyDefinitions.parameters.${{inputs.environment}}.json 
+          parameters: '{"parTargetManagementGroupId": "${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}" }'
       - name: Custom Policy Definitions - Preview
         id: deploy_custom_policy_defs_preview
         uses: azure/arm-deploy@v2
