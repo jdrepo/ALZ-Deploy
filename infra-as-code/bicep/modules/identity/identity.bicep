@@ -473,13 +473,12 @@ module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' =
       {
         remoteVirtualNetworkResourceId: parHubNetworkResourceId
         allowForwardedTraffic: true
-        allowGatewayTransit: false
+        allowGatewayTransit: varUseRemoteVpnGateway
         allowVirtualNetworkAccess: true
         remotePeeringAllowForwardedTraffic: true
         remotePeeringAllowVirtualNetworkAccess: true
         remotePeeringEnabled: true
         useRemoteGateways: varUseRemoteVpnGateway
-        remotePeeringAllowGatewayTransit: varUseRemoteVpnGateway
       }
     ]
   }
