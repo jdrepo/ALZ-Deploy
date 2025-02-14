@@ -25,6 +25,14 @@ on:
           - opnsense-single
           - no-nva
           - azfirewall-basic
+      vpngw:
+        description: 'VPN Gateway'
+        default: 'no-vpngw'
+        type: choice
+        options:
+          - vpngw-bgp
+          - vpngw-nobgp
+          - no-vpngw
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -49,6 +57,10 @@ on:
       nva:
         description: 'NVA solution'
         type: string
+      vpngw:
+        description: 'VPN Gateway type'
+        type: string
+        default: "vpngw-nobgp"
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -110,7 +122,7 @@ jobs:
           echo "$identityNetworkResourceId"
           echo "identityNetworkResourceId=$identityNetworkResourceId" >> $GITHUB_OUTPUT
           az account set -s "${{env.ConnectivitySubscriptionId}}"
-          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json) 
+          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}${{inputs.vpngw}}.${{inputs.environment}}.json) 
           hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
           echo "$hubNetworkResourceId"
           echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
@@ -182,7 +194,7 @@ jobs:
           echo "$identityNetworkResourceId"
           echo "identityNetworkResourceId=$identityNetworkResourceId" >> $GITHUB_OUTPUT
           az account set -s "${{env.ConnectivitySubscriptionId}}"
-          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json) 
+          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
           hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
           echo "$hubNetworkResourceId"
           echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
