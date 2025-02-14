@@ -119,6 +119,14 @@ param parContainerSubnetName string = 'container-subnet1'
 @sys.description('Hub VNet Resource Id to peer with.')
 param parHubNetworkResourceId string
 
+@allowed([
+  'no-vpngw'
+  'vpngw-nobgp'
+  'vpngw-bgp'
+])
+@sys.description('Hub VPN Gateway solution.')
+param parHubVpnGateway string
+
 @sys.description('VM admin user name')
 @secure()
 param parAdminUserName string
@@ -139,6 +147,7 @@ var varSubnetProperties = [ for (subnet, i) in parSubnets : {
   delegation: subnet.delegations
 }
 ]
+
 
 var _dep = deployment().name
 var varEnvironment = parTags.?Environment ?? 'canary'
@@ -173,6 +182,8 @@ var varDscSas = resSaDeployArtifacts.listServiceSas(resSaDeployArtifacts.apiVers
   signedProtocol: 'https'
   keyToSign: 'key1'
 }).serviceSasToken
+
+var varUseRemoteVpnGateway = (parHubVpnGateway == 'vpngw-nobgp' || parHubVpnGateway == 'vpngw-bgp')  ? true : false
 
 /*** EXISTING SUBSCRIPTION RESOURCES ***/
 
@@ -467,6 +478,8 @@ module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' =
         remotePeeringAllowForwardedTraffic: true
         remotePeeringAllowVirtualNetworkAccess: true
         remotePeeringEnabled: true
+        useRemoteGateways: varUseRemoteVpnGateway
+        remotePeeringAllowGatewayTransit: varUseRemoteVpnGateway
       }
     ]
   }

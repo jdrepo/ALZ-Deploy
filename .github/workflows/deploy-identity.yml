@@ -139,6 +139,7 @@ jobs:
             ./ALZ-Deploy/infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
+            parHubVpnGateway=${{inputs.vpngw}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -156,6 +157,7 @@ jobs:
             ./ALZ-Deploy/infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
+            parHubVpnGateway=${{inputs.vpngw}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -211,6 +213,7 @@ jobs:
             ./ALZ-Deploy/infra-as-code/bicep/modules/identity/parameters/identity.parameters.${{inputs.environment}}.json
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
+            parHubVpnGateway=${{inputs.vpngw}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity-${{ env.runNumber }}
           failOnStdErr: false
