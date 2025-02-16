@@ -41,7 +41,7 @@ elif [ "$4" = "TwoNics" ]; then
     cp config.xml /usr/local/etc/config.xml
 fi
 
-if [ -z "$9"]; then
+if [ ! -z "$9"]; then
    sed -i "" "s/aaa.aaa.aaa.aaa/$9/" /usr/local/etc/config.xml
 fi
 
