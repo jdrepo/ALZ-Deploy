@@ -44,6 +44,16 @@ param parTrustedSubnetName string = 'trustedSubnet'
 @sys.description('Trusted-Subnet Name.')
 param parTrustedSubnetRange string = '172.22.0.32/27'
 
+@sys.description('Windows subnet range.')
+param parWindowsSubnetRange string = ''
+
+@sys.description('External Load Balancer IP.')
+param parExternalLoadBalancerIp string = ''
+
+@sys.description('Secondary trusted NIC IP.')
+param parOpnSenseSecondaryTrustedNicIP string = ''
+
+
 @sys.description('Trusted-Subnet Name.')
 param parOnpremSubnetName string = 'onpremSubnet'
 
@@ -504,7 +514,7 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
       fileUris: [
         '${parOpnScriptURI}${parShellScriptName}'
       ]
-      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} "\'" "\'" "\'"1.1.1.1/32"\'" "\'" "\'" "\'"9.9.9.9"\'" '
+      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parWindowsSubnetRange} ${parExternalLoadBalancerIp} ${parOpnSenseSecondaryTrustedNicIP} ${parVpnGwPublicIp}'
     }
   }
 }
