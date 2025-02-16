@@ -50,6 +50,10 @@ param parOnpremSubnetName string = 'onpremSubnet'
 @sys.description('Define outbound destination ports or ranges for SSH or RDP that you want to access from Azure Bastion.')
 param parBastionOutboundSshRdpPorts array = ['22', '3389']
 
+@sys.description('Azure VPN Gateway IP address.')
+param parVpnGwPublicIp string = ''
+
+
 var _dep = deployment().name
 var varEnvironment = parTags.?Environment ?? 'canary'
 var varOpnsenseName = 'vm-${parLocationCode}-opnsense'
@@ -500,7 +504,7 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
       fileUris: [
         '${parOpnScriptURI}${parShellScriptName}'
       ]
-      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} "\'" "\'" "\'"1.1.1.1/32"\'" "\'" "\'" "\'" "\'" '
+      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} "\'" "\'" "\'"1.1.1.1/32"\'" "\'" "\'" "\'"9.9.9.9"\'" '
     }
   }
 }
