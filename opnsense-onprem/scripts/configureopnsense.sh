@@ -9,6 +9,7 @@
 # $6 = Windows-VM-Subnet subnet prefix - used to route/nat allow internet access from Windows Management VM
 # $7 = ELB VIP Address
 # $8 = Private IP Secondary Server
+# $9 = Azure VPN Gateway IP
 
 # Check if Primary or Secondary Server to setup Firewal Sync
 # Note: Firewall Sync should only be setup in the Primary Server
@@ -39,6 +40,11 @@ elif [ "$4" = "TwoNics" ]; then
     # sed -i "" "s_zzz.zzz.zzz.zzz_$6_" config.xml
     cp config.xml /usr/local/etc/config.xml
 fi
+
+if [ -z "$9"]; then
+   sed -i "" "s/aaa.aaa.aaa.aaa/$9/" /usr/local/etc/config.xml
+fi
+
 
 #OPNSense default configuration template
 #fetch https://raw.githubusercontent.com/dmauser/opnazure/dev_active_active/scripts/$1
