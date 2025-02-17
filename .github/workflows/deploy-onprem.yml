@@ -51,9 +51,13 @@ on:
         required: false
       AZURE_SUBSCRIPTION_ID:
         required: false
+      CONNECTIVITY_SUB_ID:
+        required: false
+
 env:
   ManagementGroupSuffix: "-${{inputs.environment}}"
   onpremSubscriptionId: ${{secrets.ONPREM_SUB_ID}}
+  ConnectivitySubId: ${{ secrets.CONNECTIVITY_SUB_ID }}
   onpremResourceGroupName: "rg-${{inputs.environment}}-onprem"
   Location: ${{inputs.location}}
   runNumber: ${{ github.run_number }}
@@ -87,6 +91,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install xmlstarlet
+      # - name: Get existing resources
+      #   id: get_resources
+      #   uses: azure/cli@v2
+      #   with:
+      #     azcliversion: latest
+      #     inlineScript: |
+      #       az account set -s "${{env.ConnectivitySubId}}"
+      #       hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+      #       hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+      #       echo "$hubNetworkResourceId"
+      #       echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
       - name: Onprem - Validation
         id: onprem_validation
         uses: azure/arm-deploy@v2
@@ -94,9 +109,9 @@ jobs:
           scope: subscription
           subscriptionId: ${{ env.onpremSubscriptionId }}
           region: ${{ env.Location }}
-          template: infra-as-code/bicep/modules/onprem/onprem.bicep
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/onprem.bicep
           parameters: >-
-            infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
           deploymentName: onprem-validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -108,9 +123,9 @@ jobs:
           scope: subscription
           subscriptionId: ${{ env.onpremSubscriptionId }}
           region: ${{ env.Location }}
-          template: infra-as-code/bicep/modules/onprem/onprem.bicep
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/onprem.bicep
           parameters: >-
-            infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
           deploymentName: onprem-preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -147,9 +162,9 @@ jobs:
         scope: subscription
         subscriptionId: ${{ env.onpremSubscriptionId }}
         region: ${{ env.Location }}
-        template: infra-as-code/bicep/modules/onprem/onprem.bicep
+        template: ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/onprem.bicep
         parameters: >-
-          infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
+          ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
           parResourceGroupName=${{ env.onpremResourceGroupName }}
         deploymentName: onprem-deployment-${{ env.runNumber }}
         failOnStdErr: false
