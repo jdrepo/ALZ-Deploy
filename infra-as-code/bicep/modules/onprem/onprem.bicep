@@ -431,7 +431,7 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
   name: '${_dep}-opnsense'
   scope: resourceGroup(parResourceGroupName)
   dependsOn: [
-    modKv
+    modKv,modKvPasswordOpnsense
   ]
   params: {
     name: varOpnsenseName
@@ -522,7 +522,7 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
 module modDc1 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-Vm1'
-  dependsOn: [modKv]
+  dependsOn: [modKv,modKvPasswordDC1]
   params: {
     location: parLocation
     tags: parTags
