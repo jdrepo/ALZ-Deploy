@@ -37,7 +37,7 @@ elif [ "$4" = "TwoNics" ]; then
     fetch $1get_nic_gw.py
     gwip=$(python get_nic_gw.py $5)
     sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config.xml
-    sed -i "" "s/aaa.aaa.aaa.aaa/$3/" config.xml
+    sed -i "" "s/aaa.aaa.aaa.aaa/$6/" config.xml
     # sed -i "" "s_zzz.zzz.zzz.zzz_$6_" config.xml
     cp config.xml /usr/local/etc/config.xml
 fi
