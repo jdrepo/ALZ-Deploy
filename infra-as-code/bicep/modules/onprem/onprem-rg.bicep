@@ -12,8 +12,11 @@ param parLocation string = 'northeurope'
 @sys.description('Name of resource group.')
 param parResourceGroupName string = 'rg-onprem'
 
+
+var _dep = deployment().name
+
 module modOnpremRg 'br/public:avm/res/resources/resource-group:0.4.1' = {
-  name: 'deploy-onprem-rg'
+  name: '${_dep}-deploy-onprem-rg'
   params: {
     name: parResourceGroupName
     location: parLocation
