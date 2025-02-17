@@ -127,6 +127,7 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
+            parVpnGwPublicIp="72.144.145.198"
           deploymentName: onprem-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -155,6 +156,7 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
+            parVpnGwPublicIp="72.144.145.198"
           deploymentName: onprem-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -207,6 +209,7 @@ jobs:
         parameters: >-
           ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
           parResourceGroupName=${{ env.onpremResourceGroupName }}
+          parVpnGwPublicIp="72.144.145.198"
         deploymentName: onprem-deployment-${{ env.runNumber }}
         failOnStdErr: false
     
