@@ -27,6 +27,10 @@ on:
           - vpngw-bgp
           - vpngw-nobgp
           - no-vpngw
+      hubrgname:
+        description: 'Hub Network RG Name'
+        type: string
+        default: 'rg-alz-canary-hub-networking-001'
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -51,6 +55,10 @@ on:
         description: 'VPN Gateway type'
         type: string
         default: "vpngw-nobgp"
+      hubrgname:
+        description: 'Hub Network RG Name'
+        type: string
+        default: 'rg-alz-canary-hub-networking-001'
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -112,10 +120,13 @@ jobs:
             az account set -s "${{env.ConnectivitySubId}}"
             publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
             vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+            pipId=$(az network public-ip list --out tsv --query "[?name=='pip-gwc-vpng-gwc-alz-canary'].id")
             echo "$publicIpPrefix"
             echo "$vpnGatewayName"
+            echo "$pipId"
             echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
+
       - name: Onprem RG - Validation
         id: onprem_rg_validation
         uses: azure/arm-deploy@v2
