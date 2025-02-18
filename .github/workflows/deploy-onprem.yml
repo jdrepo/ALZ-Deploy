@@ -19,6 +19,14 @@ on:
         type: choice
         options:
           - opnsense-single
+      vpngw:
+        description: 'VPN Gateway'
+        default: 'vpngw-nobgp'
+        type: choice
+        options:
+          - vpngw-bgp
+          - vpngw-nobgp
+          - no-vpngw
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -39,6 +47,10 @@ on:
       nva:
         description: 'NVA solution'
         type: string
+      vpngw:
+        description: 'VPN Gateway type'
+        type: string
+        default: "vpngw-nobgp"
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -91,17 +103,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install xmlstarlet
-      # - name: Get existing resources
-      #   id: get_resources
-      #   uses: azure/cli@v2
-      #   with:
-      #     azcliversion: latest
-      #     inlineScript: |
-      #       az account set -s "${{env.ConnectivitySubId}}"
-      #       hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
-      #       hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
-      #       echo "$hubNetworkResourceId"
-      #       echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.ConnectivitySubId}}"
+            publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+            vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+            echo "$publicIpPrefix"
+            echo "$vpnGatewayName"
+            echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
+            echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
       - name: Onprem RG - Validation
         id: onprem_rg_validation
         uses: azure/arm-deploy@v2
