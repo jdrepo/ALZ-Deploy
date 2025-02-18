@@ -120,13 +120,16 @@ jobs:
             az account set -s "${{env.ConnectivitySubId}}"
             publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
             vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
-            pipId=$(az network public-ip list --out tsv --query "[?name=='pip-gwc-vpng-gwc-alz-canary'].id")
+            publicIpId=$(az network public-ip list --out tsv --query "[?name=='pip-gwc-vpng-gwc-alz-canary'].id")
+            vpnGatewayIp=$(az network public-ip show --ids $pipid --query "ipAddress" --out tsv)
             echo "$publicIpPrefix"
             echo "$vpnGatewayName"
-            echo "$pipId"
+            echo "$publicIpId"
+            echo "$vpnGatewayIp"
             echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
-
+            echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
+            echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
       - name: Onprem RG - Validation
         id: onprem_rg_validation
         uses: azure/arm-deploy@v2
