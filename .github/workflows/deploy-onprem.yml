@@ -27,10 +27,6 @@ on:
           - vpngw-bgp
           - vpngw-nobgp
           - no-vpngw
-      hubrgname:
-        description: 'Hub Network RG Name'
-        type: string
-        default: 'rg-alz-canary-hub-networking-001'
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -55,10 +51,6 @@ on:
         description: 'VPN Gateway type'
         type: string
         default: "vpngw-nobgp"
-      hubrgname:
-        description: 'Hub Network RG Name'
-        type: string
-        default: 'rg-alz-canary-hub-networking-001'
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -120,7 +112,7 @@ jobs:
             az account set -s "${{env.ConnectivitySubId}}"
             publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
             vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
-            publicIpId=$(az network public-ip list --out tsv --query "[?name=='pip-gwc-vpng-gwc-alz-canary'].id")
+            publicIpId=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
             vpnGatewayIp=$(az network public-ip show --ids $publicIpId --query "ipAddress" --out tsv)
             echo "$publicIpPrefix"
             echo "$vpnGatewayName"
@@ -155,7 +147,7 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-            parVpnGwPublicIp="72.144.145.198"
+            parVpnGwPublicIp=${{ steps.get_resources.outputs.vpnGatewayIp}}
           deploymentName: onprem-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -184,7 +176,7 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-            parVpnGwPublicIp="72.144.145.198"
+            parVpnGwPublicIp=${{ steps.get_resources.outputs.vpnGatewayIp}}
           deploymentName: onprem-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -213,6 +205,25 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get -y install xmlstarlet
+    - name: Get existing resources
+      id: get_resources
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{env.ConnectivitySubId}}"
+          publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+          vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+          publicIpId=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
+          vpnGatewayIp=$(az network public-ip show --ids $publicIpId --query "ipAddress" --out tsv)
+          echo "$publicIpPrefix"
+          echo "$vpnGatewayName"
+          echo "$publicIpId"
+          echo "$vpnGatewayIp"
+          echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
+          echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
+          echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
+          echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
     - name: Onprem RG - Deployment
       id: onprem_rg_deploy
       uses: azure/arm-deploy@v2
@@ -237,7 +248,7 @@ jobs:
         parameters: >-
           ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
           parResourceGroupName=${{ env.onpremResourceGroupName }}
-          parVpnGwPublicIp="72.144.145.198"
+          parVpnGwPublicIp=${{ steps.get_resources.outputs.vpnGatewayIp}}
         deploymentName: onprem-deployment-${{ env.runNumber }}
         failOnStdErr: false
     
