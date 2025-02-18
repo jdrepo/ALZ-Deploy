@@ -65,6 +65,8 @@ param parVpnGwPublicIp string = ''
 
 
 var _dep = deployment().name
+var deployerObjectId = deployer().objectId
+
 var varEnvironment = parTags.?Environment ?? 'canary'
 var varOpnsenseName = 'vm-${parLocationCode}-opnsense'
 var varVnetName = 'vnet-${parLocationCode}-onprem'
@@ -104,15 +106,13 @@ var varSubnets = [
 ])
 param parScenarioOption string = 'TwoNics'
 
-
-
-// module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.1' = {
-//   name: '${_dep}-onprem-resource-group'
-//   params: {
-//     name: parResourceGroupName
-//     location: parLocation
-//   }
-// }
+module modRoleAssignSubscriptionOwner '../../../../../bicep-registry-modules/avm/ptn/authorization/role-assignment/modules/subscription.bicep' = {
+  name: '${_dep}-roleassign-sub-owner'
+  params: {
+    principalId: deployerObjectId
+    roleDefinitionIdOrName: 'Owner'
+  }
+}
 
 module modNsgUntrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.0' = {
   scope: resourceGroup(parResourceGroupName)
