@@ -121,7 +121,7 @@ jobs:
             publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
             vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
             publicIpId=$(az network public-ip list --out tsv --query "[?name=='pip-gwc-vpng-gwc-alz-canary'].id")
-            vpnGatewayIp=$(az network public-ip show --ids $pipid --query "ipAddress" --out tsv)
+            vpnGatewayIp=$(az network public-ip show --ids $publicIpId --query "ipAddress" --out tsv)
             echo "$publicIpPrefix"
             echo "$vpnGatewayName"
             echo "$publicIpId"
