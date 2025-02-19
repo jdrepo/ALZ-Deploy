@@ -324,6 +324,7 @@ jobs:
           failOnStdErr: false
   validate_preview_custom_role_definitions:
     runs-on: ubuntu-latest
+    if: ${{ always() }}
     needs: [lint,deploy_custom_policy_defs]
     name: Custom Role Definitions - Validation and Preview
     steps:
@@ -1845,6 +1846,7 @@ jobs:
           parameters: >-
             infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json            
             parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
+            parHubVpnGateway=${{inputs.vpngw}}
           deploymentName: deploy_identityNetwork_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -1860,6 +1862,7 @@ jobs:
           parameters: >-
             infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json    
             parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
+            parHubVpnGateway=${{inputs.vpngw}}
           deploymentName: deploy_identityNetwork_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"   
@@ -1908,6 +1911,7 @@ jobs:
           parameters: >-
             infra-as-code/bicep/modules/identityNetworking/parameters/identityNetworking.parameters.${{inputs.nva}}.${{inputs.environment}}.json      
             parHubNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
+            parHubVpnGateway=${{inputs.vpngw}}
           deploymentName: deploy_identityNetwork_deployment-${{ env.runNumber }}
           failOnStdErr: false
   wipe:

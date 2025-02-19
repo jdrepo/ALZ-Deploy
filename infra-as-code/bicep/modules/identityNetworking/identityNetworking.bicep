@@ -87,6 +87,14 @@ param parDnsServerIps array = []
 @sys.description('Hub VNet Resource Id to peer with.')
 param parHubNetworkResourceId string
 
+@allowed([
+  'no-vpngw'
+  'vpngw-nobgp'
+  'vpngw-bgp'
+])
+@sys.description('Hub VPN Gateway solution.')
+param parHubVpnGateway string = 'no-vpngw'
+
 @sys.description('''Resource Lock Configuration for Virtual Network.
 
 - `kind` - The lock settings of the service which can be CanNotDelete, ReadOnly, or None.
@@ -126,6 +134,8 @@ var varSubnetProperties = [ for (subnet, i) in parSubnets : {
 
 var _dep = deployment().name
 
+var varUseRemoteVpnGateway = (parHubVpnGateway == 'vpngw-nobgp' || parHubVpnGateway == 'vpngw-bgp')  ? true : false
+
 
 module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
   name: 'deploy-Identity-VNet-AVM'
@@ -148,11 +158,13 @@ module modIdentityVNetAVM 'br/public:avm/res/network/virtual-network:0.5.1' = {
       {
         remoteVirtualNetworkResourceId: parHubNetworkResourceId
         allowForwardedTraffic: true
-        allowGatewayTransit: false
+        // allowGatewayTransit: varUseRemoteVpnGateway
         allowVirtualNetworkAccess: true
         remotePeeringAllowForwardedTraffic: true
         remotePeeringAllowVirtualNetworkAccess: true
         remotePeeringEnabled: true
+        useRemoteGateways: varUseRemoteVpnGateway
+        remotePeeringAllowGatewayTransit: varUseRemoteVpnGateway
       }
     ]
   }

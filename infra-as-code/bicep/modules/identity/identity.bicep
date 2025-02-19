@@ -125,7 +125,7 @@ param parHubNetworkResourceId string
   'vpngw-bgp'
 ])
 @sys.description('Hub VPN Gateway solution.')
-param parHubVpnGateway string
+param parHubVpnGateway string = 'no-vpngw'
 
 @sys.description('VM admin user name')
 @secure()
@@ -473,12 +473,13 @@ module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' =
       {
         remoteVirtualNetworkResourceId: parHubNetworkResourceId
         allowForwardedTraffic: true
-        allowGatewayTransit: varUseRemoteVpnGateway
+        // allowGatewayTransit: varUseRemoteVpnGateway
         allowVirtualNetworkAccess: true
         remotePeeringAllowForwardedTraffic: true
         remotePeeringAllowVirtualNetworkAccess: true
         remotePeeringEnabled: true
         useRemoteGateways: varUseRemoteVpnGateway
+        remotePeeringAllowGatewayTransit: varUseRemoteVpnGateway
       }
     ]
   }
