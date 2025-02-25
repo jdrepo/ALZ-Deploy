@@ -153,6 +153,7 @@ jobs:
           az bicep build --file infra-as-code/bicep/modules/policy/definitions/additionalCustomPolicyDefinitions.bicep
           az bicep build --file infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
           az bicep build --file infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
+          az bicep build --file infra-as-code/bicep/modules/hubNetworking/hubNetworkingVPN.bicep
   validate_preview_create_mgs:
     runs-on: ubuntu-latest
     needs: [lint]
@@ -325,7 +326,6 @@ jobs:
           failOnStdErr: false
   validate_preview_custom_role_definitions:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
     needs: [lint,deploy_custom_policy_defs]
     name: Custom Role Definitions - Validation and Preview
     steps:
@@ -1066,9 +1066,110 @@ jobs:
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
           deploymentName: deploy-hubNetwork-deployment-${{ env.runNumber }}
           failOnStdErr: false
-  validate_preview_subPlacement:
+  validate_preview_hubNetworkVPN:
+    if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}
     runs-on: ubuntu-latest
     needs: [deploy_hubNetwork]
+    environment: ${{inputs.environment}}
+    name: Hub Network VPN - Validation and Preview
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Hub Network VPN - Validation
+        id: deploy_hubNetworkVPN_validation
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingVPN.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingVPN.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
+            parOnpremVPNGatewayDNS="onprem-canary.duckdns.org"
+            parOnpremAddressSpace="['172.22.0.0/16']"
+            parVPNGatewayResourceId="/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/virtualNetworkGateways/vpng-gwc-alz-canary"
+          deploymentName: deploy-hubNetworkVPN-validation-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+      - name: Deploy Hub Network VPN - Preview
+        id: deploy_hubNetworkVPN_preview
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingVPN.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingVPN.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
+            parOnpremVPNGatewayDNS="onprem-canary.duckdns.org"
+            parOnpremAddressSpace="['172.22.0.0/16']"
+            parVPNGatewayResourceId="/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/virtualNetworkGateways/vpng-gwc-alz-canary"
+          deploymentName: deploy-hubNetworkVPN-preview-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"
+  deploy_hubNetworkVPN:
+    if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}
+    runs-on: ubuntu-latest
+    needs: [validate_preview_hubNetworkVPN]
+    environment: ${{inputs.environment}}
+    name: Hub Network VPN - Deployment
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Checkout ALZ-Bicep Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/ALZ-Bicep
+          path: ALZ-Bicep
+          ref: ${{ env.alzBicepRelease }}
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy Hub Network VPN - Validation
+        id: deploy_hubNetworkVPN_validation
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.HubNetworkResourceGroupName }}
+          template: infra-as-code/bicep/modules/hubNetworking/hubNetworkingVPN.bicep
+          parameters: >-
+            infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingVPN.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
+            parOnpremVPNGatewayDNS="onprem-canary.duckdns.org"
+            parOnpremAddressSpace="['172.22.0.0/16']"
+            parVPNGatewayResourceId="/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/virtualNetworkGateways/vpng-gwc-alz-canary"
+          deploymentName: deploy-hubNetworkVPN-${{ env.runNumber }}
+          failOnStdErr: false
+  validate_preview_subPlacement:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: [deploy_hubNetworkVPN]
     name: Deploy Sub Placement - Validation and Preview
     steps:
       - name: Checkout Repo
