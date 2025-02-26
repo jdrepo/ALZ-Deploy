@@ -1091,6 +1091,19 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.ConnectivitySubId}}"
+            vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+            vpnGatewayResourceId=$(az network vnet-gateway show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $vpnGatewayName --query id)
+            echo "$vpnGatewayName"
+            echo "vpnGatewayResourceId"
+            echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
+            echo "vpnGatewayResourceId=$vpnGatewayResourceId" >> "$GITHUB_OUTPUT" 
       - name: Hub Network VPN - Validation
         id: deploy_hubNetworkVPN_validation
         uses: azure/arm-deploy@v2
@@ -1104,7 +1117,7 @@ jobs:
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingVPN.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
             parOnpremVPNGatewayDNS="onprem-canary.duckdns.org"
             parOnpremAddressSpace="['172.22.0.0/16']"
-            parVPNGatewayResourceId="/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/virtualNetworkGateways/vpng-gwc-alz-canary"
+            parVPNGatewayResourceId=${{ steps.get_resources.outputs.vpnGatewayResourceId}}
           deploymentName: deploy-hubNetworkVPN-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -1121,7 +1134,7 @@ jobs:
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingVPN.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
             parOnpremVPNGatewayDNS="onprem-canary.duckdns.org"
             parOnpremAddressSpace="['172.22.0.0/16']"
-            parVPNGatewayResourceId="/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/virtualNetworkGateways/vpng-gwc-alz-canary"
+            parVPNGatewayResourceId=${{ steps.get_resources.outputs.vpnGatewayResourceId}}
           deploymentName: deploy-hubNetworkVPN-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -1150,8 +1163,21 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Deploy Hub Network VPN - Validation
-        id: deploy_hubNetworkVPN_validation
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.ConnectivitySubId}}"
+            vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+            vpnGatewayResourceId=$(az network vnet-gateway show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $vpnGatewayName --query id)
+            echo "$vpnGatewayName"
+            echo "vpnGatewayResourceId"
+            echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
+            echo "vpnGatewayResourceId=$vpnGatewayResourceId" >> "$GITHUB_OUTPUT" 
+      - name: Hub Network VPN - Deployment
+        id: deploy_hubNetworkVPN
         uses: azure/arm-deploy@v2
         with:
           scope: resourcegroup
@@ -1163,7 +1189,7 @@ jobs:
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingVPN.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
             parOnpremVPNGatewayDNS="onprem-canary.duckdns.org"
             parOnpremAddressSpace="['172.22.0.0/16']"
-            parVPNGatewayResourceId="/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/virtualNetworkGateways/vpng-gwc-alz-canary"
+            parVPNGatewayResourceId=${{ steps.get_resources.outputs.vpnGatewayResourceId}}
           deploymentName: deploy-hubNetworkVPN-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_subPlacement:

@@ -14,12 +14,13 @@ jobs:
     uses: ./.github/workflows/deploy-alz-base.yml
     with:
       environment: "canary"
-      alzBicepRelease: "v0.20.2"
+      alzBicepRelease: "v0.21.0"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
       #nva: 'opnsense-single'
       nva: ${{vars.NVA_CANARY}}
+      vpngw: ${{vars.VPNGW_CANARY}}
     secrets:
       LOGGING_SUB_ID: ${{ secrets.LOGGING_SUB_ID_CANARY }}
       IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_CANARY}}
@@ -29,6 +30,15 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
+  deploy-onprem-canary:
+    name: "Deploy onprem infrastructure"
+    uses: ./.github/workflows/deploy-onprem.yml
+    with:
+      environment: "canary"
+      deploy: true
+      location: "northeurope"
+      nva: "opnsense-single"
+      vpngw: ${{vars.VPNGW_CANARY}}
   alz-deploy-opnsense-canary:
     if: ${{ vars.NVA_CANARY == 'opnsense-single'  }}
     needs: [alz-deploy-base-canary]
@@ -86,7 +96,7 @@ jobs:
     uses: ./.github/workflows/deploy-alz-base.yml
     with:
       environment: "prod"
-      alzBicepRelease: "v0.20.2"
+      alzBicepRelease: "v0.21.0"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false

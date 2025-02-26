@@ -1,4 +1,4 @@
-name: 00. Deploy Onpremise Environment
+name: 00. Deploy Onpremise Network Infrastructure
 
 on:
   workflow_dispatch:
