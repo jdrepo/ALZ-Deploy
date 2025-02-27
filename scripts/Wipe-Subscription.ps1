@@ -69,7 +69,7 @@ function Invoke-RemoveOrphanedRoleAssignment {
     # return `objectType : "unknown"` for all assignments with no errors.
 
     # Get Role Assignments
-    $getRequestPath = "/subscriptions/$($subId)/providers/Microsoft.Authorization/roleAssignments?api-version=$($latestRoleAssignmentsApiVersions)"
+    $getRequestPath = "/subscriptions/$($SubscriptionId)/providers/Microsoft.Authorization/roleAssignments?api-version=$($latestRoleAssignmentsApiVersions)"
     $getResponse = Invoke-AzRestMethod -Method "GET" -Path $getRequestPath
     $roleAssignments = ($getResponse.Content | ConvertFrom-Json).value
 
@@ -95,12 +95,12 @@ function Invoke-RemoveOrphanedRoleAssignment {
 
     # Find all Role Assignments where the principalId is not found in AAD
     $orphanedRoleAssignments = $roleAssignments | Where-Object {
-            ($_.properties.scope -eq "/subscriptions/$($subId)") -and
+            ($_.properties.scope -eq "/subscriptions/$($SubscriptionId)") -and
             ($_.properties.principalId -notin $principalIds)
     }
 
     # Delete orphaned Role Assignments
-    Write-Information "$($WhatIfPrefix)Deleting [$($orphanedRoleAssignments.Length)] orphaned Role Assignments for Subscription [$($subId)]" -InformationAction Continue
+    Write-Information "$($WhatIfPrefix)Deleting [$($orphanedRoleAssignments.Length)] orphaned Role Assignments for Subscription [$($SubscriptionId)]" -InformationAction Continue
     $orphanedRoleAssignments | ForEach-Object {
         if ($PSCmdlet.ShouldProcess("$($_.id)", "Remove-AzRoleAssignment")) {
             $deleteRequestPath = "$($_.id)?api-version=$($latestRoleAssignmentsApiVersions)"
