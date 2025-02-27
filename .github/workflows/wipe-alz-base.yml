@@ -1,4 +1,4 @@
-name: 89. Wipe ALZ Base Components 
+name: 84. Wipe ALZ Base / NVA / Identity 
 
 on:
   workflow_dispatch:
