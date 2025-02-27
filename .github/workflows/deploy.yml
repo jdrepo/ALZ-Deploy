@@ -39,6 +39,12 @@ jobs:
       location: "northeurope"
       nva: "opnsense-single"
       vpngw: ${{vars.VPNGW_CANARY}}
+    secrets:
+      ONPREM_SUB_ID: ${{ secrets.ONPREM_SUB_ID_CANARY}}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
+      CONNECTIVITY_SUB_ID: ${{ secrets.CONNECTIVITY_SUB_ID_CANARY}}
   alz-deploy-opnsense-canary:
     if: ${{ vars.NVA_CANARY == 'opnsense-single'  }}
     needs: [alz-deploy-base-canary]
