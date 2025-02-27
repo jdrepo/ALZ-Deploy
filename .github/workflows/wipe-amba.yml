@@ -1,4 +1,4 @@
-name: 86. Wipe AMBA from ALZ environment 
+name: 81. Wipe AMBA from ALZ environment 
 
 on:
   workflow_dispatch:
