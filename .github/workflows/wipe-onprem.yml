@@ -7,9 +7,6 @@ on:
         default: "canary"
         required: true
         type: string
-      location:
-        default: "northeurope"
-        type: string
       
 
   workflow_call:
@@ -17,9 +14,6 @@ on:
       environment:
         default: "canary"
         required: true
-        type: string
-      location:
-        default: "northeurope"
         type: string
     secrets:
       ONPREM_SUB_ID:
@@ -38,7 +32,6 @@ env:
   onpremSubscriptionId: ${{secrets.ONPREM_SUB_ID}}
   ConnectivitySubId: ${{ secrets.CONNECTIVITY_SUB_ID }}
   onpremResourceGroupName: "rg-${{inputs.environment}}-onprem"
-  Location: ${{inputs.location}}
   runNumber: ${{ github.run_number }}
 
 permissions:
