@@ -33,8 +33,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
   onprem-wipe-canary:
-    name: "Wipe ALZ Base Components - Canary"
-    needs: [alz-wipe-base-canary]
+    name: "Wipe onprem infrastructure - Canary"
     uses: ./.github/workflows/wipe-onprem.yml
     with:
       environment: "canary"
