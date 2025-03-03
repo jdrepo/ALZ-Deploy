@@ -66,10 +66,12 @@ jobs:
     needs: 
       - alz-deploy-opnsense-canary
       - alz-deploy-base-canary
+      - deploy-onprem-canary
     if: |
       always() && 
       (needs.alz-deploy-base-canary.result == 'skipped' || needs.alz-deploy-base-canary.result == 'success') &&
-      (needs.alz-deploy-opnsense-canary.result == 'skipped' || needs.alz-deploy-opnsense-canary.result == 'success')
+      (needs.alz-deploy-opnsense-canary.result == 'skipped' || needs.alz-deploy-opnsense-canary.result == 'success') &&
+      (needs.deploy-onprem-canary.result == 'skipped' || needs.deploy-onprem-canary.result == 'success')
     name: "Deploy Identity - Canary"
     uses: ./.github/workflows/deploy-identity.yml
     with:
