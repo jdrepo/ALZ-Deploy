@@ -111,6 +111,8 @@ jobs:
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
+      nva: ${{vars.NVA_CANARY}}
+      vpngw: ${{vars.VPNGW_CANARY}}
     secrets:
       LOGGING_SUB_ID: ${{ secrets.LOGGING_SUB_ID_PROD }}
       IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_PROD}}
