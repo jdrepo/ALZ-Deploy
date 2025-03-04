@@ -106,13 +106,13 @@ var varSubnets = [
 ])
 param parScenarioOption string = 'TwoNics'
 
-module modRoleAssignSubscriptionOwner '../../../../../bicep-registry-modules/avm/ptn/authorization/role-assignment/modules/subscription.bicep' = {
-  name: '${_dep}-roleassign-sub-owner'
-  params: {
-    principalId: deployerObjectId
-    roleDefinitionIdOrName: 'Owner'
-  }
-}
+// module modRoleAssignSubscriptionOwner '../../../../../bicep-registry-modules/avm/ptn/authorization/role-assignment/modules/subscription.bicep' = {
+//   name: '${_dep}-roleassign-sub-owner'
+//   params: {
+//     principalId: deployerObjectId
+//     roleDefinitionIdOrName: 'Owner'
+//   }
+// }
 
 module modNsgUntrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.0' = {
   scope: resourceGroup(parResourceGroupName)
