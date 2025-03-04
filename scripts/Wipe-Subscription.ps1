@@ -93,6 +93,7 @@ function Invoke-RemoveOrphanedRoleAssignment {
     $principalsResponse = Invoke-AzRestMethod -Method "POST" -Uri $principalsRequestUri -Payload $principalsRequestBody -WhatIf:$false
     $principalIds = ($principalsResponse.Content | ConvertFrom-Json).value.id
 
+     Write-Host "principalsResponse: $($principalsResponse)"
      Write-Host "Principal IDs: $($principalIds)"
 
     # Find all Role Assignments where the principalId is not found in AAD
