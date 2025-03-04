@@ -99,7 +99,7 @@ function Invoke-RemoveOrphanedRoleAssignment {
             ($_.properties.principalId -notin $principalIds)
     }
 
-    Write-Host "Orphaned Role Assignment: $($orphanedRoleAssignments)"
+    Write-Host "Orphaned Role Assignment: $($orphanedRoleAssignments.properties)"
      
     # Delete orphaned Role Assignments
     Write-Information "$($WhatIfPrefix)Deleting [$($orphanedRoleAssignments.Length)] orphaned Role Assignments for Subscription [$($SubscriptionId)]" -InformationAction Continue
