@@ -27,10 +27,7 @@ on:
           - vpngw-bgp
           - vpngw-nobgp
           - no-vpngw
-      wipeAfterDeploy:
-        default: false
-        type: boolean
-
+      
   workflow_call:
     inputs:
       deploy:
@@ -51,9 +48,7 @@ on:
         description: 'VPN Gateway type'
         type: string
         default: "vpngw-nobgp"
-      wipeAfterDeploy:
-        default: false
-        type: boolean
+      
     secrets:
       ONPREM_SUB_ID:
         required: false
@@ -104,6 +99,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install xmlstarlet
       - name: Get existing resources
+        if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}        
         id: get_resources
         uses: azure/cli@v2
         with:
@@ -206,6 +202,7 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install xmlstarlet
     - name: Get existing resources
+      if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}          
       id: get_resources
       uses: azure/cli@v2
       with:
