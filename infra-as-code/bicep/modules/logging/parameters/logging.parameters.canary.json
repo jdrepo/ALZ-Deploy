@@ -35,7 +35,7 @@
       "value": "mi-gwc-logging-alz-canary"
     },
     "parLogAnalyticsWorkspaceLinkAutomationAccount": {
-      "value": true
+      "value": false
     },
     "parAutomationAccountName": {
       "value": "aa-gwc-alz-canary"
