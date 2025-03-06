@@ -177,7 +177,9 @@ jobs:
           failOnStdErr: false
           additionalArguments: "--what-if"
   onprem_deployment:
-    if: ${{ inputs.deploy }}
+    if: ${{ inputs.deploy }} && (needs.onprem_validation_preview.result == 'skipped' || needs.onprem_validation_preview.result == 'success')
+    needs:
+      - onprem_validation_preview
     runs-on: ubuntu-latest
     environment: ${{inputs.environment}}
     name: Onprem - Deployment
