@@ -22,6 +22,7 @@ on:
           - "v0.20.1"
           - "v0.20.2"
           - "v0.21.0"
+          - "v0.22.0"
       managementGroupPrefix:
         default: "alz"
         required: true
@@ -59,7 +60,7 @@ on:
         required: true
         type: string
       alzBicepRelease:
-        default: "v0.21.0"
+        default: "v0.22.0"
         required: true
         type: string
       managementGroupPrefix:
