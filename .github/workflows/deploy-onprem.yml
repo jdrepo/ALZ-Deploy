@@ -196,7 +196,7 @@ jobs:
           additionalArguments: "--what-if"
   onprem_deployment:
     # if: ${{ inputs.deploy }} && (needs.onprem_validation_preview.result == 'skipped' || needs.onprem_validation_preview.result == 'success')
-    if: (${{ inputs.deploy }} && (needs.onprem_validation_preview.result == 'success'))
+    if: (${{ inputs.deploy == true  }} && (needs.onprem_validation_preview.result == 'success'))
     needs:
       - onprem_validation_preview
     runs-on: ubuntu-latest
@@ -238,10 +238,14 @@ jobs:
           echo "$vpnGatewayName"
           echo "$publicIpId"
           echo "$vpnGatewayIp"
+          az account set -s "${{ env.onpremSubscriptionId }}"
+          opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
+          opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
           echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
           echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
           echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
           echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
+          echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
     - name: Check installed extension
       id: check_installed_extension
       run: |

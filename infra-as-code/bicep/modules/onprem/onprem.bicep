@@ -504,7 +504,7 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
 }
 
 
-module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute/virtual-machine/extension/main.bicep' = if (parInstallOpnsense == 'true')  {
+module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute/virtual-machine/extension/main.bicep' = if (parInstallOpnsense == 'yes')  {
   name: '${_dep}-opnsense-script-extension'
   dependsOn: [modOpnSense]
   scope: resourceGroup(parResourceGroupName)
