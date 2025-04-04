@@ -92,7 +92,7 @@ jobs:
       - alz-deploy-identity-canary
     if: |
       always() && 
-      (needs.alz-deploy-identity-canary.result == 'skipped' || needs.alz-deploy-identity-canary == 'success') 
+      (needs.alz-deploy-identity-canary.result == 'skipped' || needs.alz-deploy-identity-canary.result == 'success') 
     name: "Deploy AMBA - Canary"
     uses: ./.github/workflows/deploy-amba.yml
     with:
