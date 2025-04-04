@@ -24,6 +24,9 @@ param parShellScriptName string = 'configureopnsense.sh'
 @sys.description('OPN Version')
 param parOpnVersion string = '24.7'
 
+@sys.description('OPNsense VM name.')
+param parOpnsenseName string = 'vm-neu-opnsense'
+
 @sys.description('Azure WALinux agent Version')
 param parWALinuxVersion string = '2.12.0.2'
 
@@ -68,7 +71,6 @@ var _dep = deployment().name
 var deployerObjectId = deployer().objectId
 
 var varEnvironment = parTags.?Environment ?? 'canary'
-var varOpnsenseName = 'vm-${parLocationCode}-opnsense'
 var varVnetName = 'vnet-${parLocationCode}-onprem'
 var varDc1Name = 'vm-${parLocationCode}-dc1'
 
@@ -393,7 +395,7 @@ module modKvPasswordOpnsense '../keyVaultSecret/keyVaultSecret.bicep' = {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-kv-password-opnsensene'
   params: {
-    parSecretName: '${varOpnsenseName}-password'
+    parSecretName: '${parOpnsenseName}-password'
     parKeyVaultName: modKv.outputs.name
     parTags: parTags
     parSecretDeployIdentityId: modKv.outputs.SecretDeployIdentityId
@@ -435,10 +437,10 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
     modKv,modKvPasswordOpnsense
   ]
   params: {
-    name: varOpnsenseName
+    name: parOpnsenseName
     location: parLocation
     adminUsername: parAdminUserName
-    adminPassword: resKv.getSecret('${varOpnsenseName}-password')
+    adminPassword: resKv.getSecret('${parOpnsenseName}-password')
     secureBootEnabled: false
     vTpmEnabled: false
     timeZone: parTimeZone
@@ -510,7 +512,7 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
     publisher: 'Microsoft.OSTCExtensions'
     type: 'CustomScriptForLinux'
     typeHandlerVersion: '1.5'
-    virtualMachineName: varOpnsenseName
+    virtualMachineName: parOpnsenseName
     settings: {
       fileUris: [
         '${parOpnScriptURI}${parShellScriptName}'

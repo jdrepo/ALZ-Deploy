@@ -21,6 +21,9 @@
     },
     "parUntrustedSubnetName" : {
       "value": "untrustedSubnet"
+    },
+    "parOpnsenseName" : {
+      "value": "vm-neu-opnsense"
     }
   }
 }
