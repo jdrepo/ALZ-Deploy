@@ -130,6 +130,7 @@ jobs:
           if [ ${{ steps.get_resources.outputs.opnSenseCustomScriptExtensionId}} != 0 ]; then echo "Extension installed"
           else
             echo "Extension not installed"
+          fi
       - name: Onprem RG - Validation
         id: onprem_rg_validation
         uses: azure/arm-deploy@v2
