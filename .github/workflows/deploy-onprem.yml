@@ -5,7 +5,7 @@ on:
     inputs:
       deploy:
         description: 'Deploy after preview'
-        default: false
+        #default: false
         type: boolean
       environment:
         default: "canary"
@@ -196,7 +196,7 @@ jobs:
           additionalArguments: "--what-if"
   onprem_deployment:
     # if: ${{ inputs.deploy }} && (needs.onprem_validation_preview.result == 'skipped' || needs.onprem_validation_preview.result == 'success')
-    if: (${{ inputs.deploy == true  }} && (needs.onprem_validation_preview.result == 'skipped'))
+    if: (${{ inputs.deploy }} && (needs.onprem_validation_preview.result == 'skipped'))
     needs:
       - onprem_validation_preview
     runs-on: ubuntu-latest
