@@ -127,9 +127,12 @@ jobs:
       - name: Check installed extension
         id: check_installed_extension
         run: |
-          if [ ${{ steps.get_resources.outputs.opnSenseCustomScriptExtensionId}} != 0 ]; then echo "Extension installed"
+          if [ ${{ steps.get_resources.outputs.opnSenseCustomScriptExtensionId}} != 0 ]; 
+            then echo "OPNsense CustomScript Extension installed"
+            echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
           else
-            echo "Extension not installed"
+            echo "OPNsense CustomScript Extension not installed"
+            echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
           fi
       - name: Onprem RG - Validation
         id: onprem_rg_validation

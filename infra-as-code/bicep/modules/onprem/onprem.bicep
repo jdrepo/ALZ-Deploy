@@ -21,6 +21,9 @@ param parOpnScriptURI string = 'https://raw.githubusercontent.com/jdrepo/ALZ-Dep
 @sys.description('Shell Script to be executed')
 param parShellScriptName string = 'configureopnsense.sh'
 
+@sys.description('Install OPNsense with CustomScript extension')
+param parInstallOpnsense string = 'yes'
+
 @sys.description('OPN Version')
 param parOpnVersion string = '24.7'
 
@@ -501,7 +504,7 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
 }
 
 
-module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute/virtual-machine/extension/main.bicep' = {
+module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute/virtual-machine/extension/main.bicep' = if (parInstallOpnsense == 'true')  {
   name: '${_dep}-opnsense-script-extension'
   dependsOn: [modOpnSense]
   scope: resourceGroup(parResourceGroupName)
