@@ -110,14 +110,25 @@ jobs:
             vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
             publicIpId=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
             vpnGatewayIp=$(az network public-ip show --ids $publicIpId --query "ipAddress" --out tsv)
+            opnSenseName=$$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
+            opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
             echo "$publicIpPrefix"
             echo "$vpnGatewayName"
             echo "$publicIpId"
             echo "$vpnGatewayIp"
+            echo "$opnSenseName"
+            echo "$opnSenseCustomScriptExtensionId"
             echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
             echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
+            echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
+      - name: Check installed extension
+        run: |
+          if [ ${{ steps.get_resources.outputs.opnSenseCustomScriptExtensionId}}]; then
+            echo "Extension installed"
+          else
+            echo "Extension not installed"
       - name: Onprem RG - Validation
         id: onprem_rg_validation
         uses: azure/arm-deploy@v2
