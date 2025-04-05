@@ -98,9 +98,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install xmlstarlet
-      - name: Get existing resources
+      - name: Get existing Azure VPN Gateway resources
         if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}        
-        id: get_resources
+        id: get_vpngw_resources
         uses: azure/cli@v2
         with:
           azcliversion: latest
@@ -110,9 +110,6 @@ jobs:
             vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
             publicIpId=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
             vpnGatewayIp=$(az network public-ip show --ids $publicIpId --query "ipAddress" --out tsv)
-            az account set -s "${{ env.onpremSubscriptionId }}"
-            opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
-            opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
             echo "$publicIpPrefix"
             echo "$vpnGatewayName"
             echo "$publicIpId"
@@ -123,17 +120,23 @@ jobs:
             echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
             echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
+      - name: Check installed OPNsense CustomScript extension
+        id: check_installed_opns_extension
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{ env.onpremSubscriptionId }}"
+            opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
             echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
-      - name: Check installed extension
-        id: check_installed_extension
-        run: |
-          if [ ${{ steps.get_resources.outputs.opnSenseCustomScriptExtensionId}} != 0 ]; 
-            then echo "OPNsense CustomScript Extension installed"
-            echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
-          else
-            echo "OPNsense CustomScript Extension not installed"
-            echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
-          fi
+            opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
+            if [ -n $opnSenseCustomScriptExtensionId ]; 
+              then echo "OPNsense CustomScript Extension installed"
+              echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
+            else
+              echo "OPNsense CustomScript Extension not installed"
+              echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
+            fi
       - name: Onprem RG - Validation
         id: onprem_rg_validation
         uses: azure/arm-deploy@v2
@@ -159,8 +162,8 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-            parVpnGwPublicIp=${{ steps.get_resources.outputs.vpnGatewayIp}}
-            parInstallOpnsense=${{steps.check_installed_extension.outputs.install-opnsense}}
+            parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
+            parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
           deploymentName: onprem-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -189,14 +192,14 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-            parVpnGwPublicIp=${{ steps.get_resources.outputs.vpnGatewayIp}}
-            parInstallOpnsense=${{steps.check_installed_extension.outputs.install-opnsense}}
+            parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
+            parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
           deploymentName: onprem-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
   onprem_deployment:
     # if: ${{ inputs.deploy }} && (needs.onprem_validation_preview.result == 'skipped' || needs.onprem_validation_preview.result == 'success')
-    if: (${{ inputs.deploy }} && (needs.onprem_validation_preview.result == 'skipped'))
+    if: ${{ inputs.deploy && (needs.onprem_validation_preview.result == 'skipped')}}
     needs:
       - onprem_validation_preview
     runs-on: ubuntu-latest
@@ -222,9 +225,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get -y install xmlstarlet
-    - name: Get existing resources
-      if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}          
-      id: get_resources
+    - name: Get existing Azure VPN Gateway resources
+      if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}        
+      id: get_vpngw_resources
       uses: azure/cli@v2
       with:
         azcliversion: latest
@@ -280,7 +283,7 @@ jobs:
         parameters: >-
           ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
           parResourceGroupName=${{ env.onpremResourceGroupName }}
-          parVpnGwPublicIp=${{ steps.get_resources.outputs.vpnGatewayIp}}
+          parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
           parInstallOpnsense=${{steps.check_installed_extension.outputs.install-opnsense}}
         deploymentName: onprem-deployment-${{ env.runNumber }}
         failOnStdErr: false
