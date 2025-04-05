@@ -131,7 +131,7 @@ jobs:
             echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
             opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
             if [ -n $opnSenseCustomScriptExtensionId ]; 
-              then echo "OPNsense CustomScript Extension installed"
+              then echo "OPNsense CustomScript Extension already installed"
               echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
             else
               echo "OPNsense CustomScript Extension not installed"
@@ -198,8 +198,8 @@ jobs:
           failOnStdErr: false
           additionalArguments: "--what-if"
   onprem_deployment:
-    # if: ${{ inputs.deploy }} && (needs.onprem_validation_preview.result == 'skipped' || needs.onprem_validation_preview.result == 'success')
-    if: ${{ inputs.deploy && (needs.onprem_validation_preview.result == 'skipped')}}
+    if: ${{ inputs.deploy && (needs.onprem_validation_preview.result == 'skipped' || needs.onprem_validation_preview.result == 'success')}}
+    # if: ${{ inputs.deploy && (needs.onprem_validation_preview.result == 'skipped')}}
     needs:
       - onprem_validation_preview
     runs-on: ubuntu-latest
@@ -241,24 +241,27 @@ jobs:
           echo "$vpnGatewayName"
           echo "$publicIpId"
           echo "$vpnGatewayIp"
-          az account set -s "${{ env.onpremSubscriptionId }}"
-          opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
-          opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
           echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
           echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
           echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
           echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
+    - name: Check installed OPNsense CustomScript extension
+      id: check_installed_opns_extension
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{ env.onpremSubscriptionId }}"
+          opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
           echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
-    - name: Check installed extension
-      id: check_installed_extension
-      run: |
-        if [ ${{ steps.get_resources.outputs.opnSenseCustomScriptExtensionId}} != 0 ]; 
-          then echo "OPNsense CustomScript Extension installed"
-          echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
-        else
-          echo "OPNsense CustomScript Extension not installed"
-          echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
-        fi
+          opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
+          if [ -n $opnSenseCustomScriptExtensionId ]; 
+            then echo "OPNsense CustomScript Extension already installed"
+            echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "OPNsense CustomScript Extension not installed"
+            echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
+          fi
     - name: Onprem RG - Deployment
       id: onprem_rg_deploy
       uses: azure/arm-deploy@v2
@@ -284,7 +287,7 @@ jobs:
           ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
           parResourceGroupName=${{ env.onpremResourceGroupName }}
           parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
-          parInstallOpnsense=${{steps.check_installed_extension.outputs.install-opnsense}}
+          parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
         deploymentName: onprem-deployment-${{ env.runNumber }}
         failOnStdErr: false
     
