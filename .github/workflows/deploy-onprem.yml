@@ -273,15 +273,22 @@ jobs:
         inlineScript: |
           az account set -s "${{ env.onpremSubscriptionId }}"
           opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
-          echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
-          opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id" 2>/dev/null)
-          if [ -n $opnSenseCustomScriptExtensionId ]; 
+          if [[ $(az group exists -n ${{ env.onpremResourceGroupName }}) = true ]];
+            then
+              if [[ $(az vm list --resource-group ${{ env.onpremResourceGroupName }} --query "[?name=='$opnSenseName'] | length(@)") > 0 ]]; 
+                then 
+                  opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
+              fi  
+          fi
+          if [ -n "$opnSenseCustomScriptExtensionId" ]; 
             then echo "OPNsense CustomScript Extension already installed"
             echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
           else
             echo "OPNsense CustomScript Extension not installed"
             echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
           fi
+          echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
+          echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId"
     - name: Onprem - Deployment
       id: onprem_deployment
       uses: azure/arm-deploy@v2
