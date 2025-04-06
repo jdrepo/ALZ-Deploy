@@ -149,7 +149,7 @@ jobs:
                     opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
                 fi  
             fi
-            if [ -n $opnSenseCustomScriptExtensionId ]; 
+            if [ -n "$opnSenseCustomScriptExtensionId" ]; 
               then echo "OPNsense CustomScript Extension already installed"
               echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
             else
