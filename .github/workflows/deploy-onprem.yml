@@ -149,8 +149,6 @@ jobs:
                     opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
                 fi  
             fi
-            # az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id" 
-            echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
             if [ -n $opnSenseCustomScriptExtensionId ]; 
               then echo "OPNsense CustomScript Extension already installed"
               echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
@@ -158,6 +156,8 @@ jobs:
               echo "OPNsense CustomScript Extension not installed"
               echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
             fi
+            echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
+            echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId"
       - name: Onprem - Validation
         id: onprem_validation
         uses: azure/arm-deploy@v2
