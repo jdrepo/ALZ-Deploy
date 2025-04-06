@@ -120,23 +120,6 @@ jobs:
             echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
             echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
-      - name: Check installed OPNsense CustomScript extension
-        id: check_installed_opns_extension
-        uses: azure/cli@v2
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az account set -s "${{ env.onpremSubscriptionId }}"
-            opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
-            echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
-            opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
-            if [ -n $opnSenseCustomScriptExtensionId ]; 
-              then echo "OPNsense CustomScript Extension already installed"
-              echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
-            else
-              echo "OPNsense CustomScript Extension not installed"
-              echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
-            fi
       - name: Onprem RG - Validation
         id: onprem_rg_validation
         uses: azure/arm-deploy@v2
@@ -151,6 +134,23 @@ jobs:
           deploymentName: onprem-rg-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
+      - name: Check installed OPNsense CustomScript extension
+        id: check_installed_opns_extension
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{ env.onpremSubscriptionId }}"
+            opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
+            echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
+            opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id" 2>/dev/null)
+            if [ -n $opnSenseCustomScriptExtensionId ]; 
+              then echo "OPNsense CustomScript Extension already installed"
+              echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
+            else
+              echo "OPNsense CustomScript Extension not installed"
+              echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
+            fi
       - name: Onprem - Validation
         id: onprem_validation
         uses: azure/arm-deploy@v2
@@ -245,23 +245,6 @@ jobs:
           echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
           echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
           echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
-    - name: Check installed OPNsense CustomScript extension
-      id: check_installed_opns_extension
-      uses: azure/cli@v2
-      with:
-        azcliversion: latest
-        inlineScript: |
-          az account set -s "${{ env.onpremSubscriptionId }}"
-          opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
-          echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
-          opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
-          if [ -n $opnSenseCustomScriptExtensionId ]; 
-            then echo "OPNsense CustomScript Extension already installed"
-            echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
-          else
-            echo "OPNsense CustomScript Extension not installed"
-            echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
-          fi
     - name: Onprem RG - Deployment
       id: onprem_rg_deploy
       uses: azure/arm-deploy@v2
@@ -275,6 +258,23 @@ jobs:
           parResourceGroupName=${{ env.onpremResourceGroupName }}
         deploymentName: onprem-rg-deployment-${{ env.runNumber }}
         failOnStdErr: false
+    - name: Check installed OPNsense CustomScript extension
+      id: check_installed_opns_extension
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{ env.onpremSubscriptionId }}"
+          opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
+          echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
+          opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id" 2>/dev/null)
+          if [ -n $opnSenseCustomScriptExtensionId ]; 
+            then echo "OPNsense CustomScript Extension already installed"
+            echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "OPNsense CustomScript Extension not installed"
+            echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
+          fi
     - name: Onprem - Deployment
       id: onprem_deployment
       uses: azure/arm-deploy@v2
