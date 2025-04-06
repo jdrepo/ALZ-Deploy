@@ -142,8 +142,9 @@ jobs:
           inlineScript: |
             az account set -s "${{ env.onpremSubscriptionId }}"
             opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
+            # opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id" 2>/dev/null)
+            az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id"
             echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
-            opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.onpremResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id" 2>/dev/null)
             if [ -n $opnSenseCustomScriptExtensionId ]; 
               then echo "OPNsense CustomScript Extension already installed"
               echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
