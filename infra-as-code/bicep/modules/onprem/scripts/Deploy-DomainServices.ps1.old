@@ -56,13 +56,6 @@ Configuration Deploy-DomainServices
             ActionAfterReboot = 'ContinueConfiguration'
         }
 
-        Script SetWindowsAzureGuestAgentDepndencyOnDNS
-        {
-            GetScript = { }
-            TestScript = { return $false }
-            SetScript = { Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\WindowsAzureGuestAgent' -Name "DependOnService" -Type MultiString -Value "DNS" }
-        }
-
         WindowsFeature InstallDNS 
         { 
             Ensure = 'Present'
@@ -144,11 +137,11 @@ Configuration Deploy-DomainServices
             DependsOn = '[DnsServerAddress]SetDNS', '[WindowsFeature]InstallADDS'
         }
 
-        #PendingReboot RebootAfterCreatingADForest
-        #{
-        #    Name = 'RebootAfterCreatingADForest'
-        #    DependsOn = "[ADDomain]CreateADForest"
-        #}
+        PendingReboot RebootAfterCreatingADForest
+        {
+            Name = 'RebootAfterCreatingADForest'
+            DependsOn = "[ADDomain]CreateADForest"
+        }
 
         WaitForADDomain WaitForDomainController
         {
@@ -157,9 +150,8 @@ Configuration Deploy-DomainServices
             RestartCount = 3
             Credential = $domainCredential
             WaitForValidCredentials = $true
-            #DependsOn = "[PendingReboot]RebootAfterCreatingADForest"
+            DependsOn = "[PendingReboot]RebootAfterCreatingADForest"
         }
-
     }
 }
 
@@ -186,3 +178,12 @@ function Get-NetBIOSName {
     }
 }
 
+$ConfigurationData = @{
+    AllNodes = @(
+        @{
+            NodeName="localhost"
+            PSDscAllowPlainTextPassword=$true
+            PSDscAllowDomainUser=$true
+         }
+   )
+}
