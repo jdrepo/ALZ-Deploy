@@ -12,6 +12,9 @@ param parLocation string = 'northeurope'
 @sys.description('Name of resource group.')
 param parResourceGroupName string = 'rg-onprem'
 
+@sys.description('Prefix value which will be prepended to all resource names.')
+param parCompanyPrefix string = 'onprem'
+
 @sys.description('Region code for resource naming.')
 param parLocationCode string = 'neu'
 
@@ -76,6 +79,23 @@ var deployerObjectId = deployer().objectId
 var varEnvironment = parTags.?Environment ?? 'canary'
 var varVnetName = 'vnet-${parLocationCode}-onprem'
 var varDc1Name = 'vm-${parLocationCode}-dc1'
+var varSaUserAssignedIdentityName = 'id-${parLocationCode}-sa-${parCompanyPrefix}-${varEnvironment}'
+var varActiveDirectoryDomainName = 'alz-${varEnvironment}.lokal'
+
+var varDscSasRes1 = {
+  canonicalizedResource: '/blob/${modSaDeployArtifacts.outputs.name}/scripts/Deploy-DomainServices.ps1.zip'
+  signedResource: 'b'
+  signedPermission: 'r'
+  signedExpiry: dateTimeAdd(parTimeNow, 'PT1H')
+  signedProtocol: 'https'
+  keyToSign: 'key1'
+}
+
+var varContainersToCreate = {
+  scripts: ['prepareDisks.ps1', 'Deploy-DomainServices.ps1.zip']
+}
+
+var varContainersToCreateFormatted = replace(string(varContainersToCreate), '"', '\\"')
 
 var varSubnets = [
   {
@@ -95,6 +115,9 @@ var varSubnets = [
     name: parOnpremSubnetName
     networkSecurityGroupResourceId: modNsgOnpremSubnet.outputs.resourceId
     routeTableResourceId: modOnpremRouteTable.outputs.resourceId
+    serviceEndpoints: [
+      'Microsoft.Storage'
+    ]
   }
   {
     addressPrefix: '172.22.0.64/27'
@@ -102,7 +125,18 @@ var varSubnets = [
     networkSecurityGroupResourceId: modNsgBastion.outputs.resourceId
     routeTableResourceId: ''
   }
+  {
+    addressPrefix: '172.22.9.0/28'
+    name: 'container-subnet'
+    networkSecurityGroupResourceId: modContainerSubnetNSG.outputs.resourceId
+    routeTableResourceId: ''
+    delegation: 'Microsoft.ContainerInstance/containerGroups'
+    serviceEndpoints: [
+      'Microsoft.Storage'
+    ]
+  }
 ]
+
 
 @sys.description('Select a valid scenario. Active Active: Two OPNSenses deployed in HA mode using SLB and ILB. Two Nics: Single OPNSense deployed with two Nics.')
 @allowed([
@@ -200,6 +234,14 @@ module modNsgOnpremSubnet 'br/public:avm/res/network/network-security-group:0.5.
   params: {
     location: parLocation
     name: 'nsg-${parLocationCode}-onprem-subnet'
+  }
+}
+
+module modContainerSubnetNSG 'br/public:avm/res/network/network-security-group:0.5.0' = {
+  scope: resourceGroup(parResourceGroupName)
+  name: '${_dep}-nsg-${parLocationCode}-container-subnet'
+  params: {
+    name: 'nsg-${parLocationCode}-container-subnet'
   }
 }
 
@@ -357,7 +399,7 @@ module modNsgBastion 'br/public:avm/res/network/network-security-group:0.5.0' = 
 
 
 
-module modVnet 'br/public:avm/res/network/virtual-network:0.5.2' = {
+module modVnet 'br/public:avm/res/network/virtual-network:0.6.1' = {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-${varVnetName}'
   params: {
@@ -591,6 +633,181 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
   }
 }
 
+// resource resSaDeployArtifacts 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
+//   scope: resourceGroup(parResourceGroupName)
+//   name: take(
+//     ('sa${parLocationCode}deploy${take(uniqueString(parResourceGroupName),4)}${parTags.Environment}${parCompanyPrefix}'),
+//     24
+//   )
+// }
+// module modConfigureGuestAgent '../../modules/Compute/virtual-machine/runcommand/main.bicep' = {
+//   scope: resourceGroup(parResourceGroupName)
+//   name: '${_dep}-configure-guest-agent'
+//   dependsOn: [
+//     modDscDeployAds
+//   ]
+//   params: {
+//     location: parLocation
+//     tags: parTags
+//     runCommandName: 'ConfigureGuestAgent'
+//     vmName: modDc1.outputs.name
+//     script: 'Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\WindowsAzureGuestAgent" -Name DependOnService -Type MultiString -Value DNS'
+//   }
+// }
+// module modDscDeployAds './dsc-dc.bicep' = {
+//   scope: resourceGroup(parResourceGroupName)
+//   name: '${_dep}-dsc-deploy-ads'
+//   //dependsOn: [modPrepareDisksDc1,modCopyDeployArtifacts2SaScript]
+//   dependsOn: [modCopyDeployArtifacts2SaScript]
+//   params: {
+//     location: parLocation
+//     publisher: 'Microsoft.Powershell'
+//     type: 'DSC'
+//     typeHandlerVersion: '2.77'
+//     autoUpgradeMinorVersion: true
+//     enableAutomaticUpgrade: false
+//     name: 'Microsoft.Powershell.DSC'
+//     virtualMachineName: modDc1.outputs.name
+//     settings: {
+//       configuration: {
+//         url: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip?'
+//         script: 'Deploy-DomainServices.ps1'
+//         function: 'Deploy-DomainServices'
+//       }
+//       configurationArguments: {
+//         domainFQDN: varActiveDirectoryDomainName
+//         ADDSFilePath: 'E:\\'
+//         ADDiskId: 1
+//         DNSForwarder: ['168.63.129.16']
+//         ForestMode: 'WinThreshold'
+//       }
+//     }
+//     adminPassword: resKv.getSecret('${varDc1Name}-password')
+//     adminUserName: parAdminUserName
+//     configurationUrlSasToken: modServiceSasToken.outputs.serviceSasToken
+//     //configurationUrlSasToken: resSaDeployArtifacts.listServiceSas(resSaDeployArtifacts.apiVersion, varDscSasRes1).serviceSasToken
+//   }
+// }
+
+module modServiceSasToken '../Storage/storage-account/serviceSas.bicep' = {
+  scope: resourceGroup(parResourceGroupName)
+  name: '${_dep}-service-sas-token'
+  params: {
+    parServiceSas: varDscSasRes1
+    parStorageAccountName: modSaDeployArtifacts.outputs.name
+  }
+}
+
+
+module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-script:0.5.0' = {
+  scope: resourceGroup(parResourceGroupName)
+  name: '${_dep}-copy-deploy-artifacts'
+  params: {
+    tags: parTags
+    location: parLocation
+    name: 'copy-deploy-artifacts-to-sa'
+    kind: 'AzurePowerShell'
+    retentionInterval: 'PT1H'
+    azPowerShellVersion: '12.3'
+    cleanupPreference: 'Always'
+    managedIdentities: {
+      userAssignedResourceIds: [
+        modIdSa.outputs.resourceId
+      ]
+    }
+    subnetResourceIds: [
+      modVnet.outputs.subnetResourceIds[4]
+    ]
+    storageAccountResourceId: modSaDeployArtifacts.outputs.resourceId
+    arguments: '-storageAccountName ${modSaDeployArtifacts.outputs.name} -resourceGroupName ${parResourceGroupName} -containersToCreate \'${varContainersToCreateFormatted}\''
+    scriptContent: loadTextContent('createBlobStorageContainers.ps1')
+  }
+}
+
+module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.19.0' = {
+  scope: resourceGroup(parResourceGroupName)
+  name: '${_dep}-sa-deploy-artifacts'
+  params: {
+    name: take(('sa${parLocationCode}deploy${take(uniqueString(parResourceGroupName),4)}${parTags.Environment}${parCompanyPrefix}'),24)
+    tags: parTags
+    location: parLocation
+    allowBlobPublicAccess: false
+    skuName: 'Standard_LRS'
+    networkAcls: {
+      bypass: 'AzureServices'
+      defaultAction: 'Deny'
+      virtualNetworkRules: [
+        {
+          id: modVnet.outputs.subnetResourceIds[4]
+          action: 'Allow'
+        }
+        {
+          id: modVnet.outputs.subnetResourceIds[2]
+          action: 'Allow'
+        }
+      ]
+    }
+    blobServices: {
+      containerDeleteRetentionPolicyEnabled: true
+      deleteRetentionPolicyDays: 7
+      containerDeleteRetentionPolicyDays: 7
+      deleteRetentionPolicyEnabled: true
+      containers: [
+        {
+          name: 'scripts'
+          publicAccess: 'None'
+        }
+      ]
+    }
+    roleAssignments: [
+      {
+        principalId: modIdSa.outputs.principalId
+        roleDefinitionIdOrName: 'Storage Blob Data Contributor'
+      }
+      {
+        principalId: modIdSa.outputs.principalId
+        roleDefinitionIdOrName: 'Storage Account Contributor'
+      }
+      {
+        principalId: modIdSa.outputs.principalId
+        roleDefinitionIdOrName: 'Storage File Data Privileged Contributor'
+      }
+      {
+        principalId: modDc1.outputs.systemAssignedMIPrincipalId
+        roleDefinitionIdOrName: 'Storage Blob Data Reader'
+      }
+    ]
+  }
+}
+
+module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
+  scope: resourceGroup(parResourceGroupName)
+  name: '${_dep}-${varSaUserAssignedIdentityName}'
+  params: {
+    name: varSaUserAssignedIdentityName
+    location: parLocation
+    tags: parTags
+  }
+}
+
+
+
+
+// module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
+//   scope: resourceGroup(parResourceGroupName)
+//   name: '${_dep}-container-subnet1'
+//   params: {
+//     name: 'container-subnet1'
+//     virtualNetworkName: modVnet.outputs.name
+//     addressPrefix: varSubnets[4].addressPrefix
+//     serviceEndpoints: [
+//       'Microsoft.Storage'
+//     ]
+//     delegation: 'Microsoft.ContainerInstance/containerGroups'
+//     networkSecurityGroupResourceId: modContainerSubnetNSG.outputs.resourceId
+//   }
+// }
+
 module modOnpremRouteTable 'br/public:avm/res/network/route-table:0.4.0' = {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-rt-${parLocationCode}-onprem'
@@ -657,3 +874,7 @@ module modVnetFlowLog 'br/public:avm/res/network/network-watcher:0.4.0' = {
   }
 }
 
+output containersToCreate object = varContainersToCreate
+output containersToCreateFormatted string = varContainersToCreateFormatted
+output varDscSasToken string = modServiceSasToken.outputs.serviceSasToken
+output dscUrl string = '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip?${modServiceSasToken.outputs.serviceSasToken}'
