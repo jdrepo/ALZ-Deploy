@@ -633,13 +633,6 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
   }
 }
 
-// resource resSaDeployArtifacts 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
-//   scope: resourceGroup(parResourceGroupName)
-//   name: take(
-//     ('sa${parLocationCode}deploy${take(uniqueString(parResourceGroupName),4)}${parTags.Environment}${parCompanyPrefix}'),
-//     24
-//   )
-// }
 // module modConfigureGuestAgent '../../modules/Compute/virtual-machine/runcommand/main.bicep' = {
 //   scope: resourceGroup(parResourceGroupName)
 //   name: '${_dep}-configure-guest-agent'
@@ -654,40 +647,39 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
 //     script: 'Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\WindowsAzureGuestAgent" -Name DependOnService -Type MultiString -Value DNS'
 //   }
 // }
-// module modDscDeployAds './dsc-dc.bicep' = {
-//   scope: resourceGroup(parResourceGroupName)
-//   name: '${_dep}-dsc-deploy-ads'
-//   //dependsOn: [modPrepareDisksDc1,modCopyDeployArtifacts2SaScript]
-//   dependsOn: [modCopyDeployArtifacts2SaScript]
-//   params: {
-//     location: parLocation
-//     publisher: 'Microsoft.Powershell'
-//     type: 'DSC'
-//     typeHandlerVersion: '2.77'
-//     autoUpgradeMinorVersion: true
-//     enableAutomaticUpgrade: false
-//     name: 'Microsoft.Powershell.DSC'
-//     virtualMachineName: modDc1.outputs.name
-//     settings: {
-//       configuration: {
-//         url: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip?'
-//         script: 'Deploy-DomainServices.ps1'
-//         function: 'Deploy-DomainServices'
-//       }
-//       configurationArguments: {
-//         domainFQDN: varActiveDirectoryDomainName
-//         ADDSFilePath: 'E:\\'
-//         ADDiskId: 1
-//         DNSForwarder: ['168.63.129.16']
-//         ForestMode: 'WinThreshold'
-//       }
-//     }
-//     adminPassword: resKv.getSecret('${varDc1Name}-password')
-//     adminUserName: parAdminUserName
-//     configurationUrlSasToken: modServiceSasToken.outputs.serviceSasToken
-//     //configurationUrlSasToken: resSaDeployArtifacts.listServiceSas(resSaDeployArtifacts.apiVersion, varDscSasRes1).serviceSasToken
-//   }
-// }
+module modDscDeployAds './dsc-dc.bicep' = {
+  scope: resourceGroup(parResourceGroupName)
+  name: '${_dep}-dsc-deploy-ads'
+  dependsOn: [modCopyDeployArtifacts2SaScript]
+  params: {
+    location: parLocation
+    publisher: 'Microsoft.Powershell'
+    type: 'DSC'
+    typeHandlerVersion: '2.77'
+    autoUpgradeMinorVersion: true
+    enableAutomaticUpgrade: false
+    name: 'Microsoft.Powershell.DSC'
+    //forceUpdateTag: null
+    virtualMachineName: modDc1.outputs.name
+    settings: {
+      configuration: {
+        url: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip?'
+        script: 'Deploy-DomainServices.ps1'
+        function: 'Deploy-DomainServices'
+      }
+      configurationArguments: {
+        domainFQDN: varActiveDirectoryDomainName
+        ADDSFilePath: 'E:\\'
+        ADDiskId: 1
+        DNSForwarder: ['168.63.129.16']
+        ForestMode: 'WinThreshold'
+      }
+    }
+    adminPassword: resKv.getSecret('${varDc1Name}-password')
+    adminUserName: parAdminUserName
+    configurationUrlSasToken: modServiceSasToken.outputs.serviceSasToken
+  }
+}
 
 module modServiceSasToken '../Storage/storage-account/serviceSas.bicep' = {
   scope: resourceGroup(parResourceGroupName)
@@ -773,7 +765,7 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.19.0' =
         roleDefinitionIdOrName: 'Storage File Data Privileged Contributor'
       }
       {
-        principalId: modDc1.outputs.systemAssignedMIPrincipalId
+        principalId: modDc1.outputs.systemAssignedMIPrincipalId!
         roleDefinitionIdOrName: 'Storage Blob Data Reader'
       }
     ]
@@ -789,24 +781,6 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
     tags: parTags
   }
 }
-
-
-
-
-// module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
-//   scope: resourceGroup(parResourceGroupName)
-//   name: '${_dep}-container-subnet1'
-//   params: {
-//     name: 'container-subnet1'
-//     virtualNetworkName: modVnet.outputs.name
-//     addressPrefix: varSubnets[4].addressPrefix
-//     serviceEndpoints: [
-//       'Microsoft.Storage'
-//     ]
-//     delegation: 'Microsoft.ContainerInstance/containerGroups'
-//     networkSecurityGroupResourceId: modContainerSubnetNSG.outputs.resourceId
-//   }
-// }
 
 module modOnpremRouteTable 'br/public:avm/res/network/route-table:0.4.0' = {
   scope: resourceGroup(parResourceGroupName)
