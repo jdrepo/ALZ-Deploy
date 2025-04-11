@@ -1335,24 +1335,6 @@
         <backend>opnsense</backend>
       </general>
       <accounts>
-        <account>
-          <enabled>1</enabled>
-          <service>duckdns</service>
-          <protocol/>
-          <server/>
-          <username/>
-          <password>ab67611e-bdc8-45e3-a3e8-e4cc9c26ab28</password>
-          <resourceId/>
-          <hostnames>onprem-canary.duckdns.org</hostnames>
-          <wildcard>0</wildcard>
-          <zone/>
-          <checkip>web_freedns</checkip>
-          <checkip_timeout>10</checkip_timeout>
-          <force_ssl>1</force_ssl>
-          <ttl>300</ttl>
-          <interface/>
-          <description/>
-        </account>
 		<account>
           <enabled>1</enabled>
           <service>noip</service>
