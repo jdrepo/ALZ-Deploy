@@ -163,7 +163,8 @@ var varEnvironment = parTags.?Environment ?? 'canary'
 var varDc1Name = 'vm-${parLocationCode}-dc-01'
 var varDesUserAssignedIdentityName = 'id-${parLocationCode}-des-${parCompanyPrefix}-${varEnvironment}'
 var varDesName = 'des-${parLocationCode}-001-${parCompanyPrefix}-${varEnvironment}'
-var varSaUserAssignedIdentityName = 'id-${parLocationCode}-sa-${parCompanyPrefix}-${varEnvironment}'
+var varSaContributorUserAssignedIdentityName = 'id-${parLocationCode}-sa-contributor-${parCompanyPrefix}-${varEnvironment}'
+var varSaReaderUserAssignedIdentityName = 'id-${parLocationCode}-sa-reader-${parCompanyPrefix}-${varEnvironment}'
 var varActiveDirectoryDomainName = 'alz-${varEnvironment}.lokal'
 
 var varGwcSerialConsoleIps = [
@@ -223,7 +224,8 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
 
 /*** NEW RESOURCES ***/
 
-module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = if ((parActiveDirectoryScenario == 'create-identity-dom') || (parActiveDirectoryScenario == 'use-onprem-domain')) {
+module modDc1 'br/public:avm/res/compute/virtual-machine:0.13.0' = if ((parActiveDirectoryScenario == 'create-identity-domain') || (parActiveDirectoryScenario == 'use-onprem-domain')) {
+//module modDc1 'br/public:avm/res/compute/virtual-machine:0.13.0' =  {
   name: '${_dep}-Vm1'
   dependsOn: [modKvPassword]
   params: {
@@ -288,6 +290,9 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = if ((parActive
     bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
     managedIdentities: {
       systemAssigned: true
+      userAssignedResourceIds: [
+        modIdSaReader.outputs.resourceId
+      ]
     }
   }
 }
@@ -371,7 +376,8 @@ module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
   }
 }
 
-module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' = {
+
+module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.19.0' = {
   name: '${_dep}-sa-deploy-artifacts'
   params: {
     name: take(('sa${parLocationCode}deploy${take(uniqueString(resourceGroup().name),4)}${parTags.Environment}${parCompanyPrefix}'),24)
@@ -408,29 +414,41 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.14.3' =
     }
     roleAssignments: [
       {
-        principalId: modIdSa.outputs.principalId
+        principalId: modIdSaContributor.outputs.principalId
         roleDefinitionIdOrName: 'Storage Blob Data Contributor'
       }
       {
-        principalId: modIdSa.outputs.principalId
+        principalId: modIdSaContributor.outputs.principalId
         roleDefinitionIdOrName: 'Storage Account Contributor'
       }
       {
-        principalId: modIdSa.outputs.principalId
+        principalId: modIdSaContributor.outputs.principalId
         roleDefinitionIdOrName: 'Storage File Data Privileged Contributor'
       }
       {
-        principalId: modDc1.outputs.systemAssignedMIPrincipalId
+        principalId: modIdSaReader.outputs.principalId
         roleDefinitionIdOrName: 'Storage Blob Data Reader'
       }
     ]
   }
 }
 
-module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
-  name: '${_dep}-${varSaUserAssignedIdentityName}'
+
+
+
+module modIdSaContributor 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
+  name: '${_dep}-${varSaContributorUserAssignedIdentityName}'
   params: {
-    name: varSaUserAssignedIdentityName
+    name: varSaContributorUserAssignedIdentityName
+    location: parLocation
+    tags: parTags
+  }
+}
+
+module modIdSaReader 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
+  name: '${_dep}-${varSaReaderUserAssignedIdentityName}'
+  params: {
+    name: varSaReaderUserAssignedIdentityName
     location: parLocation
     tags: parTags
   }
@@ -460,7 +478,7 @@ module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network
   }
 }
 
-module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = if (parActiveDirectoryScenario == 'create-identity-dom') {
+module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = if ((parActiveDirectoryScenario == 'create-identity-dom' || parActiveDirectoryScenario == 'use-onprem-domain' )) {
   name: 'deploy-Identity-VNet-SetDNS'
   dependsOn: [
     modContainerSubnetNSG
@@ -537,7 +555,7 @@ module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-s
     cleanupPreference: 'Always'
     managedIdentities: {
       userAssignedResourceIds: [
-        modIdSa.outputs.resourceId
+        modIdSaContributor.outputs.resourceId
       ]
     }
     subnetResourceIds: [
@@ -631,7 +649,7 @@ module modKvPassword '../keyVaultSecret/keyVaultSecret.bicep' = {
 }
 
 
-output dc1ResourceId string = modDc1.outputs.resourceId
+output dc1ResourceId string = ((parActiveDirectoryScenario == 'create-identity-domain') || (parActiveDirectoryScenario == 'use-onprem-domain')) ? modDc1.outputs.resourceId : ''
 output kv1ResourceId string = modKv.outputs.resourceId
 
 output containersToCreate object = varContainersToCreate
