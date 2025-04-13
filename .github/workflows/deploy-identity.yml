@@ -20,6 +20,7 @@ on:
         type: string
       nva:
         description: 'NVA solution'
+        default: 'no-nva'
         type: choice
         options:
           - opnsense-single
