@@ -40,6 +40,7 @@ jobs:
       location: "northeurope"
       nva: "opnsense-single"
       vpngw: ${{vars.VPNGW_CANARY}}
+      activeDirectory: "create-onprem-domain"
     secrets:
       ONPREM_SUB_ID: ${{ secrets.ONPREM_SUB_ID_CANARY}}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
@@ -81,6 +82,7 @@ jobs:
       location: "germanywestcentral"
       nva: ${{vars.NVA_CANARY}}
       wipeAfterDeploy: false
+      activeDirectory: "use-onprem-domain"
     secrets:
       IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_CANARY}}
       CONNECTIVITY_SUB_ID: ${{ secrets.CONNECTIVITY_SUB_ID_CANARY}}
