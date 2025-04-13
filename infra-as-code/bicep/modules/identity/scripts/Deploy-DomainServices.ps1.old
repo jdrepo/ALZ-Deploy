@@ -56,13 +56,6 @@ Configuration Deploy-DomainServices
             ActionAfterReboot = 'ContinueConfiguration'
         }
 
-        Script SetWindowsAzureGuestAgentDepndencyOnDNS
-        {
-            GetScript = { }
-            TestScript = { return $false }
-            SetScript = { Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\WindowsAzureGuestAgent' -Name "DependOnService" -Type MultiString -Value "DNS" }
-        }
-
         WindowsFeature InstallDNS 
         { 
             Ensure = 'Present'
@@ -113,17 +106,16 @@ Configuration Deploy-DomainServices
             DependsOn = "[WindowsFeature]InstallADDSTools"
         }
 
-        if (Get-CimInstance -ClassName Win32_CDROMDrive) {
-            OpticalDiskDriveLetter SetFirstOpticalDiskDriveLetterToZ {
-                DiskId      = 1
-                DriveLetter = 'Z'
-            }
+        OpticalDiskDriveLetter SetFirstOpticalDiskDriveLetterToZ
+        {
+            DiskId      = 1
+            DriveLetter = 'Z'
         }
         WaitForDisk ADDataDisk
         {
              DiskId = $ADDiskId
-             RetryIntervalSec = 61
-             RetryCount = 61
+             RetryIntervalSec = 60
+             RetryCount = 60
         }
 
         Disk ADDataDisk {
@@ -144,11 +136,11 @@ Configuration Deploy-DomainServices
             DependsOn = '[DnsServerAddress]SetDNS', '[WindowsFeature]InstallADDS'
         }
 
-        #PendingReboot RebootAfterCreatingADForest
-        #{
-        #    Name = 'RebootAfterCreatingADForest'
-        #    DependsOn = "[ADDomain]CreateADForest"
-        #}
+        PendingReboot RebootAfterCreatingADForest
+        {
+            Name = 'RebootAfterCreatingADForest'
+            DependsOn = "[ADDomain]CreateADForest"
+        }
 
         WaitForADDomain WaitForDomainController
         {
@@ -157,9 +149,8 @@ Configuration Deploy-DomainServices
             RestartCount = 3
             Credential = $domainCredential
             WaitForValidCredentials = $true
-            #DependsOn = "[PendingReboot]RebootAfterCreatingADForest"
+            DependsOn = "[PendingReboot]RebootAfterCreatingADForest"
         }
-
     }
 }
 
@@ -185,4 +176,5 @@ function Get-NetBIOSName {
         }
     }
 }
+
 
