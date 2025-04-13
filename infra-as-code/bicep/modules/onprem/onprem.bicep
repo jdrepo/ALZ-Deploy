@@ -254,6 +254,7 @@ module modContainerSubnetNSG 'br/public:avm/res/network/network-security-group:0
 }
 
 
+
 module modNsgBastion 'br/public:avm/res/network/network-security-group:0.5.0' = {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-nsg-AzureBastionSubnet'
@@ -412,7 +413,26 @@ module modVnet 'br/public:avm/res/network/virtual-network:0.6.1' = {
   name: '${_dep}-${varVnetName}'
   params: {
     location: parLocation
+    tags: parTags
     name: varVnetName
+    addressPrefixes: [
+      '172.22.0.0/16'
+    ]
+    subnets: varSubnets
+  }
+}
+
+module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = if (parActiveDirectoryScenario == 'create-onprem-domain') {
+  scope: resourceGroup(parResourceGroupName)
+  name: 'deploy-Onprem-VNet-SetDNS'
+  dependsOn: [
+    modDscCreateAd
+  ]
+  params: {
+    name: varVnetName
+    location: parLocation
+    tags: parTags
+    dnsServers: [cidrHost(varSubnets[2].addressPrefix, 3)]
     addressPrefixes: [
       '172.22.0.0/16'
     ]
