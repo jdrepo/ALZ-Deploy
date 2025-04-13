@@ -477,7 +477,7 @@ module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network
   }
 }
 
-module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = if ((parActiveDirectoryScenario == 'create-identity-dom' || parActiveDirectoryScenario == 'use-onprem-domain' )) {
+module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = if ((parActiveDirectoryScenario == 'create-identity-domain' || parActiveDirectoryScenario == 'use-onprem-domain' )) {
   name: 'deploy-Identity-VNet-SetDNS'
   dependsOn: [
     modContainerSubnetNSG
