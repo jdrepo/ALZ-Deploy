@@ -27,6 +27,13 @@ on:
           - vpngw-bgp
           - vpngw-nobgp
           - no-vpngw
+      activeDirectory:
+        description: 'Active Directory Scenario'
+        default: 'create-onprem-domain'
+        type: choice
+        options:
+          - create-onprem-domain
+          - no-onprem-domain
       
   workflow_call:
     inputs:
@@ -48,6 +55,10 @@ on:
         description: 'VPN Gateway type'
         type: string
         default: "vpngw-nobgp"
+      activeDirectory:
+        description: 'Active Directory Scenario'
+        default: 'create-onprem-domain'
+        type: string
       
     secrets:
       ONPREM_SUB_ID:
@@ -171,6 +182,7 @@ jobs:
             parResourceGroupName=${{ env.onpremResourceGroupName }}
             parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
             parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
+            parActiveDirectoryScenario=${{inputs.activeDirectory}}
           deploymentName: onprem-validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -201,6 +213,7 @@ jobs:
             parResourceGroupName=${{ env.onpremResourceGroupName }}
             parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
             parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
+            parActiveDirectoryScenario=${{inputs.activeDirectory}}
           deploymentName: onprem-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -302,6 +315,7 @@ jobs:
           parResourceGroupName=${{ env.onpremResourceGroupName }}
           parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
           parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
+          parActiveDirectoryScenario=${{inputs.activeDirectory}}
         deploymentName: onprem-deployment-${{ env.runNumber }}
         failOnStdErr: false
     
