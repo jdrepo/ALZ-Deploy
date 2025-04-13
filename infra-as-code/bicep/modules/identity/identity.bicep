@@ -225,7 +225,6 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
 /*** NEW RESOURCES ***/
 
 module modDc1 'br/public:avm/res/compute/virtual-machine:0.13.0' = if ((parActiveDirectoryScenario == 'create-identity-domain') || (parActiveDirectoryScenario == 'use-onprem-domain')) {
-//module modDc1 'br/public:avm/res/compute/virtual-machine:0.13.0' =  {
   name: '${_dep}-Vm1'
   dependsOn: [modKvPassword]
   params: {
@@ -322,7 +321,7 @@ resource resSaDeployArtifacts 'Microsoft.Storage/storageAccounts@2023-05-01' exi
 }
 
 
-module modDscCreateAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'create-identity-dom') {
+module modDscCreateAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'create-identity-domain') {
   name: '${_dep}-dsc-create-ad'
   dependsOn: [modCopyDeployArtifacts2SaScript]
   params: {
