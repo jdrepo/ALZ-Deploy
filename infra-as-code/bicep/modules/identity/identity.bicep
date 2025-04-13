@@ -127,6 +127,15 @@ param parHubNetworkResourceId string
 @sys.description('Hub VPN Gateway solution.')
 param parHubVpnGateway string = 'no-vpngw'
 
+@allowed([
+  'no-identity-domain'
+  'create-identity-domain'
+  'use-onprem-domain'
+])
+@sys.description('Active Directory Domain scenario for identity subscription.')
+param parActiveDirectoryScenario string = 'create-identity-domain'
+
+
 @sys.description('VM admin user name')
 @secure()
 param parAdminUserName string
@@ -214,7 +223,7 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
 
 /*** NEW RESOURCES ***/
 
-module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = {
+module modDc1 'br/public:avm/res/compute/virtual-machine:0.9.0' = if ((parActiveDirectoryScenario == 'create-identity-dom') || (parActiveDirectoryScenario == 'use-onprem-domain')) {
   name: '${_dep}-Vm1'
   dependsOn: [modKvPassword]
   params: {
@@ -308,9 +317,8 @@ resource resSaDeployArtifacts 'Microsoft.Storage/storageAccounts@2023-05-01' exi
 }
 
 
-module modDscDeployAds './dsc-dc.bicep' = {
-  name: '${_dep}-dsc-deploy-ads'
-  //dependsOn: [modPrepareDisksDc1,modCopyDeployArtifacts2SaScript]
+module modDscCreateAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'create-identity-dom') {
+  name: '${_dep}-dsc-create-ad'
   dependsOn: [modCopyDeployArtifacts2SaScript]
   params: {
     location: parLocation
@@ -428,6 +436,8 @@ module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0'
   }
 }
 
+
+
 module modContainerSubnetNSG 'br/public:avm/res/network/network-security-group:0.5.0' = {
   name: '${_dep}-container-subnet1-nsg'
   params: {
@@ -450,11 +460,11 @@ module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network
   }
 }
 
-module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = {
+module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = if (parActiveDirectoryScenario == 'create-identity-dom') {
   name: 'deploy-Identity-VNet-SetDNS'
   dependsOn: [
     modContainerSubnetNSG
-    modDscDeployAds
+    modDscCreateAd
   ]
   params: {
     name: parIdentityNetworkName

@@ -33,6 +33,14 @@ on:
           - vpngw-bgp
           - vpngw-nobgp
           - no-vpngw
+      activeDirectory:
+        description: 'Active Directory Scenario'
+        default: 'create-identity-domain'
+        type: choice
+        options:
+          - create-identity-domain
+          - use-onprem-domain
+          - no-identity-domain
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -61,6 +69,10 @@ on:
         description: 'VPN Gateway type'
         type: string
         default: "vpngw-nobgp"
+      activeDirectory:
+        description: 'Active Directory Scenario'
+        type: string
+        default: 'create-identity-domain'
       wipeAfterDeploy:
         default: false
         type: boolean
@@ -140,6 +152,7 @@ jobs:
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parHubVpnGateway=${{inputs.vpngw}}
+            parActiveDirectoryScenario=${{inputs.activeDirectory}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -158,6 +171,7 @@ jobs:
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parHubVpnGateway=${{inputs.vpngw}}
+            parActiveDirectoryScenario=${{inputs.activeDirectory}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -214,6 +228,7 @@ jobs:
             parIdentityVnetResourceId=${{steps.get_resources.outputs.identityNetworkResourceId}}
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parHubVpnGateway=${{inputs.vpngw}}
+            parActiveDirectoryScenario=${{inputs.activeDirectory}}
             parAdminUserName="domadmin"
           deploymentName: deploy_identity-${{ env.runNumber }}
           failOnStdErr: false
