@@ -72,14 +72,22 @@ param parBastionOutboundSshRdpPorts array = ['22', '3389']
 @sys.description('Azure VPN Gateway IP address.')
 param parVpnGwPublicIp string = ''
 
+@allowed([
+  'no-onprem-domain'
+  'create-onprem-domain'
+])
+@sys.description('Active Directory Domain scenario for onprem subscription.')
+param parActiveDirectoryScenario string = 'create-onprem-domain'
+
 
 var _dep = deployment().name
 var deployerObjectId = deployer().objectId
 
 var varEnvironment = parTags.?Environment ?? 'canary'
 var varVnetName = 'vnet-${parLocationCode}-onprem'
-var varDc1Name = 'vm-${parLocationCode}-dc1'
-var varSaUserAssignedIdentityName = 'id-${parLocationCode}-sa-${parCompanyPrefix}-${varEnvironment}'
+var varVm1Name = 'vm-${parLocationCode}-001'
+var varSaContributorUserAssignedIdentityName = 'id-${parLocationCode}-sa-contributor-${parCompanyPrefix}-${varEnvironment}'
+var varSaReaderUserAssignedIdentityName = 'id-${parLocationCode}-sa-reader-${parCompanyPrefix}-${varEnvironment}'
 var varActiveDirectoryDomainName = 'alz-${varEnvironment}.lokal'
 
 var varDscSasRes1 = {
@@ -452,11 +460,11 @@ module modKvPasswordOpnsense '../keyVaultSecret/keyVaultSecret.bicep' = {
 }
 
 
-module modKvPasswordDC1 '../keyVaultSecret/keyVaultSecret.bicep' = {
+module modKvPasswordVm1 '../keyVaultSecret/keyVaultSecret.bicep' = {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-kv-password-dc1'
   params: {
-    parSecretName: '${varDc1Name}-password'
+    parSecretName: '${varVm1Name}-password'
     parKeyVaultName: modKv.outputs.name
     parTags: parTags
     parSecretDeployIdentityId: modKv.outputs.SecretDeployIdentityId
@@ -567,18 +575,18 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
   }
 }
 
-module modDc1 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
+module modVm1 'br/public:avm/res/compute/virtual-machine:0.12.0' =  {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-Vm1'
-  dependsOn: [modKv,modKvPasswordDC1]
+  dependsOn: [modKv,modKvPasswordVm1]
   params: {
     location: parLocation
     tags: parTags
-    name: varDc1Name
+    name: varVm1Name
     secureBootEnabled: true
     vTpmEnabled: true
     adminUsername: parAdminUserName
-    adminPassword: resKv.getSecret('${varDc1Name}-password')
+    adminPassword: resKv.getSecret('${varVm1Name}-password')
     timeZone: parTimeZone
     imageReference: {
       offer: 'WindowsServer'
@@ -590,7 +598,7 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
       {
         tags: parTags
         enableAcceleratedNetworking: false
-        name: 'nic-01-${varDc1Name}'
+        name: 'nic-01-${varVm1Name}'
         ipConfigurations: [
           {
             name: 'ipconfig01'
@@ -629,6 +637,9 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
     bootDiagnostics: true
     managedIdentities: {
       systemAssigned: true
+      userAssignedResourceIds: [
+        modIdSaReader.outputs.resourceId
+      ]
     }
   }
 }
@@ -647,7 +658,7 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
 //     script: 'Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\WindowsAzureGuestAgent" -Name DependOnService -Type MultiString -Value DNS'
 //   }
 // }
-module modDscDeployAds './dsc-dc.bicep' = {
+module modDscCreateAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'create-onprem-domain') {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-dsc-deploy-ads'
   dependsOn: [modCopyDeployArtifacts2SaScript]
@@ -660,7 +671,7 @@ module modDscDeployAds './dsc-dc.bicep' = {
     enableAutomaticUpgrade: false
     name: 'Microsoft.Powershell.DSC'
     //forceUpdateTag: null
-    virtualMachineName: modDc1.outputs.name
+    virtualMachineName: modVm1.outputs.name
     settings: {
       configuration: {
         url: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip?'
@@ -675,7 +686,7 @@ module modDscDeployAds './dsc-dc.bicep' = {
         ForestMode: 'WinThreshold'
       }
     }
-    adminPassword: resKv.getSecret('${varDc1Name}-password')
+    adminPassword: resKv.getSecret('${varVm1Name}-password')
     adminUserName: parAdminUserName
     configurationUrlSasToken: modServiceSasToken.outputs.serviceSasToken
   }
@@ -704,7 +715,7 @@ module modCopyDeployArtifacts2SaScript 'br/public:avm/res/resources/deployment-s
     cleanupPreference: 'Always'
     managedIdentities: {
       userAssignedResourceIds: [
-        modIdSa.outputs.resourceId
+        modIdSaContributor.outputs.resourceId
       ]
     }
     subnetResourceIds: [
@@ -753,30 +764,40 @@ module modSaDeployArtifacts 'br/public:avm/res/storage/storage-account:0.19.0' =
     }
     roleAssignments: [
       {
-        principalId: modIdSa.outputs.principalId
+        principalId: modIdSaContributor.outputs.principalId
         roleDefinitionIdOrName: 'Storage Blob Data Contributor'
       }
       {
-        principalId: modIdSa.outputs.principalId
+        principalId: modIdSaContributor.outputs.principalId
         roleDefinitionIdOrName: 'Storage Account Contributor'
       }
       {
-        principalId: modIdSa.outputs.principalId
+        principalId: modIdSaContributor.outputs.principalId
         roleDefinitionIdOrName: 'Storage File Data Privileged Contributor'
       }
       {
-        principalId: modDc1.outputs.systemAssignedMIPrincipalId!
+        principalId: modIdSaReader.outputs.principalId
         roleDefinitionIdOrName: 'Storage Blob Data Reader'
       }
     ]
   }
 }
 
-module modIdSa 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
+module modIdSaContributor 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
   scope: resourceGroup(parResourceGroupName)
-  name: '${_dep}-${varSaUserAssignedIdentityName}'
+  name: '${_dep}-${varSaContributorUserAssignedIdentityName}'
   params: {
-    name: varSaUserAssignedIdentityName
+    name: varSaContributorUserAssignedIdentityName
+    location: parLocation
+    tags: parTags
+  }
+}
+
+module modIdSaReader 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
+  scope: resourceGroup(parResourceGroupName)
+  name: '${_dep}-${varSaReaderUserAssignedIdentityName}'
+  params: {
+    name: varSaReaderUserAssignedIdentityName
     location: parLocation
     tags: parTags
   }
