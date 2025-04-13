@@ -280,7 +280,7 @@ module modDc1 'br/public:avm/res/compute/virtual-machine:0.13.0' = if ((parActiv
       }
     ]
     osType: 'Windows'
-    vmSize: 'Standard_B2s'
+    vmSize: 'Standard_B2als_v2'
     zone: 1
     enableAutomaticUpdates: true
     patchMode: 'AutomaticByPlatform'
