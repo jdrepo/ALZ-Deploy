@@ -107,7 +107,16 @@ param parSubnets subnetOptionsType = [
     ]
     delegations: 'Microsoft.ContainerInstance/containerGroups'
   }
-  
+  {
+    name: 'AzureBastionSubnet'
+    addressPrefix: '10.20.0.64/27'
+    networkSecurityGroupName: 'nsg-${parLocation}-bastion-${parCompanyPrefix}'
+    routeTableResourceName: ''
+    serviceEndpoints: [
+        'Microsoft.Storage'
+    ]
+    delegations: 'Microsoft.ContainerInstance/containerGroups'
+  }
 ]
 
 @sys.description('The identity subnet name that will host the VMs NIC')
@@ -115,6 +124,9 @@ param parIdentitySubnetName string = 'identity-subnet1'
 
 @sys.description('The subnet name that will host container instances')
 param parContainerSubnetName string = 'container-subnet1'
+
+@sys.description('Define outbound destination ports or ranges for SSH or RDP that you want to access from Azure Bastion.')
+param parBastionOutboundSshRdpPorts array = ['22', '3389']
 
 @sys.description('Hub VNet Resource Id to peer with.')
 param parHubNetworkResourceId string
@@ -135,6 +147,8 @@ param parHubVpnGateway string = 'no-vpngw'
 @sys.description('Active Directory Domain scenario for identity subscription.')
 param parActiveDirectoryScenario string = 'create-identity-domain'
 
+@sys.description('Array with DNS Server addresses for identity vnet.')
+param parOnpremDns array = []
 
 @sys.description('VM admin user name')
 @secure()
@@ -157,6 +171,7 @@ var varSubnetProperties = [ for (subnet, i) in parSubnets : {
 }
 ]
 
+var varBastionNsgName = 'nsg-${parLocation}-bastion-${parCompanyPrefix}'
 
 var _dep = deployment().name
 var varEnvironment = parTags.?Environment ?? 'canary'
@@ -462,6 +477,174 @@ module modContainerSubnetNSG 'br/public:avm/res/network/network-security-group:0
   }
 }
 
+module modNsgBastion 'br/public:avm/res/network/network-security-group:0.5.0' = {
+  name: '${_dep}-nsg-AzureBastionSubnet'
+  params: {
+    name: 'nsg-AzureBastionSubnet'
+    location: parLocation
+    securityRules: [
+      // Inbound Rules
+      {
+        name: 'AllowHttpsInbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Inbound'
+          priority: 120
+          sourceAddressPrefix: 'Internet'
+          destinationAddressPrefix: '*'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+        }
+      }
+      {
+        name: 'AllowGatewayManagerInbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Inbound'
+          priority: 130
+          sourceAddressPrefix: 'GatewayManager'
+          destinationAddressPrefix: '*'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+        }
+      }
+      {
+        name: 'AllowAzureLoadBalancerInbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Inbound'
+          priority: 140
+          sourceAddressPrefix: 'AzureLoadBalancer'
+          destinationAddressPrefix: '*'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+        }
+      }
+      {
+        name: 'AllowBastionHostCommunication'
+        properties: {
+          access: 'Allow'
+          direction: 'Inbound'
+          priority: 150
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: 'VirtualNetwork'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRanges: [
+            '8080'
+            '5701'
+          ]
+        }
+      }
+      {
+        name: 'DenyAllInbound'
+        properties: {
+          access: 'Deny'
+          direction: 'Inbound'
+          priority: 4096
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+        }
+      }
+      // Outbound Rules
+      {
+        name: 'AllowSshRdpOutbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 100
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'VirtualNetwork'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRanges: parBastionOutboundSshRdpPorts
+        }
+      }
+      {
+        name: 'AllowAzureCloudOutbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 110
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'AzureCloud'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+        }
+      }
+      {
+        name: 'AllowBastionCommunication'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 120
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: 'VirtualNetwork'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRanges: [
+            '8080'
+            '5701'
+          ]
+        }
+      }
+      {
+        name: 'AllowGetSessionInformation'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 130
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'Internet'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '80'
+        }
+      }
+      {
+        name: 'DenyAllOutbound'
+        properties: {
+          access: 'Deny'
+          direction: 'Outbound'
+          priority: 4096
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+        }
+      }
+    ]
+  }
+}
+
+// module modBastion 'bastion.bicep' = {
+//   name: '${_dep}-bastion-${parLocationCode}-identity'
+//   params: {
+//     parBastionName: 'bastion-${parLocationCode}-identity'
+//     parLocation: parLocation
+//     parVnetResourceId: modVnet.outputs.resourceId
+//     parTags: parTags
+//   }
+// }
+
+module modBastion 'br/public:avm/res/network/bastion-host:0.6.1' = {
+  name: '${_dep}-bastion-${parLocationCode}-identity'
+  params: {
+    // Required parameters
+    name: 'bastion-${parLocationCode}-identity'
+    virtualNetworkResourceId: resIdentityVirtualNetwork.id
+    location: parLocation
+    skuName: 'Developer'
+  }
+}
 
 module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
   name: '${_dep}-container-subnet1'
@@ -477,8 +660,8 @@ module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network
   }
 }
 
-module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' = if ((parActiveDirectoryScenario == 'create-identity-domain' || parActiveDirectoryScenario == 'use-onprem-domain' )) {
-  name: 'deploy-Identity-VNet-SetDNS'
+module modIdentityVNetSetDNSToCloud 'br/public:avm/res/network/virtual-network:0.5.1' = if (parActiveDirectoryScenario == 'create-identity-domain' ) {
+  name: 'deploy-Identity-VNet-SetDNSToCloud'
   dependsOn: [
     modContainerSubnetNSG
     modDscCreateAd
@@ -488,6 +671,38 @@ module modIdentityVNetSetDNS 'br/public:avm/res/network/virtual-network:0.5.1' =
     location: parLocation
     tags: parTags
     dnsServers: [cidrHost(resIdentityVirtualNetwork::identitySubnet.properties.addressPrefix, 3)]
+    addressPrefixes: [
+      parIdentityNetworkAddressPrefix
+    ]
+    lock: {
+      name: parVirtualNetworkLock.kind.?name ?? '${parIdentityNetworkName}-lock'
+      kind: (parGlobalResourceLock.kind != 'None') ? parGlobalResourceLock.kind : parVirtualNetworkLock.kind
+    }
+    subnets: varSubnetProperties
+    peerings: [
+      {
+        remoteVirtualNetworkResourceId: parHubNetworkResourceId
+        allowForwardedTraffic: true
+        // allowGatewayTransit: varUseRemoteVpnGateway
+        allowVirtualNetworkAccess: true
+        remotePeeringAllowForwardedTraffic: true
+        remotePeeringAllowVirtualNetworkAccess: true
+        remotePeeringEnabled: true
+        useRemoteGateways: varUseRemoteVpnGateway
+        remotePeeringAllowGatewayTransit: varUseRemoteVpnGateway
+      }
+    ]
+  }
+}
+
+module modIdentityVNetSetDNSToOnprem 'br/public:avm/res/network/virtual-network:0.5.1' = if (parActiveDirectoryScenario == 'use-onprem-domain' ) {
+  name: 'deploy-Identity-VNet-SetDNSToOnprem'
+  dependsOn: []
+  params: {
+    name: parIdentityNetworkName
+    location: parLocation
+    tags: parTags
+    dnsServers: parOnpremDns
     addressPrefixes: [
       parIdentityNetworkAddressPrefix
     ]
