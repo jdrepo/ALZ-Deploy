@@ -572,14 +572,14 @@
     <rule>
       <type>pass</type>
       <ipprotocol>inet</ipprotocol>
-      <descr>Allow IPsec to onprem-subnet1</descr>
+      <descr>Allow IPsec all</descr>
 	    <log>1</log>
-      <interface>ipsec1</interface>
+      <interface>enc0</interface>
       <source>
         <any>1</any>
       </source>
       <destination>
-        <address>onprem_subnet1</address>
+        <any>1</any>
       </destination>
     </rule>
   </filter>
