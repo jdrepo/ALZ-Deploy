@@ -82,6 +82,9 @@ param parIdentityNsgName string = 'nsg-${parLocation}-001-${parCompanyPrefix}'
 @sys.description('Name for Network Security Group for container network')
 param parContainerNsgName string = 'nsg-${parLocation}-container-${parCompanyPrefix}'
 
+@sys.description('Name for Network Security Group for Bastion network')
+param parBastionNsgName string = 'nsg-${parLocation}-bastion-${parCompanyPrefix}'
+
 @sys.description('The IP address range for Identity Network.')
 param parIdentityNetworkAddressPrefix string = '10.20.0.0/16'
 
@@ -110,12 +113,10 @@ param parSubnets subnetOptionsType = [
   {
     name: 'AzureBastionSubnet'
     addressPrefix: '10.20.0.64/27'
-    networkSecurityGroupName: 'nsg-${parLocation}-bastion-${parCompanyPrefix}'
+    networkSecurityGroupName: parBastionNsgName
     routeTableResourceName: ''
-    serviceEndpoints: [
-        'Microsoft.Storage'
-    ]
-    delegations: 'Microsoft.ContainerInstance/containerGroups'
+    serviceEndpoints: []
+    delegations: ''
   }
 ]
 
@@ -171,7 +172,6 @@ var varSubnetProperties = [ for (subnet, i) in parSubnets : {
 }
 ]
 
-var varBastionNsgName = 'nsg-${parLocation}-bastion-${parCompanyPrefix}'
 
 var _dep = deployment().name
 var varEnvironment = parTags.?Environment ?? 'canary'
@@ -233,6 +233,10 @@ resource resIdentityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01
   // Delegated container network's subnet 
   resource containerSubnet 'subnets' existing = {
     name: parContainerSubnetName
+  }
+  // Bastion subnet 
+  resource bastionSubnet 'subnets' existing = {
+    name: 'AzureBastionSubnet'
   }
 }
 
@@ -357,7 +361,7 @@ module modDscCreateAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'crea
       configurationArguments: {
         domainFQDN: varActiveDirectoryDomainName
         ADDSFilePath: 'E:\\'
-        ADDiskId: 2
+        ADDiskId: 1
         DNSForwarder: ['168.63.129.16']
         ForestMode: 'WinThreshold'
       }
@@ -478,9 +482,9 @@ module modContainerSubnetNSG 'br/public:avm/res/network/network-security-group:0
 }
 
 module modNsgBastion 'br/public:avm/res/network/network-security-group:0.5.0' = {
-  name: '${_dep}-nsg-AzureBastionSubnet'
+  name: '${_dep}-bastion-subnet-nsg'
   params: {
-    name: 'nsg-AzureBastionSubnet'
+    name: parBastionNsgName
     location: parLocation
     securityRules: [
       // Inbound Rules
@@ -637,8 +641,10 @@ module modNsgBastion 'br/public:avm/res/network/network-security-group:0.5.0' = 
 
 module modBastion 'br/public:avm/res/network/bastion-host:0.6.1' = {
   name: '${_dep}-bastion-${parLocationCode}-identity'
+  dependsOn: [
+    modBastionSubnet
+  ]
   params: {
-    // Required parameters
     name: 'bastion-${parLocationCode}-identity'
     virtualNetworkResourceId: resIdentityVirtualNetwork.id
     location: parLocation
@@ -657,6 +663,16 @@ module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network
     ]
     delegation: 'Microsoft.ContainerInstance/containerGroups'
     networkSecurityGroupResourceId: modContainerSubnetNSG.outputs.resourceId
+  }
+}
+
+module modBastionSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
+  name: '${_dep}-bastion-subnet'
+  params: {
+    name: 'AzureBastionSubnet'
+    virtualNetworkName: resIdentityVirtualNetwork.name
+    addressPrefix: parSubnets[2].addressPrefix
+    networkSecurityGroupResourceId: modNsgBastion.outputs.resourceId
   }
 }
 
@@ -697,7 +713,7 @@ module modIdentityVNetSetDNSToCloud 'br/public:avm/res/network/virtual-network:0
 
 module modIdentityVNetSetDNSToOnprem 'br/public:avm/res/network/virtual-network:0.5.1' = if (parActiveDirectoryScenario == 'use-onprem-domain' ) {
   name: 'deploy-Identity-VNet-SetDNSToOnprem'
-  dependsOn: []
+  dependsOn: [modContainerSubnetNSG]
   params: {
     name: parIdentityNetworkName
     location: parLocation

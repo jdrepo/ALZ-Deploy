@@ -24,9 +24,9 @@
 					"serviceEndpoints": [
 						"Microsoft.Storage"
 					],
-          "delegations": ""
+                    "delegations": ""
 				},
-        {
+                {
 					"name": "container-subnet1",
 					"addressPrefix": "10.20.10.0/28",
 					"networkSecurityGroupName": "nsg-gwc-container-alz-canary",
@@ -34,7 +34,15 @@
 					"serviceEndpoints": [
 						"Microsoft.Storage"
 					],
-          "delegations" : "Microsoft.ContainerInstance/containerGroups"
+                    "delegations" : "Microsoft.ContainerInstance/containerGroups"
+				},
+				{
+					"name": "AzureBastionSubnet",
+					"addressPrefix": "10.20.0.64/27",
+					"networkSecurityGroupName": "nsg-gwc-bastion-alz-canary",
+					"routeTableResourceName": "",
+					"serviceEndpoints": [],
+                    "delegations" : ""
 				}
 			]
 		},
@@ -57,6 +65,9 @@
 		},
     "parContainerNsgName": {
 			"value": "nsg-gwc-container-alz-canary"
+		},
+	"parBastionNsgName": {
+			"value": "nsg-gwc-bastion-alz-canary"
 		},
     "parHubNetworkResourceId": {
 			"value": ""
