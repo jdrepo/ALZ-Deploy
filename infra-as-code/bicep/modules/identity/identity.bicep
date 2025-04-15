@@ -713,7 +713,7 @@ module modIdentityVNetSetDNSToCloud 'br/public:avm/res/network/virtual-network:0
 
 module modIdentityVNetSetDNSToOnprem 'br/public:avm/res/network/virtual-network:0.5.1' = if (parActiveDirectoryScenario == 'use-onprem-domain' ) {
   name: 'deploy-Identity-VNet-SetDNSToOnprem'
-  dependsOn: [modContainerSubnetNSG]
+  dependsOn: [modContainerSubnet]
   params: {
     name: parIdentityNetworkName
     location: parLocation
