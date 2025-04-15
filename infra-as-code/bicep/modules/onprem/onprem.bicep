@@ -162,7 +162,7 @@ module modRoleAssignSubscriptionOwner '../../../../../bicep-registry-modules/avm
   }
 }
 
-module modNsgUntrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.0' = {
+module modNsgUntrustedSubnet 'br/public:avm/res/network/network-security-group:0.5.1' = {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-nsg-${parLocationCode}-untrusted-subnet'
   params: {
@@ -196,18 +196,31 @@ module modNsgUntrustedSubnet 'br/public:avm/res/network/network-security-group:0
         }
       }
       {
-        name: 'Allow-ESP'
+        name: 'AllowALZIdentitySubnetOutbound'
         properties: {
+          description: 'Allow Azure identity subnet outbound access from OPNsense untrusted nic to onprem vnet'
           access: 'Allow'
-          direction: 'Inbound'
-          priority: 4094
-          protocol: 'Esp'
+          direction: 'Outbound'
+          priority: 4095
+          protocol: '*'
           sourcePortRange: '*'
           destinationPortRange: '*'
-          destinationAddressPrefix: '172.22.0.4'
-          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'VirtualNetwork'
+          sourceAddressPrefix: '10.20.1.0/24'
         }
       }
+      // {
+      //   name: 'Allow-ESP'
+      //   properties: {
+      //     access: 'Allow'
+      //     direction: 'Inbound'
+      //     priority: 4094
+      //     protocol: 'Esp'
+      //     sourcePortRange: '*'
+      //     destinationPortRange: '*'
+      //     destinationAddressPrefix: '172.22.0.4'
+      //     sourceAddressPrefix: '*'
+      //   }
     ]
   }
 }
