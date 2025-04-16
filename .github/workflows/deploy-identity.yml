@@ -97,6 +97,7 @@ env:
   HubNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-networking-001"
   Location: ${{inputs.location}}
   runNumber: ${{ github.run_number }}
+  onpremDns: "['172.22.10.5']"
 
 permissions:
   id-token: write
@@ -154,6 +155,7 @@ jobs:
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parHubVpnGateway=${{inputs.vpngw}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
+            param parOnpremDns=${{env.onpremDns}}  
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -173,6 +175,7 @@ jobs:
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parHubVpnGateway=${{inputs.vpngw}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
+            param parOnpremDns=${{env.onpremDns}}  
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -230,6 +233,7 @@ jobs:
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parHubVpnGateway=${{inputs.vpngw}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
+            param parOnpremDns=${{env.onpremDns}}  
             parAdminUserName="domadmin"
           deploymentName: deploy_identity-${{ env.runNumber }}
           failOnStdErr: false
