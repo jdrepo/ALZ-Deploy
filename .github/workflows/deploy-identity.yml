@@ -155,7 +155,7 @@ jobs:
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parHubVpnGateway=${{inputs.vpngw}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
-            param parOnpremDns=${{env.onpremDns}}  
+            parOnpremDns=${{env.onpremDns}}  
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
@@ -175,7 +175,7 @@ jobs:
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parHubVpnGateway=${{inputs.vpngw}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
-            param parOnpremDns=${{env.onpremDns}}  
+            parOnpremDns=${{env.onpremDns}}  
             parAdminUserName="domadmin"
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -233,7 +233,7 @@ jobs:
             parHubNetworkResourceId=${{ steps.get_resources.outputs.hubNetworkResourceId}}
             parHubVpnGateway=${{inputs.vpngw}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
-            param parOnpremDns=${{env.onpremDns}}  
+            parOnpremDns=${{env.onpremDns}}  
             parAdminUserName="domadmin"
           deploymentName: deploy_identity-${{ env.runNumber }}
           failOnStdErr: false
