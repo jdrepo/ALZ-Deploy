@@ -81,6 +81,7 @@ jobs:
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       nva: ${{vars.NVA_CANARY}}
+      vpngw: ${{vars.VPNGW_CANARY}}
       wipeAfterDeploy: false
       activeDirectory: "use-onprem-domain"
     secrets:
