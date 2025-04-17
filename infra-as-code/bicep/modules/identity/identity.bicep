@@ -395,7 +395,7 @@ module modDscAddAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'use-onp
     virtualMachineName: modDc1.outputs.name
     settings: {
       configuration: {
-        url: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip'
+        url: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Add-DomainServices.ps1.zip'
         script: 'Add-DomainServices.ps1'
         function: 'Add-DomainServices'
       }
