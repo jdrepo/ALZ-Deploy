@@ -381,38 +381,38 @@ module modDscCreateAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'crea
   }
 }
 
-// module modDscAddAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'use-onprem-domain') {
-//   name: '${_dep}-dsc-add-ad'
-//   dependsOn: [modCopyDeployArtifacts2SaScript]
-//   params: {
-//     location: parLocation
-//     publisher: 'Microsoft.Powershell'
-//     type: 'DSC'
-//     typeHandlerVersion: '2.77'
-//     autoUpgradeMinorVersion: true
-//     enableAutomaticUpgrade: false
-//     name: 'Microsoft.Powershell.DSC'
-//     virtualMachineName: modDc1.outputs.name
-//     settings: {
-//       configuration: {
-//         url: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Add-DomainServices.ps1.zip'
-//         script: 'Add-DomainServices.ps1'
-//         function: 'Add-DomainServices'
-//       }
-//       configurationArguments: {
-//         domainFQDN: varActiveDirectoryDomainName
-//         ADDSFilePath: 'E:\\'
-//         ADDiskId: 1
-//         DNSForwarder: ['168.63.129.16']
-//       }
-//     }
-//     // adminPassword: resKv.getSecret('${varDc1Name}-password')
-//     // adminUserName: parAdminUserName
-//     adminPassword: '+u4whYS0#k4s'
-//     adminUserName: 'azadmin'
-//     configurationUrlSasToken: '?${varDscSas2}'
-//   }
-// }
+module modDscAddAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'use-onprem-domain') {
+  name: '${_dep}-dsc-add-ad'
+  dependsOn: [modCopyDeployArtifacts2SaScript]
+  params: {
+    location: parLocation
+    publisher: 'Microsoft.Powershell'
+    type: 'DSC'
+    typeHandlerVersion: '2.77'
+    autoUpgradeMinorVersion: true
+    enableAutomaticUpgrade: false
+    name: 'Microsoft.Powershell.DSC'
+    virtualMachineName: modDc1.outputs.name
+    settings: {
+      configuration: {
+        url: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Add-DomainServices.ps1.zip'
+        script: 'Add-DomainServices.ps1'
+        function: 'Add-DomainServices'
+      }
+      configurationArguments: {
+        domainFQDN: varActiveDirectoryDomainName
+        ADDSFilePath: 'E:\\'
+        ADDiskId: 1
+        DNSForwarder: ['168.63.129.16']
+      }
+    }
+    // adminPassword: resKv.getSecret('${varDc1Name}-password')
+    // adminUserName: parAdminUserName
+    adminPassword: '+u4whYS0#k4s'
+    adminUserName: 'azadmin'
+    configurationUrlSasToken: '?${varDscSas2}'
+  }
+}
 
 module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
   name: '${_dep}-sa-boot-diag'
