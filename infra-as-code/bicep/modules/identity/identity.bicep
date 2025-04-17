@@ -194,7 +194,7 @@ var varGwcSerialConsoleIps = [
 ]
 
 var varContainersToCreate = {
-  scripts: ['prepareDisks.ps1', 'Deploy-DomainServices.ps1.zip', 'Add-DomainServices.zip']
+  scripts: ['prepareDisks.ps1', 'Deploy-DomainServices.ps1.zip', 'Add-DomainServices.ps1.zip']
 }
 
 var varContainersToCreateFormatted = replace(string(varContainersToCreate), '"', '\\"')
