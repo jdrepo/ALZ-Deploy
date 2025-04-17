@@ -194,13 +194,22 @@ var varGwcSerialConsoleIps = [
 ]
 
 var varContainersToCreate = {
-  scripts: ['prepareDisks.ps1', 'Deploy-DomainServices.ps1.zip']
+  scripts: ['prepareDisks.ps1', 'Deploy-DomainServices.ps1.zip', 'Add-DomainServices.zip']
 }
 
 var varContainersToCreateFormatted = replace(string(varContainersToCreate), '"', '\\"')
 
-var varDscSas = resSaDeployArtifacts.listServiceSas(resSaDeployArtifacts.apiVersion, {
+var varDscSas1 = resSaDeployArtifacts.listServiceSas(resSaDeployArtifacts.apiVersion, {
   canonicalizedResource: '/blob/${resSaDeployArtifacts.name}/scripts/Deploy-DomainServices.ps1.zip'
+  signedResource: 'b'
+  signedPermission: 'r'
+  signedExpiry: dateTimeAdd(parTimeNow, 'PT1H')
+  signedProtocol: 'https'
+  keyToSign: 'key1'
+}).serviceSasToken
+
+var varDscSas2 = resSaDeployArtifacts.listServiceSas(resSaDeployArtifacts.apiVersion, {
+  canonicalizedResource: '/blob/${resSaDeployArtifacts.name}/scripts/Add-DomainServices.ps1.zip'
   signedResource: 'b'
   signedPermission: 'r'
   signedExpiry: dateTimeAdd(parTimeNow, 'PT1H')
@@ -368,7 +377,40 @@ module modDscCreateAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'crea
     }
     adminPassword: resKv.getSecret('${varDc1Name}-password')
     adminUserName: parAdminUserName
-    configurationUrlSasToken: '?${varDscSas}'
+    configurationUrlSasToken: '?${varDscSas1}'
+  }
+}
+
+module modDscAddAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'use-onprem-domain') {
+  name: '${_dep}-dsc-add-ad'
+  dependsOn: [modCopyDeployArtifacts2SaScript]
+  params: {
+    location: parLocation
+    publisher: 'Microsoft.Powershell'
+    type: 'DSC'
+    typeHandlerVersion: '2.77'
+    autoUpgradeMinorVersion: true
+    enableAutomaticUpgrade: false
+    name: 'Microsoft.Powershell.DSC'
+    virtualMachineName: modDc1.outputs.name
+    settings: {
+      configuration: {
+        url: '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip'
+        script: 'Add-DomainServices.ps1'
+        function: 'Add-DomainServices'
+      }
+      configurationArguments: {
+        domainFQDN: varActiveDirectoryDomainName
+        ADDSFilePath: 'E:\\'
+        ADDiskId: 1
+        DNSForwarder: ['168.63.129.16']
+      }
+    }
+    // adminPassword: resKv.getSecret('${varDc1Name}-password')
+    // adminUserName: parAdminUserName
+    adminPassword: '+u4whYS0#k4s'
+    adminUserName: 'azadmin'
+    configurationUrlSasToken: '?${varDscSas2}'
   }
 }
 
@@ -884,5 +926,5 @@ output kv1ResourceId string = modKv.outputs.resourceId
 
 output containersToCreate object = varContainersToCreate
 output containersToCreateFormatted string = varContainersToCreateFormatted
-output varDscSas string = varDscSas
-output dscUrl string = '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip?${varDscSas}'
+output varDscSas string = varDscSas1
+output dscUrl string = '${modSaDeployArtifacts.outputs.primaryBlobEndpoint}scripts/Deploy-DomainServices.ps1.zip?${varDscSas1}'
