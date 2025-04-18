@@ -155,7 +155,6 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Notification-Assets
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Alerting-ServiceHealth
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform${{ env.ManagementGroupSuffix }}" -policyName Alerting-HybridVM
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-platform${{ env.ManagementGroupSuffix }}" -policyName Alerting-VM
@@ -170,6 +169,7 @@ jobs:
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-Storage
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-VM
             azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName "${{ env.ManagementGroupPrefix }}-landingzones${{ env.ManagementGroupSuffix }}" -policyName Alerting-Web
+            azure-monitor-baseline-alerts/patterns/alz/scripts/Start-AMBA-ALZ-Remediation.ps1 -managementGroupName ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} -policyName Notification-Assets
           azPSVersion: "latest"
   wipe:
     runs-on: ubuntu-latest
