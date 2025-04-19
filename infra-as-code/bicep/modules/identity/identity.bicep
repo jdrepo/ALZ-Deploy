@@ -151,6 +151,15 @@ param parActiveDirectoryScenario string = 'create-identity-domain'
 @sys.description('Array with DNS Server addresses for identity vnet.')
 param parOnpremDns array = []
 
+@sys.description('Onprem KeyVault resource id.')
+param parOnpremKvId string
+
+@sys.description('Onprem domain admin name.')
+param parOnpremDomainAdminName string = 'azadmin'
+
+@sys.description('Onprem domain admin password.')
+param parOnpremDomainAdminPasswordSecretName string
+
 @sys.description('VM admin user name')
 @secure()
 param parAdminUserName string
@@ -408,8 +417,8 @@ module modDscAddAd './dsc-dc.bicep' = if (parActiveDirectoryScenario == 'use-onp
     }
     // adminPassword: resKv.getSecret('${varDc1Name}-password')
     // adminUserName: parAdminUserName
-    adminPassword: '+u4whYS0#k4s'
-    adminUserName: 'azadmin'
+    adminPassword: resKvOnprem.getSecret(parOnpremDomainAdminPasswordSecretName)
+    adminUserName: parOnpremDomainAdminName
     configurationUrlSasToken: '?${varDscSas2}'
   }
 }
@@ -710,6 +719,9 @@ module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network
 
 module modBastionSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
   name: '${_dep}-bastion-subnet'
+  dependsOn: [
+    modContainerSubnet
+  ]
   params: {
     name: 'AzureBastionSubnet'
     virtualNetworkName: resIdentityVirtualNetwork.name
@@ -866,6 +878,13 @@ resource resKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
     24
   )
 }
+
+// KeyVault from onprem subscriptions with domain join credentials (use-onprem-domain)
+resource resKvOnprem 'Microsoft.KeyVault/vaults@2023-07-01' existing = if (parActiveDirectoryScenario == 'use-onprem-domain') {
+  scope: resourceGroup(split(parOnpremKvId,'/')[2],split(parOnpremKvId,'/')[4])
+  name: last(split(parOnpremKvId,'/'))
+}
+
 
 // Key Encryption Key for DES
 
