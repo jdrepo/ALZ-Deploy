@@ -106,7 +106,7 @@ env:
   onpremDns: "['172.22.10.5']"
   onpremDomainAdminName: 'azadmin'
   onpremDomainAdminPasswordSecretName: 'vm-neu-001-password'
-  onpremKvId: '/subscriptions/3ece3246-1ebe-45d1-a87e-b9a5ab5039ee/resourceGroups/rg-canary-onprem/providers/Microsoft.KeyVault/vaults/kv-neu-001-canary-vmsu'
+  # onpremKvId: '/subscriptions/3ece3246-1ebe-45d1-a87e-b9a5ab5039ee/resourceGroups/rg-canary-onprem/providers/Microsoft.KeyVault/vaults/kv-neu-001-canary-vmsu'
 
 permissions:
   id-token: write
@@ -172,7 +172,7 @@ jobs:
             parAdminUserName=${{env.adminUserName}}
             parOnpremDomainAdminName=${{env.onpremDomainAdminName}}
             parOnpremDomainAdminPasswordSecretName=${{env.onpremDomainAdminPasswordSecretName}}
-            parOnpremKvId=${{env.onpremKvId}}
+            parOnpremKvId=${{steps.get_resources.outputs.onpremKvResourceId}}
           deploymentName: deploy_identity_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -195,7 +195,7 @@ jobs:
             parAdminUserName=${{env.adminUserName}}
             parOnpremDomainAdminName=${{env.onpremDomainAdminName}}
             parOnpremDomainAdminPasswordSecretName=${{env.onpremDomainAdminPasswordSecretName}}
-            parOnpremKvId=${{env.onpremKvId}}
+            parOnpremKvId=${{steps.get_resources.outputs.onpremKvResourceId}}
           deploymentName: deploy_identity_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -237,6 +237,10 @@ jobs:
           hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
           echo "$hubNetworkResourceId"
           echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
+          az account set -s "${{env.OnpremSubscriptionId}}"
+          onpremKvResourceId=$(az keyvault list --resource-group ${{ env.onpremResourceGroupName }} --query "[?contains(name,'kv-')&&contains(name,'-001-') ].id" --output tsv)
+          echo "onpremKvResourceId: $onpremKvResourceId"
+          echo "onpremKvResourceId=$onpremKvResourceId" >> "$GITHUB_OUTPUT"
     - name: Deploy Identity
       id: deploy_identity
       uses: azure/arm-deploy@v2
@@ -256,7 +260,7 @@ jobs:
             parAdminUserName=${{env.adminUserName}}
             parOnpremDomainAdminName=${{env.onpremDomainAdminName}}
             parOnpremDomainAdminPasswordSecretName=${{env.onpremDomainAdminPasswordSecretName}}
-            parOnpremKvId=${{env.onpremKvId}}
+            parOnpremKvId=${{steps.get_resources.outputs.onpremKvResourceId}}
           deploymentName: deploy_identity-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--verbose"
