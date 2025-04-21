@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       ambaRelease:
-        default: "2025-01-10-hotfix"
+        default: "2025-02-05"
         required: true
         type: choice
         options:
@@ -17,6 +17,7 @@ on:
           - "2024-12-10"
           - "2025-01-10"
           - "2025-01-10-hotfix"
+          - "2025-02-05"
       managementGroupPrefix:
         default: "alz"
         required: true
@@ -95,6 +96,7 @@ jobs:
             --parameters amba/parameters/alzAmba-${{ env.ambaRelease }}.param.${{inputs.environment}}.json \
             --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} --parameters ALZMonitorActionGroupEmail='["${{ secrets.AMBA_ACTIONGROUP_EMAIL }}"]' \
+            --parameters ALZMonitorResourceGroupLocation=${{env.Location}} \
             --name deploy_amba_validation-${{ env.runNumber }} 
       - name: Deploy AMBA - Preview
         id: deploy_amba_preview
@@ -104,6 +106,7 @@ jobs:
             --parameters amba/parameters/alzAmba-${{ env.ambaRelease }}.param.${{inputs.environment}}.json \
             --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} --parameters ALZMonitorActionGroupEmail='["${{ secrets.AMBA_ACTIONGROUP_EMAIL }}"]' \
+            --parameters ALZMonitorResourceGroupLocation=${{env.Location}} \
             --name deploy_amba_preview-${{ env.runNumber }}
   deploy_amba:
     runs-on: ubuntu-latest
@@ -129,6 +132,7 @@ jobs:
             --parameters amba/parameters/alzAmba-${{ env.ambaRelease }}.param.${{inputs.environment}}.json \
             --location ${{ env.Location }} --management-group-id ${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }} \
             --parameters managementSubscriptionId=${{env.ManagementSubscriptionId}} --parameters ALZMonitorActionGroupEmail='["${{ secrets.AMBA_ACTIONGROUP_EMAIL }}"]' \
+            --parameters ALZMonitorResourceGroupLocation=${{env.Location}} \
             --name deploy_amba_deployment-${{ env.runNumber }} 
   remediate:
     runs-on: ubuntu-latest
