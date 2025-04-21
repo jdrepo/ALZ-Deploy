@@ -37,6 +37,9 @@
     "parLogAnalyticsWorkspaceLinkAutomationAccount": {
       "value": false
     },
+    "parAutomationAccountEnabled": {
+      "value": false
+    },
     "parAutomationAccountName": {
       "value": "aa-gwc-alz-canary"
     },
