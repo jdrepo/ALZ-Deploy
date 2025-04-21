@@ -14,7 +14,7 @@ jobs:
       uses: ./.github/workflows/wipe-amba.yml
       with:
         environment: "canary"
-        ambaRelease: "2025-01-10-hotfix"
+        ambaRelease: "2025-03-03"
         managementGroupPrefix: "alz"
       secrets:
         AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
@@ -26,7 +26,7 @@ jobs:
     uses: ./.github/workflows/wipe-alz-base.yml
     with:
       environment: "canary"
-      alzBicepRelease: "v0.22.0"
+      alzBicepRelease: "v0.22.1"
       managementGroupPrefix: "alz"
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
