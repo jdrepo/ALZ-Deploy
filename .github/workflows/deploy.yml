@@ -2,6 +2,15 @@ name: 0. Deploy complete ALZ solution
 
 on:
   workflow_dispatch:
+    inputs:
+      onprem:
+        description: 'Onpremise Scenario'
+        default: 'create-onprem-domain'
+        type: choice
+        options:
+          - create-onprem-domain
+          - no-onprem-domain
+          - no-onprem-enironment
 
 permissions:
   id-token: write
@@ -31,6 +40,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
   deploy-onprem-canary:
+    if: ${{ (inputs.onprem == 'create-onprem-domain') || (inputs.onprem == 'no-onprem-domain') }}
     name: "Deploy onprem infrastructure"
     needs: [alz-deploy-base-canary]
     uses: ./.github/workflows/deploy-onprem.yml
