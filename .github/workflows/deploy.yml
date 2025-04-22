@@ -10,8 +10,14 @@ on:
         options:
           - create-onprem-domain
           - no-onprem-domain
-          - no-onprem-enironment
-
+          - no-onprem-environment
+      activeDirectory:
+        description: 'Active Directory Scenario'
+        default: 'create-onprem-domain'
+        type: choice
+        options:
+          - create-onprem-domain
+          - no-onprem-domain
 permissions:
   id-token: write
   contents: write
@@ -50,7 +56,7 @@ jobs:
       location: "northeurope"
       nva: "opnsense-single"
       vpngw: ${{vars.VPNGW_CANARY}}
-      activeDirectory: "create-onprem-domain"
+      activeDirectory: ${{inputs.activeDirectory}}
     secrets:
       ONPREM_SUB_ID: ${{ secrets.ONPREM_SUB_ID_CANARY}}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
@@ -93,7 +99,7 @@ jobs:
       nva: ${{vars.NVA_CANARY}}
       vpngw: ${{vars.VPNGW_CANARY}}
       wipeAfterDeploy: false
-      activeDirectory: "use-onprem-domain"
+      activeDirectory: ${{inputs.activeDirectory}}
     secrets:
       IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_CANARY}}
       CONNECTIVITY_SUB_ID: ${{ secrets.CONNECTIVITY_SUB_ID_CANARY}}
