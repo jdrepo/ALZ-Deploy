@@ -8,29 +8,29 @@ name: 0. Deploy complete ALZ solution
 
 on:
   workflow_dispatch:
-    inputs:
-      onprem:
-        description: 'Onpremise Scenario'
-        default: 'create-onprem-domain'
-        type: choice
-        options:
-          - create-onprem-environment
-          - no-onprem-environment
-      onpremActiveDirectory:
-        description: 'Onprem Active Directory Scenario'
-        default: 'create-onprem-domain'
-        type: choice
-        options:
-          - create-onprem-domain
-          - no-onprem-domain
-      azureActiveDirectory:
-        description: 'Azure Active Directory Scenario'
-        default: 'use-onprem-domain'
-        type: choice
-        options:
-          - use-onprem-domain
-          - create-identity-domain
-          - no-identity-domain
+    # inputs:
+    #   onprem:
+    #     description: 'Onpremise Scenario'
+    #     default: 'create-onprem-domain'
+    #     type: choice
+    #     options:
+    #       - create-onprem-environment
+    #       - no-onprem-environment
+    #   onpremActiveDirectory:
+    #     description: 'Onprem Active Directory Scenario'
+    #     default: 'create-onprem-domain'
+    #     type: choice
+    #     options:
+    #       - create-onprem-domain
+    #       - no-onprem-domain
+    #   azureActiveDirectory:
+    #     description: 'Azure Active Directory Scenario'
+    #     default: 'use-onprem-domain'
+    #     type: choice
+    #     options:
+    #       - use-onprem-domain
+    #       - create-identity-domain
+    #       - no-identity-domain
 permissions:
   id-token: write
   contents: write
@@ -58,7 +58,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
   deploy-onprem-canary:
-    if: ${{ (inputs.onprem == 'create-onprem-domain') || (inputs.onprem == 'no-onprem-domain') }}
+    if: ${{ vars.ONPREM_CANARY == 'create-onprem-environment' }}
     name: "Deploy onprem infrastructure"
     needs: [alz-deploy-base-canary]
     uses: ./.github/workflows/deploy-onprem.yml
@@ -68,7 +68,7 @@ jobs:
       location: "northeurope"
       nva: "opnsense-single"
       vpngw: ${{vars.VPNGW_CANARY}}
-      activeDirectory: ${{inputs.onpremActiveDirectory}}
+      activeDirectory: ${{vars.ONPREMAD_CANARY}}
     secrets:
       ONPREM_SUB_ID: ${{ secrets.ONPREM_SUB_ID_CANARY}}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
@@ -111,7 +111,7 @@ jobs:
       nva: ${{vars.NVA_CANARY}}
       vpngw: ${{vars.VPNGW_CANARY}}
       wipeAfterDeploy: false
-      activeDirectory: ${{inputs.azureActiveDirectory}}
+      activeDirectory: ${{vars.AZUREAD_CANARY}}
     secrets:
       IDENTITY_SUB_ID: ${{ secrets.IDENTITY_SUB_ID_CANARY}}
       CONNECTIVITY_SUB_ID: ${{ secrets.CONNECTIVITY_SUB_ID_CANARY}}
