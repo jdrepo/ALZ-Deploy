@@ -111,7 +111,7 @@ jobs:
     uses: ./.github/workflows/deploy-amba.yml
     with:
       environment: "canary"
-      ambaRelease: "2025-03-03"
+      ambaRelease: "2025-03-03-hotfix"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
@@ -148,7 +148,7 @@ jobs:
     uses: ./.github/workflows/deploy-amba.yml
     with:
       environment: "prod"
-      ambaRelease: "2024-09-02"
+      ambaRelease: "2025-03-03-hotfix"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
