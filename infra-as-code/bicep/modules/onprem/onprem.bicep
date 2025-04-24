@@ -581,7 +581,7 @@ module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
     }
     osType: 'Linux'
     vmSize: 'Standard_B2als_v2'
-    zone: 2
+    zone: 0
     bootDiagnostics: true
   }
 }
@@ -663,7 +663,7 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.12.0' =  {
     ]
     osType: 'Windows'
     vmSize: 'Standard_B2als_v2'
-    zone: 2
+    zone: 0
     enableAutomaticUpdates: true
     patchMode: 'AutomaticByPlatform'
     bypassPlatformSafetyChecksOnUserSchedule: true
