@@ -162,6 +162,8 @@ jobs:
           failOnStdErr: false
           additionalArguments: "--what-if"
   deploy_opns:
+    needs:
+      - validate_preview_opns
     runs-on: ubuntu-latest
     environment: ${{inputs.environment}}
     name: Deploy NVA OpnSense
