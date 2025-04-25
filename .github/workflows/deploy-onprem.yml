@@ -142,7 +142,7 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem-rg.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-          deploymentName: onprem-rg-validation-${{ env.runNumber }}
+          deploymentName: rg-validate-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
       - name: Check installed OPNsense CustomScript extension
@@ -183,7 +183,7 @@ jobs:
             parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
             parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
-          deploymentName: onprem-validation-${{ env.runNumber }}
+          deploymentName: onprem-validate-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
       - name: Onprem RG - Preview
@@ -197,7 +197,7 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem-rg.parameters.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-          deploymentName: onprem-rg-preview-${{ env.runNumber }}
+          deploymentName: rg-preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
       - name: Onprem - Preview
@@ -276,7 +276,7 @@ jobs:
         parameters: >-
           ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem-rg.parameters.${{inputs.environment}}.json
           parResourceGroupName=${{ env.onpremResourceGroupName }}
-        deploymentName: onprem-rg-deployment-${{ env.runNumber }}
+        deploymentName: rg-deploy-${{ env.runNumber }}
         failOnStdErr: false
     - name: Check installed OPNsense CustomScript extension
       id: check_installed_opns_extension
@@ -316,7 +316,7 @@ jobs:
           parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
           parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
           parActiveDirectoryScenario=${{inputs.activeDirectory}}
-        deploymentName: onprem-deployment-${{ env.runNumber }}
+        deploymentName: onprem-deploy-${{ env.runNumber }}
         failOnStdErr: false
     
 
