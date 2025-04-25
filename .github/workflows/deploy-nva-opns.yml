@@ -196,30 +196,30 @@ jobs:
           hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.hubNetworkResourceGroupName }} --name $hubNetworkName --query id)
           echo "$hubNetworkResourceId"
           echo "hubNetworkResourceId=$hubNetworkResourceId" >> $GITHUB_OUTPUT
-          - name: Check installed OPNsense CustomScript extension
-          id: check_installed_opns_extension
-          uses: azure/cli@v2
-          with:
-            azcliversion: latest
-            inlineScript: |
-              az account set -s "${{env.ConnectivitySubscriptionId}}"
-                opnSenseName=$(jq -r .parameters.parVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/parameters/opnsense.parameters.${{inputs.environment}}.json)
-                if [[ $(az group exists -n ${{ env.hubNetworkResourceGroupName }}) = true ]];
-                  then
-                    if [[ $(az vm list --resource-group ${{ env.hubNetworkResourceGroupName }} --query "[?name=='$opnSenseName'] | length(@)") > 0 ]]; 
-                      then 
-                        opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.hubNetworkResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
-                    fi  
-                fi
-                if [ -n "$opnSenseCustomScriptExtensionId" ]; 
-                  then echo "OPNsense CustomScript Extension already installed"
-                  echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
-                else
-                  echo "OPNsense CustomScript Extension not installed"
-                  echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
-                fi
-                echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
-                echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId"
+    - name: Check installed OPNsense CustomScript extension
+      id: check_installed_opns_extension
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{env.ConnectivitySubscriptionId}}"
+            opnSenseName=$(jq -r .parameters.parVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/parameters/opnsense.parameters.${{inputs.environment}}.json)
+            if [[ $(az group exists -n ${{ env.hubNetworkResourceGroupName }}) = true ]];
+              then
+                if [[ $(az vm list --resource-group ${{ env.hubNetworkResourceGroupName }} --query "[?name=='$opnSenseName'] | length(@)") > 0 ]]; 
+                  then 
+                    opnSenseCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.hubNetworkResourceGroupName }} --vm-name $opnSenseName --query "[?name=='CustomScript'].id")
+                fi  
+            fi
+            if [ -n "$opnSenseCustomScriptExtensionId" ]; 
+              then echo "OPNsense CustomScript Extension already installed"
+              echo "install-opnsense=no" >> "$GITHUB_OUTPUT"
+            else
+              echo "OPNsense CustomScript Extension not installed"
+              echo "install-opnsense=yes" >> "$GITHUB_OUTPUT"
+            fi
+            echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
+            echo "opnSenseCustomScriptExtensionId=$opnSenseCustomScriptExtensionId"
     - name: Deploy NVA OpnSense
       id: deploy_opns
       uses: azure/arm-deploy@v2
