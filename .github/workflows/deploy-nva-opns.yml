@@ -15,6 +15,14 @@ on:
         default: "alz"
         required: true
         type: string
+      vpngw:
+        description: 'VPN Gateway'
+        default: 'no-vpngw'
+        type: choice
+        options:
+          - vpngw-bgp
+          - vpngw-nobgp
+          - no-vpngw
       location:
         default: "germanywestcentral"
         type: string
@@ -36,6 +44,10 @@ on:
         default: "alz"
         required: true
         type: string
+      vpngw:
+        description: 'VPN Gateway type'
+        type: string
+        default: "vpngw-nobgp"
       location:
         default: "germanywestcentral"
         type: string
@@ -91,7 +103,7 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account set -s "${{env.ConnectivitySubscriptionId}}"
-          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.opnsense-single.${{inputs.environment}}.json) 
+          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.opnsense-single.${{inputs.vpngw}}.${{inputs.environment}}.json) 
           hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.hubNetworkResourceGroupName }} --name $hubNetworkName --query id)
           echo "$hubNetworkResourceId"
           echo "hubNetworkResourceId=$hubNetworkResourceId" >> $GITHUB_OUTPUT
@@ -152,7 +164,7 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account set -s "${{env.ConnectivitySubscriptionId}}"
-          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.opnsense-single.${{inputs.environment}}.json) 
+          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.opnsense-single.${{inputs.vpngw}}.${{inputs.environment}}.json) ) 
           hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.hubNetworkResourceGroupName }} --name $hubNetworkName --query id)
           echo "$hubNetworkResourceId"
           echo "hubNetworkResourceId=$hubNetworkResourceId" >> $GITHUB_OUTPUT
