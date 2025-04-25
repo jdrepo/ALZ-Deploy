@@ -85,6 +85,9 @@ param parOpnScriptURI string = 'https://raw.githubusercontent.com/jdrepo/ALZ-Dep
 @sys.description('Shell Script to be executed')
 param parShellScriptName string = 'configureopnsense.sh'
 
+@sys.description('Install OPNsense with CustomScript extension')
+param parInstallOpnsense string = 'yes'
+
 @sys.description('OPN Version')
 param parOpnVersion string = '24.7'
 
@@ -376,7 +379,7 @@ resource resOpnSense 'Microsoft.Compute/virtualMachines@2024-07-01' existing = {
   dependsOn: [modOpnSense]
 }
  
-resource vmext 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = {
+resource vmext 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = if (parInstallOpnsense == 'yes') {
   parent: resOpnSense
   dependsOn: [modOpnSense]
   name: 'CustomScript'
