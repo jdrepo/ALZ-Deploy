@@ -705,6 +705,9 @@ module modBastion 'br/public:avm/res/network/bastion-host:0.6.1' = {
 
 module modContainerSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
   name: '${_dep}-container-subnet1'
+  dependsOn: [
+    modIdentityVNetSetDNSToOnprem
+  ]
   params: {
     name: 'container-subnet1'
     virtualNetworkName: resIdentityVirtualNetwork.name
