@@ -37,6 +37,7 @@ on:
         type: choice
         options:
           - opnsense-single
+          - opnsense-ha
           - no-nva
           - azfirewall-basic
       vpngw:
@@ -944,7 +945,7 @@ jobs:
           deploymentName: deploy-hubNetworkNvaReq-deployment-${{ env.runNumber }}
           failOnStdErr: false
       - name: Prepare opnSense deployment
-        if: ${{ inputs.nva == 'opnsense-single'  }}
+        if: ${{ inputs.nva == 'opnsense-single' || inputs.nva == 'opnsense-ha'  }}
         id: get_resources
         uses: azure/cli@v2
         with:
