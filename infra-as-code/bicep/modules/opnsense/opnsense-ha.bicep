@@ -521,82 +521,82 @@ module modPrimaryOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
   }
 }
 
-module modSecondaryOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
-  name: '${_dep}-secondary-opnsense'
-  dependsOn: [
-    modKv
-  ]
-  params: {
-    name: parSecondaryVirtualMachineName
-    location: parLocation
-    adminUsername: parAdminUser
-    adminPassword: resKv.getSecret('${parSecondaryVirtualMachineName}-password')
-    secureBootEnabled: false
-    vTpmEnabled: false
-    timeZone: parTimeZone
-    imageReference: {
-      publisher: 'thefreebsdfoundation'
-      offer: 'freebsd-14_1'
-      sku: '14_1-release-amd64-gen2-zfs'
-      version: 'latest'
-    }
-    nicConfigurations: [
-      {
-        tags: parTags
-        name: varSecondaryUntrustedNicName
-        enableAcceleratedNetworking: false
-        enableIPForwarding: true
-        ipConfigurations: [
-          {
-            name: 'ipconfig01'
-            subnetResourceId: resConnectivityVirtualNetwork::unTrustedSubnet.id
-            privateIPAllocationMethod: 'Static'
-            privateIPAddress: cidrHost(resConnectivityVirtualNetwork::unTrustedSubnet.properties.addressPrefix,12)
-          }
-        ]
-      }
-      {
-        tags: parTags
-        name: varSecondaryTrustedNicName
-        enableAcceleratedNetworking: false
-        enableIPForwarding: true
-        ipConfigurations: [{
-          name: 'ipconfig01'
-          subnetResourceId: resConnectivityVirtualNetwork::trustedSubnet.id
-          privateIPAllocationMethod: 'Static'
-          privateIPAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)
-          loadBalancerBackendAddressPools: [
-            // {
-            //   id: modIlb.outputs.backendpools[0].id
-            // }
-          ]
-        }
-      ]
+// module modSecondaryOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
+//   name: '${_dep}-secondary-opnsense'
+//   dependsOn: [
+//     modKv
+//   ]
+//   params: {
+//     name: parSecondaryVirtualMachineName
+//     location: parLocation
+//     adminUsername: parAdminUser
+//     adminPassword: resKv.getSecret('${parSecondaryVirtualMachineName}-password')
+//     secureBootEnabled: false
+//     vTpmEnabled: false
+//     timeZone: parTimeZone
+//     imageReference: {
+//       publisher: 'thefreebsdfoundation'
+//       offer: 'freebsd-14_1'
+//       sku: '14_1-release-amd64-gen2-zfs'
+//       version: 'latest'
+//     }
+//     nicConfigurations: [
+//       {
+//         tags: parTags
+//         name: varSecondaryUntrustedNicName
+//         enableAcceleratedNetworking: false
+//         enableIPForwarding: true
+//         ipConfigurations: [
+//           {
+//             name: 'ipconfig01'
+//             subnetResourceId: resConnectivityVirtualNetwork::unTrustedSubnet.id
+//             privateIPAllocationMethod: 'Static'
+//             privateIPAddress: cidrHost(resConnectivityVirtualNetwork::unTrustedSubnet.properties.addressPrefix,12)
+//           }
+//         ]
+//       }
+//       {
+//         tags: parTags
+//         name: varSecondaryTrustedNicName
+//         enableAcceleratedNetworking: false
+//         enableIPForwarding: true
+//         ipConfigurations: [{
+//           name: 'ipconfig01'
+//           subnetResourceId: resConnectivityVirtualNetwork::trustedSubnet.id
+//           privateIPAllocationMethod: 'Static'
+//           privateIPAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)
+//           loadBalancerBackendAddressPools: [
+//             // {
+//             //   id: modIlb.outputs.backendpools[0].id
+//             // }
+//           ]
+//         }
+//       ]
         
-      }
-    ]
-    osDisk: {
-      diskSizeGB: 30
-      caching: 'ReadWrite'
-      createOption: 'FromImage'
-      managedDisk: {
-        diskEncryptionSetResourceId: modDes.outputs.resourceId
-        storageAccountType: 'StandardSSD_LRS'
-      }
-    }
+//       }
+//     ]
+//     osDisk: {
+//       diskSizeGB: 30
+//       caching: 'ReadWrite'
+//       createOption: 'FromImage'
+//       managedDisk: {
+//         diskEncryptionSetResourceId: modDes.outputs.resourceId
+//         storageAccountType: 'StandardSSD_LRS'
+//       }
+//     }
     
-    plan: {
-      name: '14_1-release-amd64-gen2-zfs'
-      publisher: 'thefreebsdfoundation'
-      product: 'freebsd-14_1'
-    }
-    osType: 'Linux'
-    vmSize: parVirtualMachineSize
-    zone: 1
-    bootDiagnostics: true
-    bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
-  }
-}
+//     plan: {
+//       name: '14_1-release-amd64-gen2-zfs'
+//       publisher: 'thefreebsdfoundation'
+//       product: 'freebsd-14_1'
+//     }
+//     osType: 'Linux'
+//     vmSize: parVirtualMachineSize
+//     zone: 1
+//     bootDiagnostics: true
+//     bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
+//   }
+// }
 
 resource resPrimaryOpnSense 'Microsoft.Compute/virtualMachines@2024-07-01' existing = {
   name: parPrimaryVirtualMachineName
@@ -616,7 +616,7 @@ resource resPrimaryVmExt 'Microsoft.Compute/virtualMachines/extensions@2023-07-0
       fileUris: [
         '${parOpnScriptURI}${parShellScriptName}'
       ]
-      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${varPrimaryInstance} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} ${modPublicIp.outputs.ipAddress} ${cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)}'
+      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${varPrimaryInstance} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} ${modPublicIp.outputs.ipAddress} "\'"1.1.1.1/32"\'" ${cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)}'
     }
   }
 }
