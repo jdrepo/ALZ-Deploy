@@ -1,0 +1,77 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"parLocation": {
+			"value": "germanywestcentral"
+		},
+		"parLocationCode": {
+			"value": "gwc"
+		},
+		"parCompanyPrefix": {
+			"value": "alz"
+		},
+		"parTags": {
+			"value": {
+				"Environment": "canary"
+			}
+		},
+		"parTopLevelManagementGroupPrefix": {
+			"value": "alz"
+		},
+		"parTopLevelManagementGroupSuffix": {
+			"value": "-canary"
+		},
+		"parVirtualMachineSize": {
+			"value": "Standard_B2s"
+		},
+		"parPrimaryVirtualMachineName": {
+			"value": "vm-opns-primary"
+		},
+		"parSecondaryVirtualMachineName": {
+			"value": "vm-opns-secondary"
+		},
+		"parAdminUser": {
+			"value": "azureuser"
+		},
+		"parVirtualNetworkResourceId": {
+			"value": ""
+		},
+		"parUntrustedSubnetCIDR": {
+			"value": "10.10.251.0/24"
+		},
+		"parTrustedSubnetCIDR": {
+			"value": "10.10.250.0/24"
+		},
+		"parUntrustedSubnetName": {
+			"value": "OPNS-Untrusted"
+		},
+		"parTrustedSubnetName": {
+			"value": "OPNS-Trusted"
+		},
+		"parHubRouteTableName": {
+			"value": "rt-gwc-hub-alz-canary"
+		},
+		"parDisableBgpRoutePropagation": {
+			"value": false
+		},
+		"parOpnScriptURI": {
+			"value": "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense/scripts/"
+		},
+		"parShellScriptName": {
+			"value": "configureopnsense.sh"
+		},
+		"parOpnVersion": {
+			"value": "25.1"
+		},
+		"parWALinuxVersion": {
+			"value": "2.12.0.2"
+		},
+		"parOpnSenseTrustedSubnetNsgName": {
+		  "value": "nsg-trusted-gwc-opnsense-alz-canary"
+		},
+		"parOpnSenseUntrustedSubnetNsgName": {
+		  "value": "nsg-untrusted-gwc-opnsense-alz-canary"
+		}
+	}
+}

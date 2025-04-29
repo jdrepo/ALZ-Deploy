@@ -1,4 +1,4 @@
-# vars.NVA-CANARY:  opnsense-single / no-nva / azfirewall-basic
+# vars.NVA-CANARY:  opnsense-single / opnsense-ha / no-nva / azfirewall-basic
 # vars.VPNGW-CANARY: vpngw-bgp / vpngw-nobgp / no-vpngw
 # vars.ONPREM_CANARY: create-onprem-environment / no-onprem-environment
 # vars.ONPREMAD_CANARY: create-onprem-domain / no-onprem-domain
