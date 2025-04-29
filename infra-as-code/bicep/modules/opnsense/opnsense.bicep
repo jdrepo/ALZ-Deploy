@@ -286,6 +286,15 @@ module modUntrustedSubnet '../../../../../bicep-registry-modules/avm/res/network
   }
 }
 
+module modBastionDeveloper 'br/public:avm/res/network/bastion-host:0.6.1' = {
+  name: '${_dep}-bastion-${parLocationCode}-hubnetwork'
+  params: {
+    name: 'bastion-${parLocationCode}-hubnetwork'
+    virtualNetworkResourceId: resConnectivityVirtualNetwork.id
+    location: parLocation
+    skuName: 'Developer'
+  }
+}
 
 
 module modPublicIp 'br/public:avm/res/network/public-ip-address:0.7.0' = {
