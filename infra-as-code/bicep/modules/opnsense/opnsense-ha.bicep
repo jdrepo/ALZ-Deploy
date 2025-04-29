@@ -339,18 +339,18 @@ module modElb 'br/public:avm/res/network/load-balancer:0.4.2' = {
         name: 'opnsense'
         loadBalancerBackendAddresses: [
           {
-            name: 'opnsense-secondary-untrusted'
+            name: 'opnsense-primary-untrusted'
             properties: {
-            ipAddress: cidrHost(resConnectivityVirtualNetwork::unTrustedSubnet.properties.addressPrefix,12)
+            ipAddress: cidrHost(resConnectivityVirtualNetwork::unTrustedSubnet.properties.addressPrefix,11)
               virtualNetwork: {
                 id: resConnectivityVirtualNetwork.id
               }
             }
           }
           {
-            name: 'opnsense-primary-untrusted'
+            name: 'opnsense-secondary-untrusted'
             properties: {
-            ipAddress: cidrHost(resConnectivityVirtualNetwork::unTrustedSubnet.properties.addressPrefix,11)
+            ipAddress: cidrHost(resConnectivityVirtualNetwork::unTrustedSubnet.properties.addressPrefix,12)
               virtualNetwork: {
                 id: resConnectivityVirtualNetwork.id
               }
@@ -402,18 +402,18 @@ module modIlb 'br/public:avm/res/network/load-balancer:0.4.2' = {
         name: 'opnsense'
         loadBalancerBackendAddresses: [
           {
-            name: 'opnsense-secondary-trusted'
+            name: 'opnsense-primary-trusted'
             properties: {
-            ipAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)
+            ipAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,11)
               virtualNetwork: {
                 id: resConnectivityVirtualNetwork.id
               }
             }
           }
           {
-            name: 'opnsense-primary-trusted'
+            name: 'opnsense-secondary-trusted'
             properties: {
-            ipAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,11)
+            ipAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)
               virtualNetwork: {
                 id: resConnectivityVirtualNetwork.id
               }
