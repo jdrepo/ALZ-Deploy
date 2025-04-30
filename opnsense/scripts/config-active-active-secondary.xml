@@ -186,8 +186,8 @@
   </sysctl>
   <system>
     <optimization>normal</optimization>
-    <hostname>OPNsense</hostname>
-    <domain>localhost</domain>
+    <hostname>vm-opns-secondary</hostname>
+    <domain>alz-canary.lokal</domain>
     <dnsallowoverride>1</dnsallowoverride>
     <group>
       <name>admins</name>
@@ -203,12 +203,12 @@
       <descr>System Administrator</descr>
       <scope>system</scope>
       <groupname>admins</groupname>
-      <password>$2b$10$YRVoF4SgskIsrXOvOQjGieB9XqHPRra9R7d80B3BZdbY/j21TwBfS</password>
+      <password>$2y$11$ByogqaOt2WR1Kb5hXcPLDOD4LE0WdNkE8OhBqXxDcbCn61Dsj72vO</password>
       <uid>0</uid>
     </user>
     <nextuid>2000</nextuid>
     <nextgid>2000</nextgid>
-    <timezone>America/Mexico_City</timezone>
+    <timezone>Europe/Berlin</timezone>
     <time-update-interval>300</time-update-interval>
     <timeservers>0.nl.pool.ntp.org</timeservers>
     <webgui>
@@ -260,7 +260,7 @@
   <interfaces>
     <wan>
       <if>hn0</if>
-      <descr/>
+      <descr>UNTRUSTED</descr>
       <enable>1</enable>
       <spoofmac/>
       <blockbogons>1</blockbogons>
@@ -286,7 +286,7 @@
     </wan>
     <lan>
       <if>hn1</if>
-      <descr>LAN</descr>
+      <descr>TRUSTED</descr>
       <enable>1</enable>
       <spoofmac/>
       <ipaddr>dhcp</ipaddr>
@@ -403,63 +403,23 @@
     </rule>
     <rule>
       <type>pass</type>
-      <interface>lan</interface>
-      <ipprotocol>inet</ipprotocol>
-      <statetype>keep state</statetype>
-      <descr>Allow Firewall Management Windows-VM-Subnet</descr>
-      <direction>in</direction>
-      <log>1</log>
-      <quick>1</quick>
-      <source>
-        <address>WindowsVMSubnet</address>
-      </source>
-      <destination>
-        <network>lanip</network>
-      </destination>
-      <updated>
-        <username>root@10.0.1.7</username>
-        <time>1650569687.4794</time>
-        <description>/firewall_rules_edit.php made changes</description>
-      </updated>
-      <created>
-        <username>root@10.0.1.7</username>
-        <time>1650569687.4794</time>
-        <description>/firewall_rules_edit.php made changes</description>
-      </created>
-    </rule>
-    <rule>
-      <type>pass</type>
-      <interface>lan</interface>
-      <ipprotocol>inet</ipprotocol>
-      <statetype>keep state</statetype>
-      <descr>Allow Windows-VM-Subnet Internet Access</descr>
-      <direction>in</direction>
-      <log>1</log>
-      <quick>1</quick>
-      <source>
-        <address>WindowsVMSubnet</address>
-      </source>
-      <destination>
-        <any>1</any>
-      </destination>
-      <updated>
-        <username>root@10.0.1.7</username>
-        <time>1650570771.5832</time>
-        <description>/firewall_rules_edit.php made changes</description>
-      </updated>
-      <created>
-        <username>root@10.0.1.7</username>
-        <time>1650570771.5832</time>
-        <description>/firewall_rules_edit.php made changes</description>
-      </created>
-    </rule>
-    <rule>
-      <type>pass</type>
       <ipprotocol>inet</ipprotocol>
       <descr>Default allow LAN to any rule</descr>
       <interface>lan</interface>
       <source>
         <network>lan</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+    </rule>
+	<rule>
+      <type>pass</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Allow identity-subnet1 to any</descr>
+      <interface>lan</interface>
+      <source>
+        <network>identity_subnet1</network>
       </source>
       <destination>
         <any/>
@@ -666,12 +626,14 @@
         <aliases>
           <alias uuid="637063a6-909d-4544-b2ac-c883a9ea97e4">
             <enabled>1</enabled>
-            <name>WindowsVMSubnet</name>
+            <name>identity_subnet1</name>
             <type>network</type>
             <proto/>
+			<interface/>	
             <counters>0</counters>
             <updatefreq/>
-            <content>zzz.zzz.zzz.zzz</content>
+            <content>10.20.1.0/24</content>
+			<categories/>			 
             <description/>
           </alias>
         </aliases>
@@ -726,31 +688,11 @@
       </rule>
       <rule>
         <source>
-          <network>WindowsVMSubnet</network>
+          <network>identity_subnet</network>
         </source>
         <destination>
           <any>1</any>
         </destination>
-        <descr>NAT Windows-VM-Subnet</descr>
-        <category/>
-        <interface>wan</interface>
-        <tag/>
-        <tagged/>
-        <poolopts/>
-        <poolopts_sourcehashkey/>
-        <ipprotocol>inet</ipprotocol>
-        <created>
-          <username>root@10.0.1.7</username>
-          <time>1650569929.4325</time>
-          <description>/firewall_nat_out_edit.php made changes</description>
-        </created>
-        <target>wanip</target>
-        <sourceport/>
-        <updated>
-          <username>root@10.0.1.7</username>
-          <time>1650570006.9471</time>
-          <description>/firewall_nat_out_edit.php made changes</description>
-        </updated>
       </rule>
       <mode>hybrid</mode>
     </outbound>
