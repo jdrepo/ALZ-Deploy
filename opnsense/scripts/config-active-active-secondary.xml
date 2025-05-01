@@ -348,6 +348,33 @@
         <description>/firewall_rules_edit.php made changes</description>
       </created>
     </rule>
+	<rule uuid="f1595a4e-5533-4b30-8a74-01748803ccb8">
+      <type>pass</type>
+      <interface>wan</interface>
+      <ipprotocol>inet</ipprotocol>
+      <statetype>keep state</statetype>
+      <direction>in</direction>
+      <category>Azure Bastion Developer Access</category>
+      <quick>1</quick>
+      <protocol>tcp</protocol>
+      <source>
+        <address>AzureWireServerIP</address>
+      </source>
+      <destination>
+        <network>wanip</network>
+        <port>22</port>
+      </destination>
+      <updated>
+        <username>root@77.21.192.145</username>
+        <time>1746121904.5187</time>
+        <description>/firewall_rules_edit.php made changes</description>
+      </updated>
+      <created>
+        <username>root@77.21.192.145</username>
+        <time>1746121904.5187</time>
+        <description>/firewall_rules_edit.php made changes</description>
+      </created>
+    </rule>
     <rule>
       <type>pass</type>
       <interface>lan</interface>
@@ -634,6 +661,22 @@
             <updatefreq/>
             <content>10.20.1.0/24</content>
 			<categories/>			 
+            <description/>
+          </alias>
+		  <alias uuid="62e7121a-97a4-4f00-97d6-55632307014a">
+            <enabled>1</enabled>
+            <name>AzureWireServerIP</name>
+            <type>host</type>
+            <path_expression/>
+            <proto/>
+            <interface/>
+            <counters>0</counters>
+            <updatefreq/>
+            <content>168.63.129.16</content>
+            <password/>
+            <username/>
+            <authtype/>
+            <categories/>
             <description/>
           </alias>
         </aliases>

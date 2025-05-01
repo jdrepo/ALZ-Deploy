@@ -65,6 +65,7 @@ sed -i "" "s/reboot/shutdown -r +2/g" opnsense-bootstrap.sh.in
 sh ./opnsense-bootstrap.sh.in -y -r "$2"
 
 # Add Azure waagent
+
 ###fetch https://github.com/Azure/WALinuxAgent/archive/refs/tags/v$3.tar.gz
 ###tar -xvzf v$3.tar.gz
 ###cd WALinuxAgent-$3/

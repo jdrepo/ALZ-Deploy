@@ -59,7 +59,7 @@
 			"value": "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense/scripts/"
 		},
 		"parShellScriptName": {
-			"value": "configureopnsense.sh"
+			"value": "configureopnsense-ha.sh"
 		},
 		"parOpnVersion": {
 			"value": "25.1"

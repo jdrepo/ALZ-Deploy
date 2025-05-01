@@ -86,7 +86,7 @@ param parDisableBgpRoutePropagation bool = false
 param parOpnScriptURI string = 'https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense/scripts/'
 
 @sys.description('Shell Script to be executed')
-param parShellScriptName string = 'configureopnsense.sh'
+param parShellScriptName string = 'configureopnsense-ha.sh'
 
 @sys.description('Install OPNsense with CustomScript extension')
 param parInstallOpnsense string = 'yes'
@@ -108,6 +108,12 @@ param parAdminUser string = 'azureuser'
 
 @description('Optional. Virtual machine time zone')
 param parTimeZone string = 'W. Europe Standard Time'
+
+@sys.description('Define outbound destination ports or ranges for SSH or RDP that you want to access from Azure Bastion.')
+param parBastionOutboundSshRdpPorts array = ['22', '3389']
+
+@sys.description('Name for Network Security Group for Bastion network')
+param parBastionNsgName string = 'nsg-${parLocation}-bastion-${parCompanyPrefix}'
 
 param parTimeNow string = utcNow('u')
 
@@ -258,6 +264,154 @@ module modNsgOpnsUntrustedSubnet 'br/public:avm/res/network/network-security-gro
           direction: 'Outbound'
           sourcePortRange: '*'
           destinationAddressPrefix: '*'
+        }
+      }
+    ]
+  }
+}
+
+module modNsgBastion 'br/public:avm/res/network/network-security-group:0.5.0' = {
+  name: '${_dep}-bastion-subnet-nsg'
+  params: {
+    name: parBastionNsgName
+    location: parLocation
+    securityRules: [
+      // Inbound Rules
+      {
+        name: 'AllowHttpsInbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Inbound'
+          priority: 120
+          sourceAddressPrefix: 'Internet'
+          destinationAddressPrefix: '*'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+        }
+      }
+      {
+        name: 'AllowGatewayManagerInbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Inbound'
+          priority: 130
+          sourceAddressPrefix: 'GatewayManager'
+          destinationAddressPrefix: '*'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+        }
+      }
+      {
+        name: 'AllowAzureLoadBalancerInbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Inbound'
+          priority: 140
+          sourceAddressPrefix: 'AzureLoadBalancer'
+          destinationAddressPrefix: '*'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+        }
+      }
+      {
+        name: 'AllowBastionHostCommunication'
+        properties: {
+          access: 'Allow'
+          direction: 'Inbound'
+          priority: 150
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: 'VirtualNetwork'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRanges: [
+            '8080'
+            '5701'
+          ]
+        }
+      }
+      {
+        name: 'DenyAllInbound'
+        properties: {
+          access: 'Deny'
+          direction: 'Inbound'
+          priority: 4096
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+        }
+      }
+      // Outbound Rules
+      {
+        name: 'AllowSshRdpOutbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 100
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'VirtualNetwork'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRanges: parBastionOutboundSshRdpPorts
+        }
+      }
+      {
+        name: 'AllowAzureCloudOutbound'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 110
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'AzureCloud'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+        }
+      }
+      {
+        name: 'AllowBastionCommunication'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 120
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: 'VirtualNetwork'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRanges: [
+            '8080'
+            '5701'
+          ]
+        }
+      }
+      {
+        name: 'AllowGetSessionInformation'
+        properties: {
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 130
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'Internet'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '80'
+        }
+      }
+      {
+        name: 'DenyAllOutbound'
+        properties: {
+          access: 'Deny'
+          direction: 'Outbound'
+          priority: 4096
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
         }
       }
     ]
@@ -560,19 +714,14 @@ module modPrimaryOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
 //         name: varSecondaryTrustedNicName
 //         enableAcceleratedNetworking: false
 //         enableIPForwarding: true
-//         ipConfigurations: [{
-//           name: 'ipconfig01'
-//           subnetResourceId: resConnectivityVirtualNetwork::trustedSubnet.id
-//           privateIPAllocationMethod: 'Static'
-//           privateIPAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)
-//           loadBalancerBackendAddressPools: [
-//             // {
-//             //   id: modIlb.outputs.backendpools[0].id
-//             // }
-//           ]
-//         }
-//       ]
-        
+//         ipConfigurations: [
+//           {
+//             name: 'ipconfig01'
+//             subnetResourceId: resConnectivityVirtualNetwork::trustedSubnet.id
+//             privateIPAllocationMethod: 'Static'
+//             privateIPAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)
+//           }
+//         ]       
 //       }
 //     ]
 //     osDisk: {
@@ -616,7 +765,7 @@ resource resPrimaryVmExt 'Microsoft.Compute/virtualMachines/extensions@2023-07-0
       fileUris: [
         '${parOpnScriptURI}${parShellScriptName}'
       ]
-      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${varPrimaryInstance} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} ${modPublicIp.outputs.ipAddress} "\'"1.1.1.1/32"\'" ${cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)}'
+      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${varPrimaryInstance} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} 1.1.1.1/32 ${modPublicIp.outputs.ipAddress} ${cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)}'
     }
   }
 }
@@ -640,7 +789,7 @@ resource resPrimaryVmExt 'Microsoft.Compute/virtualMachines/extensions@2023-07-0
 //       fileUris: [
 //         '${parOpnScriptURI}${parShellScriptName}'
 //       ]
-//       commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${varSecondaryInstance} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} "\'" "\'" "\'"1.1.1.1/32"\'" "\'" "\'" "\'" "\'" '
+//       commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${varSecondaryInstance} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} 1.1.1.1/32 ${modPublicIp.outputs.ipAddress}'
 //     }
 //   }
 // }
@@ -779,83 +928,83 @@ module modHubRouteTable 'br/public:avm/res/network/route-table:0.4.0' = {
 }
 
 
-// module modPolicyExemptionDeployMDEndpoints '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
-//   name: '${_dep}-policy-exemption-deployMDEndpoints'
-//   params: {
-//     name: varPolicyExemptionDeployMDEndpoints.libDefinition.name
-//     exemptionCategory: 'Waiver'
-//     policyAssignmentId: varPolicyExemptionDeployMDEndpoints.definitionId
-//     displayName: varPolicyExemptionDeployMDEndpoints.libDefinition.properties.displayName
-//     description: varPolicyExemptionDeployMDEndpoints.libDefinition.properties.description
-//     policyDefinitionReferenceIds: varPolicyExemptionDeployMDEndpoints.libDefinition.properties.policyDefinitionReferenceIds
-//     resourceId: modOpnSense.outputs.resourceId
-//   }
-// }
+module modPolicyExemptionDeployMDEndpoints '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-deployMDEndpoints'
+  params: {
+    name: varPolicyExemptionDeployMDEndpoints.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionDeployMDEndpoints.definitionId
+    displayName: varPolicyExemptionDeployMDEndpoints.libDefinition.properties.displayName
+    description: varPolicyExemptionDeployMDEndpoints.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionDeployMDEndpoints.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modPrimaryOpnSense.outputs.resourceId
+  }
+}
 
-// module modPolicyExemptionDeployVMMonitoring '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
-//   name: '${_dep}-policy-exemption-deployVMMonitoring'
-//   params: {
-//     name: varPolicyExemptionDeployVMMonitoring.libDefinition.name
-//     exemptionCategory: 'Waiver'
-//     policyAssignmentId: varPolicyExemptionDeployVMMonitoring.definitionId
-//     displayName: varPolicyExemptionDeployVMMonitoring.libDefinition.properties.displayName
-//     description: varPolicyExemptionDeployVMMonitoring.libDefinition.properties.description
-//     policyDefinitionReferenceIds: varPolicyExemptionDeployVMMonitoring.libDefinition.properties.policyDefinitionReferenceIds
-//     resourceId: modOpnSense.outputs.resourceId
-//   }
-// }
+module modPolicyExemptionDeployVMMonitoring '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-deployVMMonitoring'
+  params: {
+    name: varPolicyExemptionDeployVMMonitoring.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionDeployVMMonitoring.definitionId
+    displayName: varPolicyExemptionDeployVMMonitoring.libDefinition.properties.displayName
+    description: varPolicyExemptionDeployVMMonitoring.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionDeployVMMonitoring.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modPrimaryOpnSense.outputs.resourceId
+  }
+}
 
-// module modPolicyExemptionEnforceACSB '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
-//   name: '${_dep}-policy-exemption-enforceACSB'
-//   params: {
-//     name: varPolicyExemptionEnforceACSB.libDefinition.name
-//     exemptionCategory: 'Waiver'
-//     policyAssignmentId: varPolicyExemptionEnforceACSB.definitionId
-//     displayName: varPolicyExemptionEnforceACSB.libDefinition.properties.displayName
-//     description: varPolicyExemptionEnforceACSB.libDefinition.properties.description
-//     policyDefinitionReferenceIds: varPolicyExemptionEnforceACSB.libDefinition.properties.policyDefinitionReferenceIds
-//     resourceId: modOpnSense.outputs.resourceId
-//   }
-// }
+module modPolicyExemptionEnforceACSB '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-enforceACSB'
+  params: {
+    name: varPolicyExemptionEnforceACSB.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionEnforceACSB.definitionId
+    displayName: varPolicyExemptionEnforceACSB.libDefinition.properties.displayName
+    description: varPolicyExemptionEnforceACSB.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionEnforceACSB.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modPrimaryOpnSense.outputs.resourceId
+  }
+}
 
-// module modPolicyExemptionAuditTrustedLaunch '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
-//   name: '${_dep}-policy-exemption-auditTrustedLaunch'
-//   params: {
-//     name: varPolicyExemptionAuditTrustedLaunch.libDefinition.name
-//     exemptionCategory: 'Waiver'
-//     policyAssignmentId: varPolicyExemptionAuditTrustedLaunch.definitionId
-//     displayName: varPolicyExemptionAuditTrustedLaunch.libDefinition.properties.displayName
-//     description: varPolicyExemptionAuditTrustedLaunch.libDefinition.properties.description
-//     policyDefinitionReferenceIds: varPolicyExemptionAuditTrustedLaunch.libDefinition.properties.policyDefinitionReferenceIds
-//     resourceId: modOpnSense.outputs.resourceId
-//   }
-// }
+module modPolicyExemptionAuditTrustedLaunch '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-auditTrustedLaunch'
+  params: {
+    name: varPolicyExemptionAuditTrustedLaunch.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionAuditTrustedLaunch.definitionId
+    displayName: varPolicyExemptionAuditTrustedLaunch.libDefinition.properties.displayName
+    description: varPolicyExemptionAuditTrustedLaunch.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionAuditTrustedLaunch.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modPrimaryOpnSense.outputs.resourceId
+  }
+}
 
-// module modPolicyExemptionDeployMDfCConfig '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
-//   name: '${_dep}-policy-exemption-deployMDfCConfig'
-//   params: {
-//     name: varPolicyExemptionDeployMDfCConfig.libDefinition.name
-//     exemptionCategory: 'Waiver'
-//     policyAssignmentId: varPolicyExemptionDeployMDfCConfig.definitionId
-//     displayName: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.displayName
-//     description: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.description
-//     policyDefinitionReferenceIds: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.policyDefinitionReferenceIds
-//     resourceId: modOpnSense.outputs.resourceId
-//   }
-// }
+module modPolicyExemptionDeployMDfCConfig '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-deployMDfCConfig'
+  params: {
+    name: varPolicyExemptionDeployMDfCConfig.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionDeployMDfCConfig.definitionId
+    displayName: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.displayName
+    description: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionDeployMDfCConfig.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modPrimaryOpnSense.outputs.resourceId
+  }
+}
 
-// module modPolicyExemptionDeployASCMonitoring '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
-//   name: '${_dep}-policy-exemption-deploy-asc-monitoring'
-//   params: {
-//     name: varPolicyExemptionDeployASCMonitoring.libDefinition.name
-//     exemptionCategory: 'Waiver'
-//     policyAssignmentId: varPolicyExemptionDeployASCMonitoring.definitionId
-//     displayName: varPolicyExemptionDeployASCMonitoring.libDefinition.properties.displayName
-//     description: varPolicyExemptionDeployASCMonitoring.libDefinition.properties.description
-//     policyDefinitionReferenceIds: varPolicyExemptionDeployASCMonitoring.libDefinition.properties.policyDefinitionReferenceIds
-//     resourceId: modOpnSense.outputs.resourceId
-//   }
-// }
+module modPolicyExemptionDeployASCMonitoring '../policy/exemptions/policy-exemption-resource-vm.bicep' = {
+  name: '${_dep}-policy-exemption-deploy-asc-monitoring'
+  params: {
+    name: varPolicyExemptionDeployASCMonitoring.libDefinition.name
+    exemptionCategory: 'Waiver'
+    policyAssignmentId: varPolicyExemptionDeployASCMonitoring.definitionId
+    displayName: varPolicyExemptionDeployASCMonitoring.libDefinition.properties.displayName
+    description: varPolicyExemptionDeployASCMonitoring.libDefinition.properties.description
+    policyDefinitionReferenceIds: varPolicyExemptionDeployASCMonitoring.libDefinition.properties.policyDefinitionReferenceIds
+    resourceId: modPrimaryOpnSense.outputs.resourceId
+  }
+}
 
 
 
