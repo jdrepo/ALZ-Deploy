@@ -88,8 +88,11 @@ param parOpnScriptURI string = 'https://raw.githubusercontent.com/jdrepo/ALZ-Dep
 @sys.description('Shell Script to be executed')
 param parShellScriptName string = 'configureopnsense-ha.sh'
 
-@sys.description('Install OPNsense with CustomScript extension')
-param parInstallOpnsense string = 'yes'
+@sys.description('Install OPNsense Primary with CustomScript extension')
+param parInstallOpnsensePrimary string = 'yes'
+
+@sys.description('Install OPNsense Secondary with CustomScript extension')
+param parInstallOpnsenseSecondary string = 'yes'
 
 @sys.description('OPN Version')
 param parOpnVersion string = '25.1'
@@ -675,83 +678,83 @@ module modPrimaryOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
   }
 }
 
-// module modSecondaryOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
-//   name: '${_dep}-secondary-opnsense'
-//   dependsOn: [
-//     modKv
-//   ]
-//   params: {
-//     name: parSecondaryVirtualMachineName
-//     location: parLocation
-//     adminUsername: parAdminUser
-//     adminPassword: resKv.getSecret('${parSecondaryVirtualMachineName}-password')
-//     secureBootEnabled: false
-//     vTpmEnabled: false
-//     timeZone: parTimeZone
-//     imageReference: {
-//       publisher: 'thefreebsdfoundation'
-//       offer: 'freebsd-14_1'
-//       sku: '14_1-release-amd64-gen2-zfs'
-//       version: 'latest'
-//     }
-//     nicConfigurations: [
-//       {
-//         tags: parTags
-//         name: varSecondaryUntrustedNicName
-//         enableAcceleratedNetworking: false
-//         enableIPForwarding: true
-//         ipConfigurations: [
-//           {
-//             name: 'ipconfig01'
-//             subnetResourceId: resConnectivityVirtualNetwork::unTrustedSubnet.id
-//             privateIPAllocationMethod: 'Static'
-//             privateIPAddress: cidrHost(resConnectivityVirtualNetwork::unTrustedSubnet.properties.addressPrefix,12)
-//           }
-//         ]
-//       }
-//       {
-//         tags: parTags
-//         name: varSecondaryTrustedNicName
-//         enableAcceleratedNetworking: false
-//         enableIPForwarding: true
-//         ipConfigurations: [
-//           {
-//             name: 'ipconfig01'
-//             subnetResourceId: resConnectivityVirtualNetwork::trustedSubnet.id
-//             privateIPAllocationMethod: 'Static'
-//             privateIPAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)
-//           }
-//         ]       
-//       }
-//     ]
-//     osDisk: {
-//       diskSizeGB: 30
-//       caching: 'ReadWrite'
-//       createOption: 'FromImage'
-//       managedDisk: {
-//         diskEncryptionSetResourceId: modDes.outputs.resourceId
-//         storageAccountType: 'StandardSSD_LRS'
-//       }
-//     }
+module modSecondaryOpnSense 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
+  name: '${_dep}-secondary-opnsense'
+  dependsOn: [
+    modKv
+  ]
+  params: {
+    name: parSecondaryVirtualMachineName
+    location: parLocation
+    adminUsername: parAdminUser
+    adminPassword: resKv.getSecret('${parSecondaryVirtualMachineName}-password')
+    secureBootEnabled: false
+    vTpmEnabled: false
+    timeZone: parTimeZone
+    imageReference: {
+      publisher: 'thefreebsdfoundation'
+      offer: 'freebsd-14_1'
+      sku: '14_1-release-amd64-gen2-zfs'
+      version: 'latest'
+    }
+    nicConfigurations: [
+      {
+        tags: parTags
+        name: varSecondaryUntrustedNicName
+        enableAcceleratedNetworking: false
+        enableIPForwarding: true
+        ipConfigurations: [
+          {
+            name: 'ipconfig01'
+            subnetResourceId: resConnectivityVirtualNetwork::unTrustedSubnet.id
+            privateIPAllocationMethod: 'Static'
+            privateIPAddress: cidrHost(resConnectivityVirtualNetwork::unTrustedSubnet.properties.addressPrefix,12)
+          }
+        ]
+      }
+      {
+        tags: parTags
+        name: varSecondaryTrustedNicName
+        enableAcceleratedNetworking: false
+        enableIPForwarding: true
+        ipConfigurations: [
+          {
+            name: 'ipconfig01'
+            subnetResourceId: resConnectivityVirtualNetwork::trustedSubnet.id
+            privateIPAllocationMethod: 'Static'
+            privateIPAddress: cidrHost(resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix,12)
+          }
+        ]       
+      }
+    ]
+    osDisk: {
+      diskSizeGB: 30
+      caching: 'ReadWrite'
+      createOption: 'FromImage'
+      managedDisk: {
+        diskEncryptionSetResourceId: modDes.outputs.resourceId
+        storageAccountType: 'StandardSSD_LRS'
+      }
+    }
     
-//     plan: {
-//       name: '14_1-release-amd64-gen2-zfs'
-//       publisher: 'thefreebsdfoundation'
-//       product: 'freebsd-14_1'
-//     }
-//     osType: 'Linux'
-//     vmSize: parVirtualMachineSize
-//     zone: 1
-//     bootDiagnostics: true
-//     bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
-//   }
-// }
+    plan: {
+      name: '14_1-release-amd64-gen2-zfs'
+      publisher: 'thefreebsdfoundation'
+      product: 'freebsd-14_1'
+    }
+    osType: 'Linux'
+    vmSize: parVirtualMachineSize
+    zone: 1
+    bootDiagnostics: true
+    bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
+  }
+}
 
 resource resPrimaryOpnSense 'Microsoft.Compute/virtualMachines@2024-07-01' existing = {
   name: parPrimaryVirtualMachineName
 }
 
-resource resPrimaryVmExt 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = if (parInstallOpnsense == 'yes') {
+resource resPrimaryVmExt 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = if (parInstallOpnsensePrimary == 'yes') {
   parent: resPrimaryOpnSense
   dependsOn: [modPrimaryOpnSense]
   name: 'CustomScript'
@@ -771,28 +774,28 @@ resource resPrimaryVmExt 'Microsoft.Compute/virtualMachines/extensions@2023-07-0
 }
 
 
-// resource resSecondaryOpnSense 'Microsoft.Compute/virtualMachines@2024-07-01' existing = {
-//   name: parSecondaryVirtualMachineName
-// }
+resource resSecondaryOpnSense 'Microsoft.Compute/virtualMachines@2024-07-01' existing = {
+  name: parSecondaryVirtualMachineName
+}
 
-// resource resSecondaryVmExt 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = if (parInstallOpnsense == 'yes') {
-//   parent: resSecondaryOpnSense
-//   dependsOn: [modSecondaryOpnSense]
-//   name: 'CustomScript'
-//   location: parLocation
-//   properties: {
-//     publisher: 'Microsoft.OSTCExtensions'
-//     type: 'CustomScriptForLinux'
-//     typeHandlerVersion: '1.5'
-//     autoUpgradeMinorVersion: false
-//     settings:{
-//       fileUris: [
-//         '${parOpnScriptURI}${parShellScriptName}'
-//       ]
-//       commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${varSecondaryInstance} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} 1.1.1.1/32 ${modPublicIp.outputs.ipAddress}'
-//     }
-//   }
-// }
+resource resSecondaryVmExt 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = if (parInstallOpnsenseSecondary == 'yes') {
+  parent: resSecondaryOpnSense
+  dependsOn: [modSecondaryOpnSense]
+  name: 'CustomScript'
+  location: parLocation
+  properties: {
+    publisher: 'Microsoft.OSTCExtensions'
+    type: 'CustomScriptForLinux'
+    typeHandlerVersion: '1.5'
+    autoUpgradeMinorVersion: false
+    settings:{
+      fileUris: [
+        '${parOpnScriptURI}${parShellScriptName}'
+      ]
+      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${varSecondaryInstance} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} 1.1.1.1/32 ${modPublicIp.outputs.ipAddress}'
+    }
+  }
+}
 
 
 

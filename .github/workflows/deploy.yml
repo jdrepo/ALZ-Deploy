@@ -75,7 +75,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}}
       CONNECTIVITY_SUB_ID: ${{ secrets.CONNECTIVITY_SUB_ID_CANARY}}
-  alz-deploy-opnsense-canary:
+  alz-deploy-opnsense-single-canary:
     if: ${{ vars.NVA_CANARY == 'opnsense-single'  }}
     needs: [alz-deploy-base-canary]
     name: "Deploy OPNSense NVA - Canary"
@@ -91,15 +91,31 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}} 
+  alz-deploy-opnsense-ha-canary:
+    if: ${{ vars.NVA_CANARY == 'opnsense-ha'  }}
+    needs: [alz-deploy-base-canary]
+    name: "Deploy OPNSense NVA - Canary"
+    uses: ./.github/workflows/deploy-nva-opns-ha.yml
+    with:
+      environment: "canary"
+      deploy: true
+      managementGroupPrefix: "alz"
+      location: "germanywestcentral"
+      wipeAfterDeploy: false
+    secrets:
+      CONNECTIVITY_SUB_ID: ${{ secrets.CONNECTIVITY_SUB_ID_CANARY}}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}} 
   alz-deploy-identity-canary:
     needs: 
-      - alz-deploy-opnsense-canary
+      - alz-deploy-opnsense-single-canary
       - alz-deploy-base-canary
       - deploy-onprem-canary
     if: |
       always() && 
       (needs.alz-deploy-base-canary.result == 'skipped' || needs.alz-deploy-base-canary.result == 'success') &&
-      (needs.alz-deploy-opnsense-canary.result == 'skipped' || needs.alz-deploy-opnsense-canary.result == 'success') &&
+      (needs.alz-deploy-opnsense-single-canary.result == 'skipped' || needs.alz-deploy-opnsense-single-canary.result == 'success') &&
       (needs.deploy-onprem-canary.result == 'skipped' || needs.deploy-onprem-canary.result == 'success')
     name: "Deploy Identity - Canary"
     uses: ./.github/workflows/deploy-identity.yml
