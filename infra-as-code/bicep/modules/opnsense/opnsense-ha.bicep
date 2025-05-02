@@ -303,7 +303,7 @@ module modUntrustedSubnet '../../../../../bicep-registry-modules/avm/res/network
 module modBastionDeveloper 'br/public:avm/res/network/bastion-host:0.6.1' = if (parEnableBastionDeveloper) {
   name: '${_dep}-bastion-${parLocationCode}-hubnetwork'
   params: {
-    name: 'bastion-${parLocationCode}-hubnetwork'
+    name: 'bas-${parLocationCode}-hub-devsku'
     virtualNetworkResourceId: resConnectivityVirtualNetwork.id
     location: parLocation
     skuName: 'Developer'
