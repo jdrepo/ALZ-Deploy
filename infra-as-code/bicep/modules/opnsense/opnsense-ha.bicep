@@ -112,11 +112,8 @@ param parAdminUser string = 'azureuser'
 @description('Optional. Virtual machine time zone')
 param parTimeZone string = 'W. Europe Standard Time'
 
-@sys.description('Define outbound destination ports or ranges for SSH or RDP that you want to access from Azure Bastion.')
-param parBastionOutboundSshRdpPorts array = ['22', '3389']
-
-@sys.description('Name for Network Security Group for Bastion network')
-param parBastionNsgName string = 'nsg-${parLocation}-bastion-${parCompanyPrefix}'
+@sys.description('Enable Bastion Developer in Hub Network')
+param parEnableBastionDeveloper bool = true
 
 param parTimeNow string = utcNow('u')
 
@@ -128,7 +125,6 @@ var varEnvironment = parTags.?Environment ?? 'canary'
 var varPrimaryPublicIPAddressName = 'pip-${parLocationCode}-${parPrimaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varPrimaryTrustedNicName = 'nic-${parLocationCode}-trusted-${parPrimaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varPrimaryUntrustedNicName = 'nic-${parLocationCode}-untrusted-${parPrimaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
-var varSecondaryPublicIPAddressName = 'pip-${parLocationCode}-${parSecondaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varSecondaryTrustedNicName = 'nic-${parLocationCode}-trusted-${parSecondaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varSecondaryUntrustedNicName = 'nic-${parLocationCode}-untrusted-${parSecondaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varDesUserAssignedIdentityName = 'id-${parLocationCode}-des-${parCompanyPrefix}-${varEnvironment}'
@@ -273,153 +269,6 @@ module modNsgOpnsUntrustedSubnet 'br/public:avm/res/network/network-security-gro
   }
 }
 
-module modNsgBastion 'br/public:avm/res/network/network-security-group:0.5.0' = {
-  name: '${_dep}-bastion-subnet-nsg'
-  params: {
-    name: parBastionNsgName
-    location: parLocation
-    securityRules: [
-      // Inbound Rules
-      {
-        name: 'AllowHttpsInbound'
-        properties: {
-          access: 'Allow'
-          direction: 'Inbound'
-          priority: 120
-          sourceAddressPrefix: 'Internet'
-          destinationAddressPrefix: '*'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '443'
-        }
-      }
-      {
-        name: 'AllowGatewayManagerInbound'
-        properties: {
-          access: 'Allow'
-          direction: 'Inbound'
-          priority: 130
-          sourceAddressPrefix: 'GatewayManager'
-          destinationAddressPrefix: '*'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '443'
-        }
-      }
-      {
-        name: 'AllowAzureLoadBalancerInbound'
-        properties: {
-          access: 'Allow'
-          direction: 'Inbound'
-          priority: 140
-          sourceAddressPrefix: 'AzureLoadBalancer'
-          destinationAddressPrefix: '*'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '443'
-        }
-      }
-      {
-        name: 'AllowBastionHostCommunication'
-        properties: {
-          access: 'Allow'
-          direction: 'Inbound'
-          priority: 150
-          sourceAddressPrefix: 'VirtualNetwork'
-          destinationAddressPrefix: 'VirtualNetwork'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRanges: [
-            '8080'
-            '5701'
-          ]
-        }
-      }
-      {
-        name: 'DenyAllInbound'
-        properties: {
-          access: 'Deny'
-          direction: 'Inbound'
-          priority: 4096
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRange: '*'
-        }
-      }
-      // Outbound Rules
-      {
-        name: 'AllowSshRdpOutbound'
-        properties: {
-          access: 'Allow'
-          direction: 'Outbound'
-          priority: 100
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: 'VirtualNetwork'
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRanges: parBastionOutboundSshRdpPorts
-        }
-      }
-      {
-        name: 'AllowAzureCloudOutbound'
-        properties: {
-          access: 'Allow'
-          direction: 'Outbound'
-          priority: 110
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: 'AzureCloud'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '443'
-        }
-      }
-      {
-        name: 'AllowBastionCommunication'
-        properties: {
-          access: 'Allow'
-          direction: 'Outbound'
-          priority: 120
-          sourceAddressPrefix: 'VirtualNetwork'
-          destinationAddressPrefix: 'VirtualNetwork'
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRanges: [
-            '8080'
-            '5701'
-          ]
-        }
-      }
-      {
-        name: 'AllowGetSessionInformation'
-        properties: {
-          access: 'Allow'
-          direction: 'Outbound'
-          priority: 130
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: 'Internet'
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRange: '80'
-        }
-      }
-      {
-        name: 'DenyAllOutbound'
-        properties: {
-          access: 'Deny'
-          direction: 'Outbound'
-          priority: 4096
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRange: '*'
-        }
-      }
-    ]
-  }
-}
 module modTrustedSubnet '../../../../../bicep-registry-modules/avm/res/network/virtual-network/subnet/main.bicep' = {
   name: '${_dep}-trusted-subnet'
   dependsOn: [
@@ -451,7 +300,7 @@ module modUntrustedSubnet '../../../../../bicep-registry-modules/avm/res/network
   }
 }
 
-module modBastionDeveloper 'br/public:avm/res/network/bastion-host:0.6.1' = {
+module modBastionDeveloper 'br/public:avm/res/network/bastion-host:0.6.1' = if (parEnableBastionDeveloper) {
   name: '${_dep}-bastion-${parLocationCode}-hubnetwork'
   params: {
     name: 'bastion-${parLocationCode}-hubnetwork'

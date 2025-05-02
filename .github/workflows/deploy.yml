@@ -8,29 +8,6 @@ name: 0. Deploy complete ALZ solution
 
 on:
   workflow_dispatch:
-    # inputs:
-    #   onprem:
-    #     description: 'Onpremise Scenario'
-    #     default: 'create-onprem-domain'
-    #     type: choice
-    #     options:
-    #       - create-onprem-environment
-    #       - no-onprem-environment
-    #   onpremActiveDirectory:
-    #     description: 'Onprem Active Directory Scenario'
-    #     default: 'create-onprem-domain'
-    #     type: choice
-    #     options:
-    #       - create-onprem-domain
-    #       - no-onprem-domain
-    #   azureActiveDirectory:
-    #     description: 'Azure Active Directory Scenario'
-    #     default: 'use-onprem-domain'
-    #     type: choice
-    #     options:
-    #       - use-onprem-domain
-    #       - create-identity-domain
-    #       - no-identity-domain
 permissions:
   id-token: write
   contents: write
@@ -78,7 +55,7 @@ jobs:
   alz-deploy-opnsense-single-canary:
     if: ${{ vars.NVA_CANARY == 'opnsense-single'  }}
     needs: [alz-deploy-base-canary]
-    name: "Deploy OPNSense NVA - Canary"
+    name: "Deploy OPNSense Single NVA - Canary"
     uses: ./.github/workflows/deploy-nva-opns.yml
     with:
       environment: "canary"
@@ -94,7 +71,7 @@ jobs:
   alz-deploy-opnsense-ha-canary:
     if: ${{ vars.NVA_CANARY == 'opnsense-ha'  }}
     needs: [alz-deploy-base-canary]
-    name: "Deploy OPNSense NVA - Canary"
+    name: "Deploy OPNSense HA NVA - Canary"
     uses: ./.github/workflows/deploy-nva-opns-ha.yml
     with:
       environment: "canary"
@@ -116,6 +93,7 @@ jobs:
       always() && 
       (needs.alz-deploy-base-canary.result == 'skipped' || needs.alz-deploy-base-canary.result == 'success') &&
       (needs.alz-deploy-opnsense-single-canary.result == 'skipped' || needs.alz-deploy-opnsense-single-canary.result == 'success') &&
+      (needs.alz-deploy-opnsense-ha-canary.result == 'skipped' || needs.alz-deploy-opnsense-ha-canary.result == 'success') &&
       (needs.deploy-onprem-canary.result == 'skipped' || needs.deploy-onprem-canary.result == 'success')
     name: "Deploy Identity - Canary"
     uses: ./.github/workflows/deploy-identity.yml

@@ -72,6 +72,9 @@
 		},
 		"parOpnSenseUntrustedSubnetNsgName": {
 		  "value": "nsg-untrusted-gwc-opnsense-alz-canary"
+		},
+		"parEnableBastionDeveloper": {
+		  "value": true
 		}
 	}
 }

@@ -148,7 +148,7 @@ jobs:
             fi
             echo "opnSenseSecondaryCustomScriptExtensionId=$opnSenseSecondaryCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
             echo "opnSensePrimaryCustomScriptExtensionId=$opnSenseSecondaryCustomScriptExtensionId"
-    - name: Deploy NVA OpnSense - Validation
+    - name: Deploy NVA OpnSense HA - Validation
       id: deploy_opns_validation
       uses: azure/arm-deploy@v2
       with:
@@ -165,7 +165,7 @@ jobs:
           deploymentName: deploy_opnsense_validation-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
-    - name: Deploy NVA OpnSense - Preview
+    - name: Deploy NVA OpnSense HA - Preview
       id: deploy_opns_preview
       uses: azure/arm-deploy@v2
       with:
@@ -173,7 +173,7 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubscriptionId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
-          template: ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/opnsense.bicep
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/opnsense-ha.bicep
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/parameters/opnsense.parameters.${{inputs.environment}}.json
             parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
@@ -187,7 +187,7 @@ jobs:
       - validate_preview_opns
     runs-on: ubuntu-latest
     environment: ${{inputs.environment}}
-    name: Deploy NVA OpnSense
+    name: Deploy NVA OpnSense HA
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
@@ -256,7 +256,7 @@ jobs:
             fi
             echo "opnSenseSecondaryCustomScriptExtensionId=$opnSenseSecondaryCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
             echo "opnSensePrimaryCustomScriptExtensionId=$opnSenseSecondaryCustomScriptExtensionId"
-    - name: Deploy NVA OpnSense
+    - name: Deploy NVA OpnSense HA
       id: deploy_opns
       uses: azure/arm-deploy@v2
       with:
@@ -264,7 +264,7 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubscriptionId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
-          template: ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/opnsense.bicep
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/opnsense-ha.bicep
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/parameters/opnsense.parameters.${{inputs.environment}}.json
             parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
