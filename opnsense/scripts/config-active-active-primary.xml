@@ -206,6 +206,26 @@
       <password>$2y$11$ByogqaOt2WR1Kb5hXcPLDOD4LE0WdNkE8OhBqXxDcbCn61Dsj72vO</password>
       <uid>0</uid>
     </user>
+    <user uuid="7567bfdb-1899-4fe8-842c-578760db00e0">
+      <uid>2000</uid>
+      <name>sync</name>
+      <disabled>0</disabled>
+      <scope>user</scope>
+      <expires/>
+      <authorizedkeys/>
+      <otp_seed/>
+      <shell/>
+      <password>$2y$11$kVev9o1IOlO3NSGeWWX2zOMPjNbsu4BHzvKCwpTRrLhHd.cvltvR.</password>
+      <pwd_changed_at/>
+      <landing_page/>
+      <comment/>
+      <email/>
+      <apikeys/>
+      <priv>page-xmlrpclibrary</priv>
+      <language/>
+      <descr/>
+      <dashboard/>
+    </user>
     <nextuid>2000</nextuid>
     <nextgid>2000</nextgid>
     <timezone>Europe/Berlin</timezone>
@@ -771,8 +791,8 @@
     <synchronizevirtualip>on</synchronizevirtualip>
     <pfsyncinterface>lan</pfsyncinterface>
     <synchronizetoip>xxx.xxx.xxx.xxx</synchronizetoip>
-    <username>root</username>
-    <password>opnsense</password>
+    <username>sync</username>
+    <password>sync</password>
     <pfsyncenabled>on</pfsyncenabled>
     <pfsyncpeerip>xxx.xxx.xxx.xxx</pfsyncpeerip>
   </hasync>
