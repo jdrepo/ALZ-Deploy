@@ -86,6 +86,7 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}} 
   alz-deploy-identity-canary:
     needs: 
+      - alz-deploy-opnsense-ha-canary
       - alz-deploy-opnsense-single-canary
       - alz-deploy-base-canary
       - deploy-onprem-canary
@@ -116,9 +117,13 @@ jobs:
   alz-deploy-amba-canary:
     needs: 
       - alz-deploy-identity-canary
+      - alz-deploy-opnsense-single-canary
+      - alz-deploy-opnsense-ha-canary
     if: |
       always() && 
-      (needs.alz-deploy-identity-canary.result == 'skipped' || needs.alz-deploy-identity-canary.result == 'success') 
+      (needs.alz-deploy-identity-canary.result == 'skipped' || needs.alz-deploy-identity-canary.result == 'success') &&
+      (needs.alz-deploy-opnsense-single-canary.result == 'skipped' || needs.alz-deploy-opnsense-single-canary.result == 'success') &&
+      (needs.alz-deploy-opnsense-ha-canary.result == 'skipped' || needs.alz-deploy-opnsense-ha-canary.result == 'success')
     name: "Deploy AMBA - Canary"
     uses: ./.github/workflows/deploy-amba.yml
     with:
