@@ -175,7 +175,7 @@ jobs:
           resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
           template: ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/opnsense-ha.bicep
           parameters: >-
-            ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/parameters/opnsense.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/parameters/opnsense-ha.parameters.${{inputs.environment}}.json
             parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             parInstallOpnsensePrimary=${{steps.check_installed_opns_extension.outputs.install-opnsense-primary}}
             parInstallOpnsenseSecondary=${{steps.check_installed_opns_extension.outputs.install-opnsense-secondary}}
@@ -266,7 +266,7 @@ jobs:
           resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
           template: ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/opnsense-ha.bicep
           parameters: >-
-            ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/parameters/opnsense.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/opnsense/parameters/opnsense-ha.parameters.${{inputs.environment}}.json
             parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             parInstallOpnsensePrimary=${{steps.check_installed_opns_extension.outputs.install-opnsense-primary}}
             parInstallOpnsenseSecondary=${{steps.check_installed_opns_extension.outputs.install-opnsense-secondary}}
