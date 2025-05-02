@@ -751,11 +751,28 @@
       </rule>
       <rule>
         <source>
-          <network>identity_subnet</network>
+          <network>identity_subnet1</network>
         </source>
         <destination>
           <any>1</any>
         </destination>
+        <descr/>
+        <category/>
+        <interface>wan</interface>
+        <tag/>
+        <tagged/>
+        <poolopts/>
+        <poolopts_sourcehashkey/>
+        <ipprotocol>inet</ipprotocol>
+        <target/>
+        <targetip_subnet>0</targetip_subnet>
+        <sourceport/>
+        <log>1</log>
+        <updated>
+          <username>root@77.21.192.145</username>
+          <time>1746211606.8197</time>
+          <description>/firewall_nat_out_edit.php made changes</description>
+        </updated>
       </rule>
       <mode>hybrid</mode>
     </outbound>
