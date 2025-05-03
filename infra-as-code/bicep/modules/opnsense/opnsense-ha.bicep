@@ -122,7 +122,7 @@ param parTimeNow string = utcNow('u')
 
 var _dep = deployment().name
 var varEnvironment = parTags.?Environment ?? 'canary'
-var varPrimaryPublicIPAddressName = 'pip-${parLocationCode}-${parPrimaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
+var varElbPublicIPAddressName = 'pip-${parLocationCode}-elb-opnsense-${parCompanyPrefix}-${varEnvironment}'
 var varPrimaryTrustedNicName = 'nic-${parLocationCode}-trusted-${parPrimaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varPrimaryUntrustedNicName = 'nic-${parLocationCode}-untrusted-${parPrimaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
 var varSecondaryTrustedNicName = 'nic-${parLocationCode}-trusted-${parSecondaryVirtualMachineName}-${parCompanyPrefix}-${varEnvironment}'
@@ -314,7 +314,7 @@ module modBastionDeveloper 'br/public:avm/res/network/bastion-host:0.6.1' = if (
 module modPublicIp 'br/public:avm/res/network/public-ip-address:0.7.0' = {
   name: '${_dep}-primary-pip'
   params: {
-    name: varPrimaryPublicIPAddressName
+    name: varElbPublicIPAddressName
     location: parLocation
     tags: parTags
     publicIPAllocationMethod: 'Static'
