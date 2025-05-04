@@ -1,0 +1,238 @@
+name: 3. Deploy NVA Ubuntu single to ALZ environment 
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy after preview'
+        default: false
+        type: boolean
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz"
+        required: true
+        type: string
+      vpngw:
+        description: 'VPN Gateway'
+        default: 'no-vpngw'
+        type: choice
+        options:
+          - vpngw-bgp
+          - vpngw-nobgp
+          - no-vpngw
+      location:
+        default: "germanywestcentral"
+        type: string
+      wipeAfterDeploy:
+        default: false
+        type: boolean
+
+  workflow_call:
+    inputs:
+      deploy:
+        description: 'Deploy after preview'
+        default: false
+        type: boolean
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      managementGroupPrefix:
+        default: "alz"
+        required: true
+        type: string
+      vpngw:
+        description: 'VPN Gateway type'
+        type: string
+        default: "vpngw-nobgp"
+      location:
+        default: "germanywestcentral"
+        type: string
+      wipeAfterDeploy:
+        default: false
+        type: boolean
+    secrets:
+      CONNECTIVITY_SUB_ID:
+        required: false
+      AZURE_CLIENT_ID:
+        required: false
+      AZURE_TENANT_ID:
+        required: false
+      AZURE_SUBSCRIPTION_ID:
+        required: false
+env:
+  ManagementGroupPrefix: ${{inputs.managementGroupPrefix}}
+  ManagementGroupSuffix: "-${{inputs.environment}}"
+  ConnectivitySubscriptionId: ${{secrets.CONNECTIVITY_SUB_ID}}
+  hubNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-networking-001"
+  Location: ${{inputs.location}}
+  runNumber: ${{ github.run_number }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate_preview_ubuntu:
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    name: Deploy NVA Ubuntu single - Validation and Preview
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+      with:
+        path: 'ALZ-Deploy'
+    - name: Checkout Repo bicep-registry-modules
+      uses: actions/checkout@v4
+      with:
+          repository: Azure/bicep-registry-modules
+          path: 'bicep-registry-modules'
+    - name: Azure Login with OIDC
+      uses: azure/login@v2
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Get existing resources
+      id: get_resources
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{env.ConnectivitySubscriptionId}}"
+          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.ubuntu-single.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+          hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.hubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+          echo "$hubNetworkResourceId"
+          echo "hubNetworkResourceId=$hubNetworkResourceId" >> $GITHUB_OUTPUT
+    - name: Check installed Ubuntu CustomScript extension
+      id: check_installed_ubuntu_extension
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{env.ConnectivitySubscriptionId}}"
+            ubuntuName=$(jq -r .parameters.parVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-single.parameters.${{inputs.environment}}.json)
+            if [[ $(az group exists -n ${{ env.hubNetworkResourceGroupName }}) = true ]];
+              then
+                if [[ $(az vm list --resource-group ${{ env.hubNetworkResourceGroupName }} --query "[?name=='$ubuntuName'] | length(@)") > 0 ]]; 
+                  then 
+                    ubuntuCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.hubNetworkResourceGroupName }} --vm-name $ubuntuName --query "[?name=='CustomScript'].id")
+                fi  
+            fi
+            if [ -n "$ubuntuCustomScriptExtensionId" ]; 
+              then echo "Ubuntu CustomScript Extension already installed"
+              echo "install-ubuntu-extension=no" >> "$GITHUB_OUTPUT"
+            else
+              echo "Ubuntu CustomScript Extension not installed"
+              echo "install-ubuntu-extension=yes" >> "$GITHUB_OUTPUT"
+            fi
+            echo "ubuntuCustomScriptExtensionId=$ubuntuCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
+            echo "ubuntuCustomScriptExtensionId=$ubuntuCustomScriptExtensionId"
+    - name: Deploy NVA Ubuntu - Validation
+      id: deploy_ubuntu_validation
+      uses: azure/arm-deploy@v2
+      with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubscriptionId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/ubuntu-nva-single.bicep
+          parameters: >-
+            ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-single.parameters.${{inputs.environment}}.json
+            parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
+            parConfigureNva=${{steps.check_installed_ubuntu_extension.outputs.install-ubuntu-extension}}
+          deploymentName: deploy_ubuntu_validation-${{ env.runNumber }}
+          failOnStdErr: false
+          deploymentMode: Validate
+    - name: Deploy NVA Ubuntu - Preview
+      id: deploy_ubuntu_preview
+      uses: azure/arm-deploy@v2
+      with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubscriptionId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/ubuntu-nva-single.bicep
+          parameters: >-
+            ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-single.parameters.${{inputs.environment}}.json
+            parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
+            parConfigureNva=${{steps.check_installed_ubuntu_extension.outputs.install-ubuntu-extension}}
+          deploymentName: deploy_ubuntu_preview-${{ env.runNumber }}
+          failOnStdErr: false
+          additionalArguments: "--what-if"
+  deploy_ubuntu:
+    needs:
+      - validate_preview_ubuntu
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    name: Deploy NVA Ubuntu
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+      with:
+        path: 'ALZ-Deploy'
+    - name: Checkout Repo bicep-registry-modules
+      uses: actions/checkout@v4
+      with:
+          repository: Azure/bicep-registry-modules
+          path: 'bicep-registry-modules'
+    - name: Azure Login with OIDC
+      uses: azure/login@v2
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Get existing resources
+      id: get_resources
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{env.ConnectivitySubscriptionId}}"
+          hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.ubuntu-single.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+          hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.hubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+          echo "$hubNetworkResourceId"
+          echo "hubNetworkResourceId=$hubNetworkResourceId" >> $GITHUB_OUTPUT
+    - name: Check installed Ubuntu CustomScript extension
+      id: check_installed_ubuntu_extension
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account set -s "${{env.ConnectivitySubscriptionId}}"
+            ubuntuName=$(jq -r .parameters.parVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-single.parameters.${{inputs.environment}}.json)
+            if [[ $(az group exists -n ${{ env.hubNetworkResourceGroupName }}) = true ]];
+              then
+                if [[ $(az vm list --resource-group ${{ env.hubNetworkResourceGroupName }} --query "[?name=='$ubuntuName'] | length(@)") > 0 ]]; 
+                  then 
+                    ubuntuCustomScriptExtensionId=$(az vm extension list --out tsv -g ${{ env.hubNetworkResourceGroupName }} --vm-name $ubuntuName --query "[?name=='CustomScript'].id")
+                fi  
+            fi
+            if [ -n "$ubuntuCustomScriptExtensionId" ]; 
+              then echo "Ubuntu CustomScript Extension already installed"
+              echo "install-ubuntu-extension=no" >> "$GITHUB_OUTPUT"
+            else
+              echo "Ubuntu CustomScript Extension not installed"
+              echo "install-ubuntu-extension=yes" >> "$GITHUB_OUTPUT"
+            fi
+            echo "ubuntuCustomScriptExtensionId=$ubuntuCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
+            echo "ubuntuCustomScriptExtensionId=$ubuntuCustomScriptExtensionId"
+    - name: Deploy NVA Ubuntu
+      id: deploy_ubuntu
+      uses: azure/arm-deploy@v2
+      with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.ConnectivitySubscriptionId }}
+          region: ${{ env.Location }}
+          resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/ubuntu-nva-single.bicep
+          parameters: >-
+            ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-single.parameters.${{inputs.environment}}.json
+            parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
+            parConfigureNva=${{steps.check_installed_ubuntu_extension.outputs.install-ubuntu-extension}}
+          deploymentName: deploy_ubuntu-${{ env.runNumber }}
+          failOnStdErr: false
+         

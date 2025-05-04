@@ -56,7 +56,7 @@
 			"value": "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/ubuntu/scripts/"
 		},
 		"parShellScriptName": {
-			"value": "configuresingleubuntunva.sh"
+			"value": "configure-ubuntu-nva-single.sh"
 		},
 		"parNvaTrustedSubnetNsgName": {
 		  "value": "nsg-trusted-gwc-ubuntu-alz-canary"

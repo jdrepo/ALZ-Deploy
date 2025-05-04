@@ -77,7 +77,7 @@ param parDisableBgpRoutePropagation bool = false
 param parNvaScriptURI string = 'https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/ubuntu/scripts/'
 
 @sys.description('Shell Script to be executed')
-param parShellScriptName string = 'configuresingleubuntunva.sh'
+param parShellScriptName string = 'configure-ubuntu-nva-single.sh'
 
 @sys.description('Configure NVA with CustomScript extension')
 param parConfigureNva string = 'yes'
