@@ -40,6 +40,7 @@ on:
           - opnsense-ha
           - no-nva
           - azfirewall-basic
+          - ubuntu-single
       vpngw:
         description: 'VPN Gateway'
         default: 'no-vpngw'
@@ -946,7 +947,7 @@ jobs:
           failOnStdErr: false
       - name: Prepare opnSense deployment
         if: ${{ inputs.nva == 'opnsense-single' || inputs.nva == 'opnsense-ha'  }}
-        id: get_resources
+        id: get_resources_opnsense
         uses: azure/cli@v2
         with:
           azcliversion: latest
@@ -962,6 +963,24 @@ jobs:
             echo "opnSenseUntrustedSubnetNsgResourceId=$opnSenseUntrustedSubnetNsgResourceId" >> "$GITHUB_OUTPUT"
             jq --arg id $opnSenseTrustedSubnetNsgResourceId '(.parameters.parSubnets.value[] | select(.name == "OPNS-Trusted")).networkSecurityGroupId |= $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json > tmp1.json && mv tmp1.json infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
             jq --arg id $opnSenseUntrustedSubnetNsgResourceId '(.parameters.parSubnets.value[] | select(.name == "OPNS-Untrusted")).networkSecurityGroupId |= $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json > tmp2.json && mv tmp2.json infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
+      - name: Prepare Ubuntu NVA deployment
+        if: ${{ inputs.nva == 'ubuntu-single' || inputs.nva == 'ubuntu-ha'  }}
+        id: get_resources_ubuntu
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{ env.ConnectivitySubId }}"
+            nvaTrustedSubnetNsgName=$(jq -r .parameters.parNvaTrustedSubnetNsgName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json)
+            nvaTrustedSubnetNsgResourceId=$(az network nsg show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $nvaTrustedSubnetNsgName --query id --output tsv)
+            echo "$nvaTrustedSubnetNsgResourceId"
+            echo "nvaTrustedSubnetNsgResourceId=$nvaTrustedSubnetNsgResourceId" >> "$GITHUB_OUTPUT"
+            nvaUntrustedSubnetNsgName=$(jq -r .parameters.parNvaUntrustedSubnetNsgName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingNva.parameters.${{inputs.nva}}.${{inputs.environment}}.json)
+            nvaUntrustedSubnetNsgResourceId=$(az network nsg show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $nvaUntrustedSubnetNsgName --query id --output tsv)
+            echo "$nvaUntrustedSubnetNsgResourceId"
+            echo "nvaUntrustedSubnetNsgResourceId=$nvaUntrustedSubnetNsgResourceId" >> "$GITHUB_OUTPUT"
+            jq --arg id $nvaTrustedSubnetNsgResourceId '(.parameters.parSubnets.value[] | select(.name == "NVA-Trusted")).networkSecurityGroupId |= $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json > tmp1.json && mv tmp1.json infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
+            jq --arg id $nvaUntrustedSubnetNsgResourceId '(.parameters.parSubnets.value[] | select(.name == "NVA-Untrusted")).networkSecurityGroupId |= $id' infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json > tmp2.json && mv tmp2.json infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
       - name: Check for Changes
         id: check_changes
         run: |
