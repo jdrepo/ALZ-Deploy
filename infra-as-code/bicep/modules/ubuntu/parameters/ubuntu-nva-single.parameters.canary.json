@@ -26,7 +26,7 @@
 			"value": "Standard_B1s"
 		},
 		"parVirtualMachineName": {
-			"value": "vm-opns"
+			"value": "vm-ubuntu"
 		},
 		"parAdminUser": {
 			"value": "azureuser"
@@ -35,16 +35,16 @@
 			"value": ""
 		},
 		"parUntrustedSubnetCIDR": {
-			"value": "10.10.251.0/24"
+			"value": "10.10.249.0/24"
 		},
 		"parTrustedSubnetCIDR": {
-			"value": "10.10.250.0/24"
+			"value": "10.10.248.0/24"
 		},
 		"parUntrustedSubnetName": {
-			"value": "OPNS-Untrusted"
+			"value": "NVA-Untrusted"
 		},
 		"parTrustedSubnetName": {
-			"value": "OPNS-Trusted"
+			"value": "NVA-Trusted"
 		},
 		"parHubRouteTableName": {
 			"value": "rt-gwc-hub-alz-canary"
@@ -52,23 +52,20 @@
 		"parDisableBgpRoutePropagation": {
 			"value": false
 		},
-		"parOpnScriptURI": {
-			"value": "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense/scripts/"
+		"parNvaScriptURI": {
+			"value": "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/ubuntu/scripts/"
 		},
 		"parShellScriptName": {
-			"value": "configureopnsense.sh"
+			"value": "configuresingleubuntunva.sh"
 		},
-		"parOpnVersion": {
-			"value": "24.7"
+		"parNvaTrustedSubnetNsgName": {
+		  "value": "nsg-trusted-gwc-ubuntu-alz-canary"
 		},
-		"parWALinuxVersion": {
-			"value": "2.11.1.4"
+		"parNvaUntrustedSubnetNsgName": {
+		  "value": "nsg-untrusted-gwc-ubuntu-alz-canary"
 		},
-		"parOpnSenseTrustedSubnetNsgName": {
-		  "value": "nsg-trusted-gwc-opnsense-alz-canary"
-		},
-		"parOpnSenseUntrustedSubnetNsgName": {
-		  "value": "nsg-untrusted-gwc-opnsense-alz-canary"
+		"parEnableBastionDeveloper": {
+			"value": false
 		}
 	}
 }

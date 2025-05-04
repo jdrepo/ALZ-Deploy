@@ -74,7 +74,7 @@ param parHubRouteTableName string = '${parCompanyPrefix}-hub-routetable'
 param parDisableBgpRoutePropagation bool = false
 
 @sys.description('URI for Custom NVA Script and Config')
-param parNvaScriptURI string = 'https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense/scripts/'
+param parNvaScriptURI string = 'https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/ubuntu/scripts/'
 
 @sys.description('Shell Script to be executed')
 param parShellScriptName string = 'configuresingleubuntunva.sh'
@@ -309,6 +309,7 @@ module modUbuntuNva 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
   name: '${_dep}-opnsense'
   dependsOn: [
     modKv
+    modKvPassword
   ]
   params: {
     name: parVirtualMachineName
@@ -320,7 +321,7 @@ module modUbuntuNva 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
     timeZone: parTimeZone
     imageReference: {
       publisher: 'Canonical'
-      offer: 'ubuntu-24_04'
+      offer: 'ubuntu-24_04-lts'
       sku: 'server'
       version: 'latest'
     }
