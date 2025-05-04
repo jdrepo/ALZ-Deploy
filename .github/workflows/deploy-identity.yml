@@ -24,8 +24,10 @@ on:
         type: choice
         options:
           - opnsense-single
+          - opnsense-ha
           - no-nva
           - azfirewall-basic
+          - ubuntu-single
       vpngw:
         description: 'VPN Gateway'
         default: 'no-vpngw'
