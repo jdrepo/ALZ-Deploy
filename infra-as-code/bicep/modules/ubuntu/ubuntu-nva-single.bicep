@@ -305,7 +305,7 @@ module modPublicIp 'br/public:avm/res/network/public-ip-address:0.7.0' = {
 
 // module modOpnSense 
 
-module modUbuntuNva 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
+module modUbuntuNva 'br/public:avm/res/compute/virtual-machine:0.15.0' = {
   name: '${_dep}-opnsense'
   dependsOn: [
     modKv
@@ -369,33 +369,40 @@ module modUbuntuNva 'br/public:avm/res/compute/virtual-machine:0.10.0' = {
     zone: 1
     bootDiagnostics: true
     bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
-  }
-}
-
-resource resUbuntuNva 'Microsoft.Compute/virtualMachines@2024-07-01' existing = {
-  name: parVirtualMachineName
-  dependsOn: [modUbuntuNva]
-}
- 
-resource vmext 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = if (parConfigureNva == 'yes') {
-  parent: resUbuntuNva
-  dependsOn: [modUbuntuNva]
-  name: 'CustomScript'
-  location: parLocation
-  properties: {
-    publisher: 'Microsoft.OSTCExtensions'
-    type: 'CustomScriptForLinux'
-    typeHandlerVersion: '1.5'
-    autoUpgradeMinorVersion: false
-    settings:{
-      fileUris: [
-        '${parNvaScriptURI}${parShellScriptName}'
+    extensionCustomScriptConfig: {
+      enabled: true
+      fileData: [
+        {
+          uri: '${parNvaScriptURI}${parShellScriptName}'
+        }
       ]
-      commandToExecute: 'sh ${parShellScriptName} ${parNvaScriptURI}'
+    }
+    extensionCustomScriptProtectedSetting: {
+        commandToExecute: 'sh ${parShellScriptName} ${parNvaScriptURI}'
     }
   }
 }
 
+
+// module modUbuntuSingle '../../../../../bicep-registry-modules/avm/res/compute/virtual-machine/extension/main.bicep' = if (parConfigureNva == 'yes') {
+//   name: '${_dep}-ubuntu-single-extension'
+//   params: {
+//     name: 'CustomScriptExtension'
+//     virtualMachineName: parVirtualMachineName
+//     autoUpgradeMinorVersion: true
+//     publisher: 'Microsoft.Azure.Extensions'
+//     type: 'CustomScript'
+//     typeHandlerVersion: '2.1'
+//     enableAutomaticUpgrade: false
+//     protectedSettings: {
+//       commandToExecute: 'sh ${parShellScriptName} ${parNvaScriptURI}'
+//       fileUris: [
+//         '${parNvaScriptURI}${parShellScriptName}'
+//       ]
+//     }
+
+//   }
+// }
 
 
 module modSaBootDiag 'br/public:avm/res/storage/storage-account:0.14.3' = {
