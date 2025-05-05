@@ -377,24 +377,24 @@ resource resUbuntuNva 'Microsoft.Compute/virtualMachines@2024-07-01' existing = 
   dependsOn: [modUbuntuNva]
 }
  
-// resource vmext 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = if (parInstallOpnsense == 'yes') {
-//   parent: resOpnSense
-//   dependsOn: [modOpnSense]
-//   name: 'CustomScript'
-//   location: parLocation
-//   properties: {
-//     publisher: 'Microsoft.OSTCExtensions'
-//     type: 'CustomScriptForLinux'
-//     typeHandlerVersion: '1.5'
-//     autoUpgradeMinorVersion: false
-//     settings:{
-//       fileUris: [
-//         '${parOpnScriptURI}${parShellScriptName}'
-//       ]
-//       commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${resConnectivityVirtualNetwork::trustedSubnet.properties.addressPrefix} "\'" "\'" "\'"1.1.1.1/32"\'" "\'" "\'" "\'" "\'" '
-//     }
-//   }
-// }
+resource vmext 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = if (parConfigureNva == 'yes') {
+  parent: resUbuntuNva
+  dependsOn: [modUbuntuNva]
+  name: 'CustomScript'
+  location: parLocation
+  properties: {
+    publisher: 'Microsoft.OSTCExtensions'
+    type: 'CustomScriptForLinux'
+    typeHandlerVersion: '1.5'
+    autoUpgradeMinorVersion: false
+    settings:{
+      fileUris: [
+        '${parNvaScriptURI}${parShellScriptName}'
+      ]
+      commandToExecute: 'sh ${parShellScriptName} ${parNvaScriptURI}'
+    }
+  }
+}
 
 
 
