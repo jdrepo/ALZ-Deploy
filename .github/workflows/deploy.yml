@@ -1,4 +1,4 @@
-# vars.NVA-CANARY:  opnsense-single / opnsense-ha / no-nva / azfirewall-basic / ubuntu-single
+# vars.NVA-CANARY:  opnsense-single / opnsense-ha / no-nva / azfirewall-basic / ubuntu-single / ubuntu-ha
 # vars.VPNGW-CANARY: vpngw-bgp / vpngw-nobgp / no-vpngw
 # vars.ONPREM_CANARY: create-onprem-environment / no-onprem-environment
 # vars.ONPREMAD_CANARY: create-onprem-domain / no-onprem-domain
@@ -84,17 +84,35 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}} 
+  alz-deploy-ubuntu-single-canary:
+    if: ${{ vars.NVA_CANARY == 'ubuntu-single'  }}
+    needs: [alz-deploy-base-canary]
+    name: "Deploy Ubuntu Single NVA - Canary"
+    uses: ./.github/workflows/deploy-nva-ubuntu-single.yml
+    with:
+      environment: "canary"
+      deploy: true
+      managementGroupPrefix: "alz"
+      location: "germanywestcentral"
+      wipeAfterDeploy: false
+    secrets:
+      CONNECTIVITY_SUB_ID: ${{ secrets.CONNECTIVITY_SUB_ID_CANARY}}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_CANARY}}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID_CANARY}} 
   alz-deploy-identity-canary:
     needs: 
       - alz-deploy-opnsense-ha-canary
       - alz-deploy-opnsense-single-canary
       - alz-deploy-base-canary
       - deploy-onprem-canary
+      - alz-deploy-ubuntu-single-canary
     if: |
       always() && 
       (needs.alz-deploy-base-canary.result == 'skipped' || needs.alz-deploy-base-canary.result == 'success') &&
       (needs.alz-deploy-opnsense-single-canary.result == 'skipped' || needs.alz-deploy-opnsense-single-canary.result == 'success') &&
       (needs.alz-deploy-opnsense-ha-canary.result == 'skipped' || needs.alz-deploy-opnsense-ha-canary.result == 'success') &&
+      (needs.alz-deploy-ubuntu-single-canary.result == 'skipped' || needs.alz-deploy-ubuntu-single-canary.result == 'success') &&
       (needs.deploy-onprem-canary.result == 'skipped' || needs.deploy-onprem-canary.result == 'success')
     name: "Deploy Identity - Canary"
     uses: ./.github/workflows/deploy-identity.yml
@@ -119,11 +137,13 @@ jobs:
       - alz-deploy-identity-canary
       - alz-deploy-opnsense-single-canary
       - alz-deploy-opnsense-ha-canary
+      - alz-deploy-ubuntu-single-canary
     if: |
       always() && 
       (needs.alz-deploy-identity-canary.result == 'skipped' || needs.alz-deploy-identity-canary.result == 'success') &&
       (needs.alz-deploy-opnsense-single-canary.result == 'skipped' || needs.alz-deploy-opnsense-single-canary.result == 'success') &&
-      (needs.alz-deploy-opnsense-ha-canary.result == 'skipped' || needs.alz-deploy-opnsense-ha-canary.result == 'success')
+      (needs.alz-deploy-opnsense-ha-canary.result == 'skipped' || needs.alz-deploy-opnsense-ha-canary.result == 'success') &&
+      (needs.alz-deploy-ubuntu-single-canary.result == 'skipped' || needs.alz-deploy-ubuntu-single-canary.result == 'success')
     name: "Deploy AMBA - Canary"
     uses: ./.github/workflows/deploy-amba.yml
     with:
