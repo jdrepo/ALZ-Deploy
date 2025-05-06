@@ -157,8 +157,8 @@
           "peerWeight": "5"
         },
         "vpnClientConfiguration": {},
-		"ipConfigurationName": "vnetGatewayConfig",
-        "ipConfigurationActiveActiveName": "vnetGatewayConfig2"											   											   
+        "ipConfigurationName": "vnetGatewayConfig",
+        "ipConfigurationActiveActiveName": "vnetGatewayConfig2"
       }
     },
     "parExpressRouteGatewayEnabled": {
