@@ -88,7 +88,7 @@ param parLocation string = resourceGroup().location
 @sys.description('Region code for resource naming.')
 param parLocationCode string = 'gwc'
 
-@sys.description('Admin User for OPNSense.')
+@sys.description('Admin User for Ubuntu.')
 param parAdminUser string = 'azureuser'
 
 @description('Optional. Virtual machine time zone')
@@ -164,11 +164,11 @@ var varGwcSerialConsoleIps = [
 resource resConnectivityVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01' existing = {
   name: last(split(parVirtualNetworkResourceId, '/'))
 
-  // OPNSense trusted subnet
+  // Ubuntu NVA trusted subnet
   resource trustedSubnet 'subnets' existing = {
     name:  parTrustedSubnetName
   }
-  // OPNSense trusted subnet
+  // Ubuntu NVA trusted subnet
   resource unTrustedSubnet 'subnets' existing = {
     name:  parUntrustedSubnetName
   }
@@ -369,17 +369,17 @@ module modUbuntuNva 'br/public:avm/res/compute/virtual-machine:0.15.0' = {
     zone: 1
     bootDiagnostics: true
     bootDiagnosticStorageAccountName: modSaBootDiag.outputs.name
-    extensionCustomScriptConfig: {
+    extensionCustomScriptConfig: (parConfigureNva == 'yes') ? {
       enabled: true
       fileData: [
         {
           uri: '${parNvaScriptURI}${parShellScriptName}'
         }
       ]
-    }
-    extensionCustomScriptProtectedSetting: {
+    } : {}
+    extensionCustomScriptProtectedSetting: (parConfigureNva == 'yes') ? {
         commandToExecute: 'sh ${parShellScriptName} ${parNvaScriptURI}'
-    }
+    } : {}
   }
 }
 
