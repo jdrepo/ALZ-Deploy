@@ -9,6 +9,23 @@ sudo sed -i "/net.ipv6.conf.all.forwarding=1/ s/# *//" /etc/sysctl.conf
 sudo sed -i "/net.ipv4.conf.all.accept_redirects = 0/ s/# *//" /etc/sysctl.conf
 sudo sed -i "/net.ipv6.conf.all.accept_redirects = 0/ s/# *//" /etc/sysctl.conf
 
+ 
+echo '[Unit]
+ Description=/etc/rc.local Compatibility
+ ConditionPathExists=/etc/rc.local
+
+[Service]
+ Type=forking
+ ExecStart=/etc/rc.local start
+ TimeoutSec=0
+ StandardOutput=tty
+ RemainAfterExit=yes
+ SysVStartPriority=99
+
+[Install]
+ WantedBy=multi-user.target' | sudo tee /etc/systemd/system/rc-local.service
+
+sudo systemctl enable rc-local
 
 
 # Install Apache for LB Probe
@@ -33,6 +50,23 @@ echo "Installing IPTables-Persistent"
 echo iptables-persistent iptables-persistent/autosave_v4 boolean false | sudo debconf-set-selections
 echo iptables-persistent iptables-persistent/autosave_v6 boolean false | sudo debconf-set-selections
 sudo apt-get -y install iptables-persistent
+
+echo "Installing net-tools"
+sudo apt-get -y install net-tools
+
+# Get IP addresses
+ipaddint=`ip a | grep 10.10.248 | awk '{print $2}' | awk -F '/' '{print $1}'`   # either 10.10.248.12 or .13
+ipaddext=`ip a | grep 10.10.249 | awk '{print $2}' | awk -F '/' '{print $1}'`   # either 10.10.249.12 or .13
+
+# Create a custom routing table for internal LB probes
+sudo sed -i '$a201 slbint' /etc/iproute2/rt_tables # an easier echo command would be denied by selinux
+sudo ip rule add from $ipaddint to 168.63.129.16 lookup slbint  # Note that this depends on the nva number!
+sudo ip route add 168.63.129.16 via 10.10.248.1 dev eth1 table slbint
+
+# Create a custom routing table for external LB probes
+sudo sed -i '$a202 slbext' /etc/iproute2/rt_tables # an easier echo command would be denied by selinux
+sudo ip rule add from $ipaddext to 168.63.129.16 lookup slbext
+sudo ip route add 168.63.129.16 via 10.10.249.1 dev eth0 table slbext
 
 # Set up a better routing metric on eth0 (external, 10.10.249.0/24)
 # Note that this is not persistent, so you will have to rerun it if you reboot the VM
@@ -92,3 +126,13 @@ sudo iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE
 
 # Save to IPTables file for persistence on reboot
 sudo iptables-save | sudo tee /etc/iptables/rules.v4
+
+## startup scripts
+#printf '%s\n' '#!/bin/bash' 'while true; do nc -lk -p 1138; done &' 'while true; do nc -lk -p 1138; done &' 'exit 0' | sudo tee -a /etc/rc.local
+echo '#!/bin/bash 
+while true; do nc -lk -p 1138; done & 
+while true; do nc -lk -p 1138; done &
+#sudo route add -host 168.63.129.16 gw 10.10.248.1 dev eth1
+exit 0' | sudo tee -a /etc/rc.local
+
+sudo chmod +x /etc/rc.local
