@@ -35,9 +35,9 @@ sudo apt-get install php libapache2-mod-php -y
 sudo systemctl restart apache2
 
 # Delete default web site and download a new one
-sudo rm /var/www/html/index.html
-sudo apt-get install wget -you
-sudo wget https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/ubuntu/scripts/index.php -P /var/www/html/
+#sudo rm /var/www/html/index.html
+#sudo apt-get install wget -you
+#sudo wget https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/ubuntu/scripts/index.php -P /var/www/html/
 
 #############
 #  Routing  #
