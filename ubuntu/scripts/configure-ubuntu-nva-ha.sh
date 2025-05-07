@@ -31,12 +31,13 @@ sudo systemctl enable rc-local
 # Install Apache for LB Probe
 sudo apt-get update
 sudo apt-get install apache2 -y
+sudo apt-get install php libapache2-mod-php -y
 sudo systemctl restart apache2
 
 # Delete default web site and download a new one
-#sudo rm /var/www/html/index.html
-#sudo apt-get install wget -you
-#sudo wget https://raw.githubusercontent.com/erjosito/azure-networking-lab/master/arm/index.php -P /var/www/html/
+sudo rm /var/www/html/index.html
+sudo apt-get install wget -you
+sudo wget https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/ubuntu/scripts/index.php -P /var/www/html/
 
 #############
 #  Routing  #
@@ -131,8 +132,11 @@ sudo iptables-save | sudo tee /etc/iptables/rules.v4
 #printf '%s\n' '#!/bin/bash' 'while true; do nc -lk -p 1138; done &' 'while true; do nc -lk -p 1138; done &' 'exit 0' | sudo tee -a /etc/rc.local
 echo '#!/bin/bash 
 while true; do nc -lk -p 1138; done & 
-while true; do nc -lk -p 1138; done &
+while true; do nc -lk -p 1139; done &
 #sudo route add -host 168.63.129.16 gw 10.10.248.1 dev eth1
 exit 0' | sudo tee -a /etc/rc.local
 
 sudo chmod +x /etc/rc.local
+
+while true; do nc -lk -p 1138; done & 
+while true; do nc -lk -p 1139; done &
