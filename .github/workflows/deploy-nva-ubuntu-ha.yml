@@ -114,7 +114,7 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account set -s "${{env.ConnectivitySubscriptionId}}"
-            ubuntuPrimaryName=$(jq -r .parameters.parPrimaryVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-ha.parameters.${{inputs.environment}}.json)
+            ubuntuPrimaryName=$(jq -r .parameters.parPrimaryVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-ha.parameters.${{inputs.environment}}.json)
             if [[ $(az group exists -n ${{ env.hubNetworkResourceGroupName }}) = true ]];
               then
                 if [[ $(az vm list --resource-group ${{ env.hubNetworkResourceGroupName }} --query "[?name=='$ubuntuPrimaryName'] | length(@)") > 0 ]]; 
@@ -131,7 +131,7 @@ jobs:
             fi
             echo "ubuntuPrimaryCustomScriptExtensionId=$ubuntuPrimaryCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
             echo "ubuntuPrimaryCustomScriptExtensionId=$ubuntuPrimaryCustomScriptExtensionId"
-            ubuntuSecondaryName=$(jq -r .parameters.parSecondaryVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-ha.parameters.${{inputs.environment}}.json)
+            ubuntuSecondaryName=$(jq -r .parameters.parSecondaryVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-ha.parameters.${{inputs.environment}}.json)
             if [[ $(az group exists -n ${{ env.hubNetworkResourceGroupName }}) = true ]];
               then
                 if [[ $(az vm list --resource-group ${{ env.hubNetworkResourceGroupName }} --query "[?name=='$ubuntuSecondaryName'] | length(@)") > 0 ]]; 
