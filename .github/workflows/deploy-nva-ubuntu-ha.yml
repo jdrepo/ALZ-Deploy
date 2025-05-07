@@ -158,7 +158,7 @@ jobs:
           resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
           template: ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/ubuntu-nva-ha.bicep
           parameters: >-
-            ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-ha.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-ha.parameters.${{inputs.environment}}.json
             parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             parConfigurePrimaryNva=${{steps.check_installed_ubuntu_extension.outputs.install-ubuntu-extension-primary}}
             parConfigureSecondaryNva=${{steps.check_installed_ubuntu_extension.outputs.install-ubuntu-extension-secondary}}
@@ -173,9 +173,9 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubscriptionId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
-          template: ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/ubuntu-ha.bicep
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/ubuntu-nva-ha.bicep
           parameters: >-
-            ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-ha.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-ha.parameters.${{inputs.environment}}.json
             parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             parConfigurePrimaryNva=${{steps.check_installed_ubuntu_extension.outputs.install-ubuntu-extension-primary}}
             parConfigureSecondaryNva=${{steps.check_installed_ubuntu_extension.outputs.install-ubuntu-extension-secondary}}
