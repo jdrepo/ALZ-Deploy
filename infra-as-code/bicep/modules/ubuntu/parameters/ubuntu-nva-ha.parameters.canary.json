@@ -1,0 +1,80 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"parLocation": {
+			"value": "germanywestcentral"
+		},
+		"parLocationCode": {
+			"value": "gwc"
+		},
+		"parCompanyPrefix": {
+			"value": "alz"
+		},
+		"parTags": {
+			"value": {
+				"Environment": "canary"
+			}
+		},
+		"parTopLevelManagementGroupPrefix": {
+			"value": "alz"
+		},
+		"parTopLevelManagementGroupSuffix": {
+			"value": "-canary"
+		},
+		"parVirtualMachineSize": {
+			"value": "Standard_B1ms"
+		},
+		"parPrimaryVirtualMachineName": {
+			"value": "vm-ubuntu-primary"
+		},
+		"parSecondaryVirtualMachineName": {
+			"value": "vm-ubuntu-secondary"
+		},
+		"parConfigurePrimaryNva": {
+			"value": "yes"
+		},
+		"parConfigureSecondaryNva": {
+			"value": "yes"
+		},
+		"parAdminUser": {
+			"value": "azureuser"
+		},
+		"parVirtualNetworkResourceId": {
+			"value": ""
+		},
+		"parUntrustedSubnetCIDR": {
+			"value": "10.10.249.0/24"
+		},
+		"parTrustedSubnetCIDR": {
+			"value": "10.10.248.0/24"
+		},
+		"parUntrustedSubnetName": {
+			"value": "NVA-Untrusted"
+		},
+		"parTrustedSubnetName": {
+			"value": "NVA-Trusted"
+		},
+		"parHubRouteTableName": {
+			"value": "rt-gwc-hub-alz-canary"
+		},
+		"parDisableBgpRoutePropagation": {
+			"value": false
+		},
+		"parNvaScriptURI": {
+			"value": "https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/ubuntu/scripts/"
+		},
+		"parShellScriptName": {
+			"value": "configure-ubuntu-nva-ha.sh"
+		},
+		"parNvaTrustedSubnetNsgName": {
+		  "value": "nsg-trusted-gwc-ubuntu-alz-canary"
+		},
+		"parNvaUntrustedSubnetNsgName": {
+		  "value": "nsg-untrusted-gwc-ubuntu-alz-canary"
+		},
+		"parEnableBastionDeveloper": {
+			"value": false
+		}
+	}
+}
