@@ -11,6 +11,7 @@
        $hosts = array ("bing.com", "google.com");
        $allReachable = true;
        foreach ($hosts as $host) {
+        // works only with instance-level pip or nat gateway, not with public lb
          $result = exec ("ping -c 1 -W 1 " . $host . " 2>&1 | grep received");
          $pos = strpos ($result, "1 received");
          if ($pos === false) {
