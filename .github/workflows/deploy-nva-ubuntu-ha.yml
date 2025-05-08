@@ -222,7 +222,7 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account set -s "${{env.ConnectivitySubscriptionId}}"
-            ubuntuPrimaryName=$(jq -r .parameters.parPrimaryVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-ha.parameters.${{inputs.environment}}.json)
+            ubuntuPrimaryName=$(jq -r .parameters.parPrimaryVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-ha.parameters.${{inputs.environment}}.json)
             if [[ $(az group exists -n ${{ env.hubNetworkResourceGroupName }}) = true ]];
               then
                 if [[ $(az vm list --resource-group ${{ env.hubNetworkResourceGroupName }} --query "[?name=='$ubuntuPrimaryName'] | length(@)") > 0 ]]; 
@@ -239,7 +239,7 @@ jobs:
             fi
             echo "ubuntuPrimaryCustomScriptExtensionId=$ubuntuPrimaryCustomScriptExtensionId" >> "$GITHUB_OUTPUT"
             echo "ubuntuPrimaryCustomScriptExtensionId=$ubuntuPrimaryCustomScriptExtensionId"
-            ubuntuSecondaryName=$(jq -r .parameters.parSecondaryVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-ha.parameters.${{inputs.environment}}.json)
+            ubuntuSecondaryName=$(jq -r .parameters.parSecondaryVirtualMachineName.value ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-ha.parameters.${{inputs.environment}}.json)
             if [[ $(az group exists -n ${{ env.hubNetworkResourceGroupName }}) = true ]];
               then
                 if [[ $(az vm list --resource-group ${{ env.hubNetworkResourceGroupName }} --query "[?name=='$ubuntuSecondaryName'] | length(@)") > 0 ]]; 
@@ -264,9 +264,9 @@ jobs:
           subscriptionId: ${{ env.ConnectivitySubscriptionId }}
           region: ${{ env.Location }}
           resourceGroupName: ${{ env.hubNetworkResourceGroupName }}
-          template: ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/ubuntu-ha.bicep
+          template: ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/ubuntu-nva-ha.bicep
           parameters: >-
-            ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-ha.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/ubuntu/parameters/ubuntu-nva-ha.parameters.${{inputs.environment}}.json
             parVirtualNetworkResourceId=${{steps.get_resources.outputs.hubNetworkResourceId}}
             parConfigurePrimaryNva=${{steps.check_installed_ubuntu_extension.outputs.install-ubuntu-extension-primary}}
             parConfigureSecondaryNva=${{steps.check_installed_ubuntu_extension.outputs.install-ubuntu-extension-secondary}}
