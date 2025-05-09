@@ -164,6 +164,11 @@ jobs:
           az bicep build --file infra-as-code/bicep/modules/policy/assignments/alzCustoms/alzCustomPolicyAssignments.bicep
           az bicep build --file infra-as-code/bicep/modules/identityNetworking/identityNetworking.bicep
           az bicep build --file infra-as-code/bicep/modules/hubNetworking/hubNetworkingVPN.bicep
+          az bicep build --file infra-as-code/bicep/modules/ubuntu/ubuntu-nva-ha.bicep
+          az bicep build --file infra-as-code/bicep/modules/opnsense/ubuntu-nva-single.bicep
+          az bicep build --file infra-as-code/bicep/modules/opnsense/opnsense.bicep
+          az bicep build --file infra-as-code/bicep/modules/opnsense/opnsense-ha.bicep
+
   validate_preview_create_mgs:
     runs-on: ubuntu-latest
     needs: [lint]
