@@ -4,6 +4,11 @@
 # vars.ONPREMAD_CANARY: create-onprem-domain / no-onprem-domain
 # vars.AZUREAD_CANARY: create-identity-domain / use-onprem-domain / no-identity-domain
 
+# az bicep build --file infra-as-code/bicep/modules/ubuntu/ubuntu-nva-ha.bicep
+#           az bicep build --file infra-as-code/bicep/modules/opnsense/ubuntu-nva-single.bicep
+#           az bicep build --file infra-as-code/bicep/modules/opnsense/opnsense.bicep
+#           az bicep build --file infra-as-code/bicep/modules/opnsense/opnsense-ha.bicep
+
 name: 0. Deploy complete ALZ solution
 
 on:
