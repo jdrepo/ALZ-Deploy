@@ -30,6 +30,9 @@
     },
     "parScenarioOption" : {
       "value": "vpngw-bgp"
+    },
+    "parOpnVersion" : {
+      "value": "25.1"
     }
   }
 }
