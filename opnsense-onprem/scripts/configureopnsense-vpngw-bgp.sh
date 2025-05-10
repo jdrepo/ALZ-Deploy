@@ -16,7 +16,7 @@ if [ "$4" = "vpngw-bgp" ]; then
     gwip=$(python get_nic_gw.py $5)
     sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config-vpngw-bgp.xml
     sed -i "" "s/aaa.aaa.aaa.aaa/$6/" config-vpngw-bgp.xml
-    cp config.xml /usr/local/etc/config.xml
+    cp config-vpngw-bgp.xml /usr/local/etc/config.xml
 fi
 
 
