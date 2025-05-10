@@ -19,6 +19,18 @@ if [ "$4" = "vpngw-bgp" ]; then
     cp config-vpngw-bgp.xml /usr/local/etc/config.xml
 fi
 
+
+#OPNSense default configuration template
+#fetch https://raw.githubusercontent.com/dmauser/opnazure/dev_active_active/scripts/$1
+#fetch https://raw.githubusercontent.com/dmauser/opnazure/master/scripts/$1
+#cp $1 /usr/local/etc/config.xml
+
+# 1. Package to get root certificate bundle from the Mozilla Project (FreeBSD)
+# 2. Install bash to support Azure Backup integration
+#env IGNORE_OSVERSION=yes
+#pkg bootstrap -f; pkg update -f
+#env ASSUME_ALWAYS_YES=YES pkg install ca_root_nss && pkg install -y bash
+
 #Download OPNSense Bootstrap and Permit Root Remote Login
 fetch https://raw.githubusercontent.com/opnsense/update/master/src/bootstrap/opnsense-bootstrap.sh.in
 sed -i "" 's/#PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
@@ -32,11 +44,12 @@ sed -i "" "s/set -e/#set -e/g" opnsense-bootstrap.sh.in
 sed -i "" "s/reboot/shutdown -r +2/g" opnsense-bootstrap.sh.in
 sh ./opnsense-bootstrap.sh.in -y -r "$2"
 
+
 # Installing bash - This is a requirement for Azure custom Script extension to run
-pkg install -y azure-agent
 pkg install -y bash
 pkg install -y os-frr
 pkg install -y os-ddclient
+pkg install -y azure-agent
 
 
 # Remove wrong route at initialization
