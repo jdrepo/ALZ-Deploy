@@ -22,7 +22,7 @@ param parLocationCode string = 'neu'
 param parOpnScriptURI string = 'https://raw.githubusercontent.com/jdrepo/ALZ-Deploy/refs/heads/main/opnsense-onprem/scripts/'
 
 @sys.description('Shell Script to be executed')
-param parShellScriptName string = 'configureopnsense.sh'
+param parShellScriptName string = 'configureopnsense-vpngw-nobgp.sh'
 
 @sys.description('Install OPNsense with CustomScript extension')
 param parInstallOpnsense string = 'yes'
@@ -69,8 +69,11 @@ param parOnpremSubnetName string = 'onpremSubnet'
 @sys.description('Define outbound destination ports or ranges for SSH or RDP that you want to access from Azure Bastion.')
 param parBastionOutboundSshRdpPorts array = ['22', '3389']
 
-@sys.description('Azure VPN Gateway IP address.')
-param parVpnGwPublicIp string = ''
+@sys.description('Azure VPN Gateway IP address 1.')
+param parVpnGwPublicIp1 string = ''
+
+@sys.description('Azure VPN Gateway IP address 2.')
+param parVpnGwPublicIp2 string = ''
 
 @allowed([
   'no-onprem-domain'
@@ -150,6 +153,8 @@ var varSubnets = [
 @allowed([
   'Active-Active'
   'TwoNics'
+  'vpngw-nobgp'
+  'vpngw-bgp'
 ])
 param parScenarioOption string = 'TwoNics'
 
@@ -599,11 +604,16 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
     type: 'CustomScriptForLinux'
     typeHandlerVersion: '1.5'
     virtualMachineName: parOpnsenseName
-    settings: {
+    settings: (parScenarioOption == 'TwoNics') ? {
       fileUris: [
         '${parOpnScriptURI}${parShellScriptName}'
       ]
-      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parWindowsSubnetRange} ${parExternalLoadBalancerIp} ${parOpnSenseSecondaryTrustedNicIP} ${parVpnGwPublicIp}'
+      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parWindowsSubnetRange} ${parExternalLoadBalancerIp} ${parOpnSenseSecondaryTrustedNicIP} ${parVpnGwPublicIp1}'
+    } : {
+      fileUris: [
+        '${parOpnScriptURI}${parShellScriptName}'
+      ]
+      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parVpnGwPublicIp1} ${parVpnGwPublicIp2}'
     }
   }
 }
