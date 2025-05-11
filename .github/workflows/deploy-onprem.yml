@@ -18,7 +18,11 @@ on:
         description: 'NVA solution'
         type: choice
         options:
+          - no-nva
           - opnsense-single
+          - opnsense-ha
+          - ubuntu-single
+          - ubuntu-ha
       vpngw:
         description: 'VPN Gateway'
         default: 'vpngw-nobgp'
