@@ -615,7 +615,7 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
         '${parOpnScriptURI}${parShellScriptName}'
       ]
       commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parWindowsSubnetRange} ${parExternalLoadBalancerIp} ${parOpnSenseSecondaryTrustedNicIP} ${parVpnGwPublicIp1}'
-    } : (parScenarioOption == 'vpngw-nobgp') ? {
+    } : (parScenarioOption == 'vpngw-bgp') ? {
           fileUris: [
             '${parOpnScriptURI}${parShellScriptName}'
           ]
