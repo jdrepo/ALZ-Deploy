@@ -231,7 +231,8 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-            parVpnGwPublicIp1=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
+            parVpnGwPublicIp1=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp1}} parVpnGwPublicIp2=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp2}}
+            parVpnGwBgpIp1=${{ steps.get_vpngw_resources.outputs.vpnGwBgpIp1}} parVpnGwBgpIp2=${{ steps.get_vpngw_resources.outputs.vpnGwBgpIp2}}
             parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
           deploymentName: onprem-validate-${{ env.runNumber }}
@@ -262,7 +263,8 @@ jobs:
           parameters: >-
             ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-            parVpnGwPublicIp1=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
+            parVpnGwPublicIp1=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp1}} parVpnGwPublicIp2=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp2}}
+            parVpnGwBgpIp1=${{ steps.get_vpngw_resources.outputs.vpnGwBgpIp1}} parVpnGwBgpIp2=${{ steps.get_vpngw_resources.outputs.vpnGwBgpIp2}}
             parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
           deploymentName: onprem-preview-${{ env.runNumber }}
@@ -308,14 +310,34 @@ jobs:
           vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
           publicIpId1=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
           vpnGatewayIp1=$(az network public-ip show --ids $publicIpId1 --query "ipAddress" --out tsv)
-          echo "$publicIpPrefix"
-          echo "$vpnGatewayName"
-          echo "$publicIpId"
-          echo "$vpnGatewayIp1"
+          vpnGwTunnelIp1=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[0].tunnelIpAddresses[0]" --output tsv)
+          vpnGwTunnelIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].tunnelIpAddresses[0]" --output tsv)
+          vpnGwBgpIp1=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[0].defaultBgpIpAddresses"  --output tsv)
+          vpnGwBgpIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].defaultBgpIpAddresses"  --output tsv)
+          publicIpId2=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName-aa'].id")
+          vpnGatewayIp2=$(az network public-ip show --ids $publicIpId2 --query "ipAddress" --out tsv)
+          echo "publicIpPrefix: $publicIpPrefix"
+          echo "vpnGatewayName: $vpnGatewayName"
+          echo "publicIpId1: $publicIpId1"
+          echo "vpnGatewayIp1: $vpnGatewayIp1"
+          echo "publicIpId2: $publicIpId2"
+          echo "vpnGatewayIp2: $vpnGatewayIp2"
+          echo "opnSenseName: $opnSenseName"
+          echo "vpnGwTunnelIp1: $vpnGwTunnelIp1"
+          echo "vpnGwTunnelIp2: $vpnGwTunnelIp2"
+          echo "vpnGwBgpIp1: $vpnGwBgpIp1"
+          echo "vpnGwBgpIp2: $vpnGwBgpIp2"
+          echo "$opnSenseCustomScriptExtensionId"
           echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
           echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
           echo "publicIpId1=$publicIpId1" >> "$GITHUB_OUTPUT"
           echo "vpnGatewayIp1=$vpnGatewayIp1" >> "$GITHUB_OUTPUT"
+          echo "publicIpId2=$publicIpId2" >> "$GITHUB_OUTPUT"
+          echo "vpnGatewayIp2=$vpnGatewayIp1" >> "$GITHUB_OUTPUT"
+          echo "vpnGwTunnelIp1=$vpnGwTunnelIp1" >> "$GITHUB_OUTPUT"
+          echo "vpnGwTunnelIp2=$vpnGwTunnelIp2" >> "$GITHUB_OUTPUT"
+          echo "vpnGwBgpIp1=$vpnGwBgpIp1" >> "$GITHUB_OUTPUT"
+          echo "vpnGwBgpIp2=$vpnGwBgpIp2" >> "$GITHUB_OUTPUT"
     - name: Onprem RG - Deployment
       id: onprem_rg_deploy
       uses: azure/arm-deploy@v2
@@ -364,7 +386,8 @@ jobs:
         parameters: >-
           ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
           parResourceGroupName=${{ env.onpremResourceGroupName }}
-          parVpnGwPublicIp1=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
+          parVpnGwPublicIp1=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp1}} parVpnGwPublicIp2=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp2}}
+          parVpnGwBgpIp1=${{ steps.get_vpngw_resources.outputs.vpnGwBgpIp1}} parVpnGwBgpIp2=${{ steps.get_vpngw_resources.outputs.vpnGwBgpIp2}}
           parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
           parActiveDirectoryScenario=${{inputs.activeDirectory}}
         deploymentName: onprem-deploy-${{ env.runNumber }}
