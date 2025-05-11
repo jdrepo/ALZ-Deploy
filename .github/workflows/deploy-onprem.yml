@@ -110,7 +110,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install xmlstarlet
       - name: Get existing Azure VPN Gateway resources
-        if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}        
+        if: ${{ inputs.vpngw == 'vpngw-nobgp' || inputs.vpngw == 'vpngw-bgp'  }}        
         id: get_vpngw_resources
         uses: azure/cli@v2
         with:
@@ -119,18 +119,46 @@ jobs:
             az account set -s "${{env.ConnectivitySubId}}"
             publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
             vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
-            publicIpId=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
-            vpnGatewayIp=$(az network public-ip show --ids $publicIpId --query "ipAddress" --out tsv)
+            publicIpId1=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
+            vpnGatewayIp1=$(az network public-ip show --ids $publicIpId1 --query "ipAddress" --out tsv)
             echo "$publicIpPrefix"
             echo "$vpnGatewayName"
             echo "$publicIpId"
-            echo "$vpnGatewayIp"
+            echo "$vpnGatewayIp1"
             echo "$opnSenseName"
             echo "$opnSenseCustomScriptExtensionId"
             echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
-            echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
-            echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
+            echo "publicIpId1=$publicIpId1" >> "$GITHUB_OUTPUT"
+            echo "vpnGatewayIp1=$vpnGatewayIp1" >> "$GITHUB_OUTPUT"
+      # - name: Get existing Azure VPN Gateway resources
+      #   if: ${{ inputs.vpngw == 'vpngw-bgp'  }}        
+      #   id: get_vpngw_aa_resources
+      #   uses: azure/cli@v2
+      #   with:
+      #     azcliversion: latest
+      #     inlineScript: |
+      #       az account set -s "${{env.ConnectivitySubId}}"
+      #       publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+      #       vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+      #       publicIpId1=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
+      #       vpnGatewayIp1=$(az network public-ip show --ids $publicIpId1 --query "ipAddress" --out tsv)
+      #       publicIpId2=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName-aa'].id")
+      #       vpnGatewayIp2=$(az network public-ip show --ids $publicIpId2 --query "ipAddress" --out tsv)
+      #       echo "$publicIpPrefix"
+      #       echo "$vpnGatewayName"
+      #       echo "$publicIpId1"
+      #       echo "$publicIpId2"
+      #       echo "$vpnGatewayIp1"
+      #       echo "$vpnGatewayIp2"
+      #       echo "$opnSenseName"
+      #       echo "$opnSenseCustomScriptExtensionId"
+      #       echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
+      #       echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
+      #       echo "publicIpId1=$publicIpId1" >> "$GITHUB_OUTPUT"
+      #       echo "publicIpId2=$publicIpId2" >> "$GITHUB_OUTPUT"
+      #       echo "vpnGatewayIp1=$vpnGatewayIp1" >> "$GITHUB_OUTPUT"
+      #       echo "vpnGatewayIp2=$vpnGatewayIp2" >> "$GITHUB_OUTPUT"
       - name: Onprem RG - Validation
         id: onprem_rg_validation
         uses: azure/arm-deploy@v2
@@ -152,7 +180,7 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az account set -s "${{ env.onpremSubscriptionId }}"
-            opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
+            opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json)
             if [[ $(az group exists -n ${{ env.onpremResourceGroupName }}) = true ]];
               then
                 if [[ $(az vm list --resource-group ${{ env.onpremResourceGroupName }} --query "[?name=='$opnSenseName'] | length(@)") > 0 ]]; 
@@ -178,9 +206,9 @@ jobs:
           region: ${{ env.Location }}
           template: ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/onprem.bicep
           parameters: >-
-            ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-            parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
+            parVpnGwPublicIp1=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
             parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
           deploymentName: onprem-validate-${{ env.runNumber }}
@@ -209,9 +237,9 @@ jobs:
           region: ${{ env.Location }}
           template: ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/onprem.bicep
           parameters: >-
-            ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
+            ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
             parResourceGroupName=${{ env.onpremResourceGroupName }}
-            parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
+            parVpnGwPublicIp1=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
             parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
             parActiveDirectoryScenario=${{inputs.activeDirectory}}
           deploymentName: onprem-preview-${{ env.runNumber }}
@@ -246,7 +274,7 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install xmlstarlet
     - name: Get existing Azure VPN Gateway resources
-      if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}        
+      if: ${{ inputs.vpngw == 'vpngw-nobgp' || inputs.vpngw == 'vpngw-bgp'  }}    
       id: get_vpngw_resources
       uses: azure/cli@v2
       with:
@@ -255,16 +283,16 @@ jobs:
           az account set -s "${{env.ConnectivitySubId}}"
           publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
           vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
-          publicIpId=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
-          vpnGatewayIp=$(az network public-ip show --ids $publicIpId --query "ipAddress" --out tsv)
+          publicIpId1=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
+          vpnGatewayIp1=$(az network public-ip show --ids $publicIpId1 --query "ipAddress" --out tsv)
           echo "$publicIpPrefix"
           echo "$vpnGatewayName"
           echo "$publicIpId"
-          echo "$vpnGatewayIp"
+          echo "$vpnGatewayIp1"
           echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
           echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
-          echo "publicIpId=$publicIpId" >> "$GITHUB_OUTPUT"
-          echo "vpnGatewayIp=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
+          echo "publicIpId1=$publicIpId1" >> "$GITHUB_OUTPUT"
+          echo "vpnGatewayIp1=$vpnGatewayIp1" >> "$GITHUB_OUTPUT"
     - name: Onprem RG - Deployment
       id: onprem_rg_deploy
       uses: azure/arm-deploy@v2
@@ -285,7 +313,7 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account set -s "${{ env.onpremSubscriptionId }}"
-          opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json)
+          opnSenseName=$(jq -r .parameters.parOpnsenseName.value ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json)
           if [[ $(az group exists -n ${{ env.onpremResourceGroupName }}) = true ]];
             then
               if [[ $(az vm list --resource-group ${{ env.onpremResourceGroupName }} --query "[?name=='$opnSenseName'] | length(@)") > 0 ]]; 
@@ -311,9 +339,9 @@ jobs:
         region: ${{ env.Location }}
         template: ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/onprem.bicep
         parameters: >-
-          ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.environment}}.json
+          ./ALZ-Deploy/infra-as-code/bicep/modules/onprem/parameters/onprem.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
           parResourceGroupName=${{ env.onpremResourceGroupName }}
-          parVpnGwPublicIp=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
+          parVpnGwPublicIp1=${{ steps.get_vpngw_resources.outputs.vpnGatewayIp}}
           parInstallOpnsense=${{steps.check_installed_opns_extension.outputs.install-opnsense}}
           parActiveDirectoryScenario=${{inputs.activeDirectory}}
         deploymentName: onprem-deploy-${{ env.runNumber }}

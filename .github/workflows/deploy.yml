@@ -1,5 +1,5 @@
 # vars.NVA-CANARY:  opnsense-single / opnsense-ha / no-nva / azfirewall-basic / ubuntu-single / ubuntu-ha
-# vars.VPNGW-CANARY: vpngw-bgp / vpngw-nobgp / no-vpngw
+# vars.VPNGW-CANARY: vpngw-bgp / vpngw-nobgp / no-vpngw / vpngw-opnsense?
 # vars.ONPREM_CANARY: create-onprem-environment / no-onprem-environment
 # vars.ONPREMAD_CANARY: create-onprem-domain / no-onprem-domain
 # vars.AZUREAD_CANARY: create-identity-domain / use-onprem-domain / no-identity-domain

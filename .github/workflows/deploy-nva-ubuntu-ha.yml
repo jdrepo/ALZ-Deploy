@@ -76,6 +76,28 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Run lint job
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Checkout bicep-registry-modules Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Azure/bicep-registry-modules
+          path: bicep-registry-modules
+      - name: Show env
+        run: env | sort
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Run bicep linter
+        run: |
+          az bicep build --file infra-as-code/bicep/modules/ubuntu/ubuntu-nva-ha.bicep
   validate_preview_ubuntu:
     runs-on: ubuntu-latest
     environment: ${{inputs.environment}}
