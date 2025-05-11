@@ -48,7 +48,7 @@ jobs:
       environment: "canary"
       deploy: true
       location: "northeurope"
-      nva: "opnsense-single"
+      nva: ${{vars.NVA_CANARY}}
       vpngw: ${{vars.VPNGW_CANARY}}
       activeDirectory: ${{vars.ONPREMAD_CANARY}}
     secrets:

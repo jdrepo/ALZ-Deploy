@@ -27,6 +27,12 @@
     },
     "parShellScriptName" : {
       "value": "configureopnsense-vpngw-nobgp.sh"
+    },
+    "parScenarioOption" : {
+      "value": "vpngw-nobgp"
+    },
+    "parOpnVersion" : {
+      "value": "25.1"
     }
   }
 }

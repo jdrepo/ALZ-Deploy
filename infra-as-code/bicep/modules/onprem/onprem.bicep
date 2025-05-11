@@ -75,6 +75,12 @@ param parVpnGwPublicIp1 string = ''
 @sys.description('Azure VPN Gateway IP address 2.')
 param parVpnGwPublicIp2 string = ''
 
+@sys.description('Azure VPN Gateway BGP IP address 1.')
+param parVpnGwBgpIp1 string = ''
+
+@sys.description('Azure VPN Gateway IP address 2.')
+param parVpnGwBgpIp2 string = ''
+
 @allowed([
   'no-onprem-domain'
   'create-onprem-domain'
@@ -156,7 +162,7 @@ var varSubnets = [
   'vpngw-nobgp'
   'vpngw-bgp'
 ])
-param parScenarioOption string = 'TwoNics'
+param parScenarioOption string = 'vpngw-nobgp'
 
 // necessary for Traffic Analytics Deployment
 module modRoleAssignSubscriptionOwner '../../../../../bicep-registry-modules/avm/ptn/authorization/role-assignment/modules/subscription.bicep' = {
@@ -521,7 +527,7 @@ resource resKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: take(('kv-${parLocationCode}-001-${parTags.Environment}-${take(uniqueString(parResourceGroupName),4)}'),24)
 }
 
-module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.12.0' = {
+module modOpnSense 'br/public:avm/res/compute/virtual-machine:0.15.0' = {
   name: '${_dep}-opnsense'
   scope: resourceGroup(parResourceGroupName)
   dependsOn: [
@@ -604,17 +610,17 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
     type: 'CustomScriptForLinux'
     typeHandlerVersion: '1.5'
     virtualMachineName: parOpnsenseName
-    settings: (parScenarioOption == 'TwoNics') ? {
+    settings: (parScenarioOption == 'vpngw-nobgp') ? {
       fileUris: [
         '${parOpnScriptURI}${parShellScriptName}'
       ]
       commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parWindowsSubnetRange} ${parExternalLoadBalancerIp} ${parOpnSenseSecondaryTrustedNicIP} ${parVpnGwPublicIp1}'
-    } : {
-      fileUris: [
-        '${parOpnScriptURI}${parShellScriptName}'
-      ]
-      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parVpnGwPublicIp1} ${parVpnGwPublicIp2}'
-    }
+    } : (parScenarioOption == 'vpngw-nobgp') ? {
+          fileUris: [
+            '${parOpnScriptURI}${parShellScriptName}'
+          ]
+          commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parVpnGwPublicIp1} ${parVpnGwPublicIp2}'
+        } : {}
   }
 }
 
