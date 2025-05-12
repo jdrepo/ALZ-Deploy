@@ -344,13 +344,22 @@
     </enc0>
     <ipsec1>
       <if>ipsec1</if>
-      <descr>IPsecAzure</descr>
+      <descr>IPSecT1</descr>
       <enable>1</enable>
       <spoofmac/>
       <mss>1350</mss>
       <internal_dynamic>1</internal_dynamic>
       <type>none</type>
     </ipsec1>
+    <ipsec2>
+      <if>ipsec2</if>
+      <descr>IPSecT2</descr>
+      <enable>1</enable>
+      <spoofmac/>
+      <mss>1350</mss>
+      <internal_dynamic>1</internal_dynamic>
+      <type>none</type>
+    </ipsec2>
   </interfaces>
   <snmpd>
     <syslocation/>
@@ -575,6 +584,34 @@
       <descr>Allow IPsec all</descr>
 	    <log>1</log>
       <interface>enc0</interface>
+      <source>
+        <any>1</any>
+      </source>
+      <destination>
+        <any>1</any>
+      </destination>
+    </rule>
+	<rule>
+      <type>pass</type>
+      <interface>ipsec1</interface>
+      <ipprotocol>inet</ipprotocol>
+      <statetype>keep state</statetype>
+      <direction>in</direction>
+      <quick>1</quick>
+      <source>
+        <any>1</any>
+      </source>
+      <destination>
+        <any>1</any>
+      </destination>
+    </rule>
+	<rule>
+      <type>pass</type>
+      <interface>ipsec2</interface>
+      <ipprotocol>inet</ipprotocol>
+      <statetype>keep state</statetype>
+      <direction>in</direction>
+      <quick>1</quick>
       <source>
         <any>1</any>
       </source>
@@ -1068,9 +1105,9 @@
       <vxlans version="1.0.2"/>
     </Interfaces>
     <Gateways version="1.0.0">
-      <gateway_item uuid="b50eeb5a-033d-428d-a6e9-1a5481b171ef">
+      <gateway_item>
         <disabled>0</disabled>
-        <name>VPNGW</name>
+        <name>VPNGW1</name>
         <descr/>
         <interface>ipsec1</interface>
         <ipprotocol>inet</ipprotocol>
@@ -1092,9 +1129,33 @@
         <loss_interval/>
         <data_length/>
       </gateway_item>
+	  <gateway_item>
+        <disabled>0</disabled>
+        <name>VPNGW2</name>
+        <descr/>
+        <interface>ipsec1</interface>
+        <ipprotocol>inet</ipprotocol>
+        <gateway>10.112.1.2</gateway>
+        <defaultgw>0</defaultgw>
+        <fargw>1</fargw>
+        <monitor_disable>1</monitor_disable>
+        <monitor_noroute>0</monitor_noroute>
+        <monitor/>
+        <force_down>0</force_down>
+        <priority>255</priority>
+        <weight>1</weight>
+        <latencylow/>
+        <latencyhigh/>
+        <losslow/>
+        <losshigh/>
+        <interval/>
+        <time_period/>
+        <loss_interval/>
+        <data_length/>
+      </gateway_item>
     </Gateways>
     <quagga>
-      <ospf version="1.0.5">
+      <ospf version="1.1.0">
         <enabled>0</enabled>
         <carp_demote>0</carp_demote>
         <routerid/>
@@ -1112,12 +1173,12 @@
         <routemaps/>
       </ospf>
       <general version="1.0.3">
-        <enabled>0</enabled>
+        <enabled>1</enabled>
         <profile>traditional</profile>
         <enablecarp>0</enablecarp>
         <enablesyslog>1</enablesyslog>
         <enablesnmp>0</enablesnmp>
-        <sysloglevel>notifications</sysloglevel>
+        <sysloglevel>debugging</sysloglevel>
         <fwrules>1</fwrules>
       </general>
       <rip version="1.0.3">
@@ -1132,7 +1193,7 @@
         <enabled>0</enabled>
         <routes/>
       </static>
-      <ospf6 version="1.0.4">
+      <ospf6 version="1.1.0">
         <enabled>0</enabled>
         <carp_demote>0</carp_demote>
         <redistribute/>
@@ -1150,17 +1211,82 @@
         <enabled>0</enabled>
         <neighbors/>
       </bfd>
-      <bgp version="1.0.9">
+      <bgp version="1.1.0">
         <enabled>0</enabled>
-        <asnumber>65551</asnumber>
+        <asnumber>65001</asnumber>
         <distance/>
         <routerid/>
         <graceful>0</graceful>
-        <networkimportcheck>1</networkimportcheck>
-        <logneighborchanges>0</logneighborchanges>
-        <networks/>
+        <networkimportcheck>0</networkimportcheck>
+        <logneighborchanges>1</logneighborchanges>
+        <networks>172.22.0.0/16</networks>
         <redistribute/>
-        <neighbors/>
+        <neighbors>
+          <neighbor>
+            <enabled>1</enabled>
+            <description/>
+            <address>10.10.252.4</address>
+            <remote_as_mode/>
+            <remoteas>65515</remoteas>
+            <password/>
+            <weight/>
+            <localip/>
+            <updatesource/>
+            <linklocalinterface/>
+            <nexthopself>0</nexthopself>
+            <nexthopselfall>0</nexthopselfall>
+            <multihop>1</multihop>
+            <multiprotocol>0</multiprotocol>
+            <rrclient>0</rrclient>
+            <soft_reconfiguration_inbound>0</soft_reconfiguration_inbound>
+            <bfd>0</bfd>
+            <keepalive/>
+            <holddown/>
+            <connecttimer/>
+            <defaultoriginate>0</defaultoriginate>
+            <asoverride>0</asoverride>
+            <allowas_in/>
+            <disable_connected_check>0</disable_connected_check>
+            <attributeunchanged/>
+            <linkedPrefixlistIn/>
+            <linkedPrefixlistOut/>
+            <linkedRoutemapIn/>
+            <linkedRoutemapOut/>
+            <peergroup/>
+          </neighbor>
+          <neighbor>
+            <enabled>1</enabled>
+            <description/>
+            <address>10.10.252.5</address>
+            <remote_as_mode/>
+            <remoteas>65515</remoteas>
+            <password/>
+            <weight/>
+            <localip/>
+            <updatesource/>
+            <linklocalinterface/>
+            <nexthopself>0</nexthopself>
+            <nexthopselfall>0</nexthopselfall>
+            <multihop>1</multihop>
+            <multiprotocol>0</multiprotocol>
+            <rrclient>0</rrclient>
+            <soft_reconfiguration_inbound>0</soft_reconfiguration_inbound>
+            <bfd>0</bfd>
+            <keepalive/>
+            <holddown/>
+            <connecttimer/>
+            <defaultoriginate>0</defaultoriginate>
+            <asoverride>0</asoverride>
+            <allowas_in/>
+            <disable_connected_check>0</disable_connected_check>
+            <attributeunchanged/>
+            <linkedPrefixlistIn/>
+            <linkedPrefixlistOut/>
+            <linkedRoutemapIn/>
+            <linkedRoutemapOut/>
+            <peergroup/>
+          </neighbor>
+        </neighbors>
         <aspaths/>
         <prefixlists/>
         <communitylists/>
@@ -1168,7 +1294,7 @@
         <peergroups/>
       </bgp>
     </quagga>
-    <IPsec version="1.0.3">
+    <IPsec version="1.0.4">
       <general>
         <enabled/>
         <preferred_oldsa>0</preferred_oldsa>
@@ -1452,15 +1578,15 @@
   </gres>
   <staticroutes version="1.0.0">
     <route>
-      <network>10.20.0.0/16</network>
-      <gateway>VPNGW</gateway>
-      <descr>Route Azure identity vnet</descr>
+      <network>10.10.252.4/32</network>
+      <gateway>VPNGW1</gateway>
+      <descr/>
       <disabled>0</disabled>
     </route>
     <route>
-      <network>10.10.0.0/16</network>
-      <gateway>VPNGW</gateway>
-      <descr>Route Azure identity vnet</descr>
+      <network>10.10.252.5/32</network>
+      <gateway>VPNGW2</gateway>
+      <descr/>
       <disabled>0</disabled>
     </route>
   </staticroutes>
@@ -1486,34 +1612,65 @@
   <ca/>
   <ipsec>
     <phase1>
+	  <ikeid>1</ikeid>
       <iketype>ikev2</iketype>
       <interface>wan</interface>
       <protocol>inet</protocol>
-      <myid_type>myaddress</myid_type>
+      <myid_type>address</myid_type>
+      <myid_data>132.164.162.235</myid_data>
       <peerid_type>peeraddress</peerid_type>
       <encryption-algorithm>
         <name>aes</name>
-        <keylen>256</keylen>
+        <keylen>128</keylen>
       </encryption-algorithm>
       <lifetime>28800</lifetime>
       <pre-shared-key>A1b2c3d4</pre-shared-key>
       <authentication_method>pre_shared_key</authentication_method>
-      <descr>IPsec Azure</descr>
+      <descr>IPSecT1</descr>
       <nat_traversal>off</nat_traversal>
-      <auto>add</auto>
+      <auto>start</auto>
       <dhgroup>2</dhgroup>
       <hash-algorithm>sha256</hash-algorithm>
       <noinstallpolicy>1</noinstallpolicy>
       <private-key/>
       <remote-gateway>aaa.aaa.aaa.aaa</remote-gateway>
-      <ikeid>1</ikeid>
+	  <dpd_delay>10</dpd_delay>
+      <dpd_maxfail>5</dpd_maxfail>
+      <dpd_action/>
+	</phase1>
+    <phase1>
+      <ikeid>2</ikeid>
+      <iketype>ikev2</iketype>
+      <interface>wan</interface>
+      <protocol>inet</protocol>
+      <myid_type>address</myid_type>
+      <myid_data>132.164.162.235</myid_data>
+      <peerid_type>peeraddress</peerid_type>
+      <encryption-algorithm>
+        <name>aes</name>
+        <keylen>128</keylen>
+      </encryption-algorithm>
+      <lifetime>28800</lifetime>
+      <pre-shared-key>A1b2c3d4</pre-shared-key>
+      <authentication_method>pre_shared_key</authentication_method>
+      <descr>IPSecT2</descr>
+      <nat_traversal>off</nat_traversal>
+      <auto>start</auto>
+      <dhgroup>2</dhgroup>
+      <hash-algorithm>sha256</hash-algorithm>
+      <noinstallpolicy>1</noinstallpolicy>
+      <private-key/>
+      <remote-gateway>131.189.136.180</remote-gateway>
+      <dpd_delay>10</dpd_delay>
+      <dpd_maxfail>5</dpd_maxfail>
+      <dpd_action/>
     </phase1>
     <phase2>
       <ikeid>1</ikeid>
       <uniqid>67a8a1106049c</uniqid>
       <mode>route-based</mode>
       <lifetime>27000</lifetime>
-      <descr>Azure VNET</descr>
+      <descr>IPSecT1-P2</descr>
       <protocol>esp</protocol>
       <tunnel_local>10.111.1.1</tunnel_local>
       <tunnel_remote>10.111.1.2</tunnel_remote>
@@ -1522,6 +1679,21 @@
       </encryption-algorithm-option>
       <hash-algorithm-option>hmac_sha256</hash-algorithm-option>
       <reqid>1</reqid>
+    </phase2>
+	<phase2>
+      <ikeid>2</ikeid>
+      <uniqid>6821a44ac0141</uniqid>
+      <mode>route-based</mode>
+      <lifetime>27000</lifetime>
+      <descr>IPSecT2-P2</descr>
+      <protocol>esp</protocol>
+      <tunnel_local>10.112.1.1</tunnel_local>
+      <tunnel_remote>10.112.1.2</tunnel_remote>
+      <encryption-algorithm-option>
+        <name>aes256</name>
+      </encryption-algorithm-option>
+      <hash-algorithm-option>hmac_sha256</hash-algorithm-option>
+      <reqid>2</reqid>
     </phase2>
     <client/>
     <enable>1</enable>
