@@ -1126,7 +1126,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Get existing resources
-        if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}
+        if: ${{ inputs.vpngw == 'vpngw-nobgp' || inputs.vpngw == 'vpngw-bgp'  }}
         id: get_resources
         uses: azure/cli@v2
         with:
@@ -1140,7 +1140,7 @@ jobs:
             echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayResourceId=$vpnGatewayResourceId" >> "$GITHUB_OUTPUT" 
       - name: Hub Network VPN - Validation
-        if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}
+        if: ${{ inputs.vpngw == 'vpngw-nobgp' || inputs.vpngw == 'vpngw-bgp' }}
         id: deploy_hubNetworkVPN_validation
         uses: azure/arm-deploy@v2
         with:
@@ -1158,7 +1158,7 @@ jobs:
           failOnStdErr: false
           deploymentMode: Validate
       - name: Deploy Hub Network VPN - Preview
-        if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}
+        if: ${{ inputs.vpngw == 'vpngw-nobgp' || inputs.vpngw == 'vpngw-bgp' }}
         id: deploy_hubNetworkVPN_preview
         uses: azure/arm-deploy@v2
         with:
@@ -1200,7 +1200,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Get existing resources
-        if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}
+        if: ${{ inputs.vpngw == 'vpngw-nobgp' || inputs.vpngw == 'vpngw-bgp' }}
         id: get_resources
         uses: azure/cli@v2
         with:
@@ -1214,7 +1214,7 @@ jobs:
             echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayResourceId=$vpnGatewayResourceId" >> "$GITHUB_OUTPUT" 
       - name: Hub Network VPN - Deployment
-        if: ${{ inputs.vpngw == 'vpngw-nobgp'  }}
+        if: ${{ inputs.vpngw == 'vpngw-nobgp' || inputs.vpngw == 'vpngw-bgp' }}
         id: deploy_hubNetworkVPN
         uses: azure/arm-deploy@v2
         with:
