@@ -19,6 +19,12 @@ param parOnpremAddressSpace array
 @sys.description('BGP peer IP address.')
 param parOnpremBgpPeerAddress string
 
+@sys.description('Enable BGP.')
+param parEnableBgp bool = false
+
+@sys.description('Onprem BGP ASN')
+param parOnpremAsn string = '65000'
+
 @sys.description('DNS name of onpremise VPN Gateway')
 param parOnpremVPNGatewayDNS string
 
@@ -37,7 +43,7 @@ module modLocalNetworkGw 'br/public:avm/res/network/local-network-gateway:0.3.0'
     localAddressPrefixes: !empty(parOnpremBgpPeerAddress) ? ['${parOnpremBgpPeerAddress}/32'] : parOnpremAddressSpace
     fqdn: parOnpremVPNGatewayDNS
     localGatewayPublicIpAddress: empty(parOnpremVPNGatewayDNS) ? parOnpremVPNGatewayIP : ''
-    localAsn: !empty(parOnpremBgpPeerAddress) ? '65000' : ''
+    localAsn: parEnableBgp ? parOnpremAsn : ''
     localBgpPeeringAddress: parOnpremBgpPeerAddress
   }
 }
@@ -53,5 +59,6 @@ module modVpnConnection 'br/public:avm/res/network/connection:0.1.3' = {
       id: modLocalNetworkGw.outputs.resourceId
     } 
     vpnSharedKey: 'A1b2c3d4'
+    enableBgp: parEnableBgp
   }
 }

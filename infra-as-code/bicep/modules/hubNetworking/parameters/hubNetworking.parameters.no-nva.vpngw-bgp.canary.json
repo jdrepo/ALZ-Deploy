@@ -141,8 +141,8 @@
         "bgpPeeringAddress": "",
         "bgpsettings": {
           "asn": "65515",
-          "bgpPeeringAddress": "",
-          "peerWeight": "5"
+          "bgpPeeringAddress": "10.10.252.4,10.10.252.5",
+          "peerWeight": "0"
         },
         "vpnClientConfiguration": {},
         "ipConfigurationName": "vnetGatewayConfig",
