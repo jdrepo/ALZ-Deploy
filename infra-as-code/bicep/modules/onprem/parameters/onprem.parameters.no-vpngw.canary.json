@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "parTags": {
+      "value": {
+        "Environment": "canary"
+      }
+    },
+    "parLocation": {
+      "value": "northeurope"
+    },
+    "parResourceGroupName": {
+      "value": "rg-onprem"
+    },
+    "parLocationCode": {
+      "value": "neu"
+    },
+    "parTrustedSubnetName" : {
+      "value": "trustedSubnet"
+    },
+    "parUntrustedSubnetName" : {
+      "value": "untrustedSubnet"
+    },
+    "parOpnsenseName" : {
+      "value": "vm-neu-opnsense"
+    },
+    "parShellScriptName" : {
+      "value": "configureopnsense-no-vpngw.sh"
+    },
+    "parScenarioOption" : {
+      "value": "no-vpngw"
+    },
+    "parOpnVersion" : {
+      "value": "25.1"
+    }
+  }
+}
