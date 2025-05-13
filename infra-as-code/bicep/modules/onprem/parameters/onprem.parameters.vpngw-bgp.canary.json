@@ -33,6 +33,12 @@
     },
     "parOpnVersion" : {
       "value": "25.1"
+    },
+    "parRemoteAsn": {
+      "value": "65515"
+    },
+    "parLocalAsn": {
+      "value": "65001"
     }
   }
 }

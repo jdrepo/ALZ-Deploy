@@ -8,6 +8,13 @@
 # $5 = Trusted Nic subnet prefix - used to get the gw
 # $6 = Azure VPN Gateway Public IP 1
 # $7 = Azure VPN Gateway Public IP 2
+# $8 = opnSense Public IP 1
+# $9 = local ASN
+# $10 = remote ASN
+# $11 = Azure VPN Gateway BGP Peer IP Address 1
+# $12 = Azure VPN Gateway BGP Peer IP Address 2
+
+
 
 
 if [ "$4" = "vpngw-bgp" ]; then
@@ -16,6 +23,13 @@ if [ "$4" = "vpngw-bgp" ]; then
     gwip=$(python get_nic_gw.py $5)
     sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config-vpngw-bgp.xml
     sed -i "" "s/aaa.aaa.aaa.aaa/$6/" config-vpngw-bgp.xml
+    sed -i "" "s/bbb.bbb.bbb.bbb/$7/" config-vpngw-bgp.xml
+    sed -i "" "s/ccc.ccc.ccc.ccc/$8/" config-vpngw-bgp.xml
+    sed -i "" "s/XXXXX/$9/" config-vpngw-bgp.xml
+    sed -i "" "s/YYYYY/$10/" config-vpngw-bgp.xml
+    sed -i "" "s/ddd.ddd.ddd.ddd/$11/" config-vpngw-bgp.xml
+    sed -i "" "s/eee.eee.eee.eee/$12/" config-vpngw-bgp.xml
+
     cp config-vpngw-bgp.xml /usr/local/etc/config.xml
 fi
 

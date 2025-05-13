@@ -81,6 +81,12 @@ param parVpnGwBgpIp1 string = ''
 @sys.description('Azure VPN Gateway IP address 2.')
 param parVpnGwBgpIp2 string = ''
 
+@sys.description('BGP remote ASN.')
+param parRemoteAsn string = ''
+
+@sys.description('BGP local ASN.')
+param parLocalAsn string = ''
+
 @allowed([
   'no-onprem-domain'
   'create-onprem-domain'
@@ -619,7 +625,7 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
           fileUris: [
             '${parOpnScriptURI}${parShellScriptName}'
           ]
-          commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parVpnGwPublicIp1} ${parVpnGwPublicIp2}'
+          commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parVpnGwPublicIp1} ${parVpnGwPublicIp2} ${modPublicIp.outputs.ipAddress} '
         } : {}
   }
 }

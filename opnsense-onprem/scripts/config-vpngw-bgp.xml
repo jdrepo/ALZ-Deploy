@@ -1213,7 +1213,7 @@
       </bfd>
       <bgp version="1.1.0">
         <enabled>1</enabled>
-        <asnumber>65001</asnumber>
+        <asnumber>XXXX</asnumber>
         <distance/>
         <routerid/>
         <graceful>0</graceful>
@@ -1225,9 +1225,9 @@
           <neighbor>
             <enabled>1</enabled>
             <description/>
-            <address>10.10.252.4</address>
+            <address>ddd.ddd.ddd.ddd</address>
             <remote_as_mode/>
-            <remoteas>65515</remoteas>
+            <remoteas>YYYYY</remoteas>
             <password/>
             <weight/>
             <localip/>
@@ -1257,9 +1257,9 @@
           <neighbor>
             <enabled>1</enabled>
             <description/>
-            <address>10.10.252.5</address>
+            <address>eee.eee.eee.eee</address>
             <remote_as_mode/>
-            <remoteas>65515</remoteas>
+            <remoteas>YYYYY</remoteas>
             <password/>
             <weight/>
             <localip/>
@@ -1578,13 +1578,13 @@
   </gres>
   <staticroutes version="1.0.0">
     <route>
-      <network>10.10.252.4/32</network>
+      <network>ddd.ddd.ddd.ddd/32</network>
       <gateway>VPNGW1</gateway>
       <descr/>
       <disabled>0</disabled>
     </route>
     <route>
-      <network>10.10.252.5/32</network>
+      <network>eee.eee.eee.eee/32</network>
       <gateway>VPNGW2</gateway>
       <descr/>
       <disabled>0</disabled>
@@ -1617,7 +1617,7 @@
       <interface>wan</interface>
       <protocol>inet</protocol>
       <myid_type>address</myid_type>
-      <myid_data>132.164.162.235</myid_data>
+      <myid_data>ccc.ccc.ccc.ccc</myid_data>
       <peerid_type>peeraddress</peerid_type>
       <encryption-algorithm>
         <name>aes</name>
@@ -1644,7 +1644,7 @@
       <interface>wan</interface>
       <protocol>inet</protocol>
       <myid_type>address</myid_type>
-      <myid_data>132.164.162.235</myid_data>
+      <myid_data>ccc.ccc.ccc.ccc</myid_data>
       <peerid_type>peeraddress</peerid_type>
       <encryption-algorithm>
         <name>aes</name>
@@ -1660,7 +1660,7 @@
       <hash-algorithm>sha256</hash-algorithm>
       <noinstallpolicy>1</noinstallpolicy>
       <private-key/>
-      <remote-gateway>131.189.136.180</remote-gateway>
+      <remote-gateway>bbb.bbb.bbb.bbb</remote-gateway>
       <dpd_delay>10</dpd_delay>
       <dpd_maxfail>5</dpd_maxfail>
       <dpd_action/>
