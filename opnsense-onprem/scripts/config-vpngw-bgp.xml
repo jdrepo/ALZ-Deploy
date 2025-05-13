@@ -1213,7 +1213,7 @@
       </bfd>
       <bgp version="1.1.0">
         <enabled>1</enabled>
-        <asnumber>XXXX</asnumber>
+        <asnumber>XXXXX</asnumber>
         <distance/>
         <routerid/>
         <graceful>0</graceful>
