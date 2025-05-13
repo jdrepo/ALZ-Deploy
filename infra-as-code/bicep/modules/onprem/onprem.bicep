@@ -625,7 +625,7 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
           fileUris: [
             '${parOpnScriptURI}${parShellScriptName}'
           ]
-          commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parVpnGwPublicIp1} ${parVpnGwPublicIp2} ${modPublicIp.outputs.ipAddress} '
+          commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parVpnGwPublicIp1} ${parVpnGwPublicIp2} ${modPublicIp.outputs.ipAddress} ${parLocalAsn} ${parRemoteAsn} ${parVpnGwBgpIp1} ${parVpnGwBgpIp2}'
         } : {}
   }
 }
