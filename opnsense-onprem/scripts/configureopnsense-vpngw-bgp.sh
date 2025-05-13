@@ -26,9 +26,9 @@ if [ "$4" = "vpngw-bgp" ]; then
     sed -i "" "s/bbb.bbb.bbb.bbb/$7/" config-vpngw-bgp.xml
     sed -i "" "s/ccc.ccc.ccc.ccc/$8/" config-vpngw-bgp.xml
     sed -i "" "s/XXXXX/$9/" config-vpngw-bgp.xml
-    sed -i "" "s/YYYYY/$10/" config-vpngw-bgp.xml
-    sed -i "" "s/ddd.ddd.ddd.ddd/$11/" config-vpngw-bgp.xml
-    sed -i "" "s/eee.eee.eee.eee/$12/" config-vpngw-bgp.xml
+    sed -i "" "s/YYYYY/${10}/" config-vpngw-bgp.xml
+    sed -i "" "s/ddd.ddd.ddd.ddd/${11}/" config-vpngw-bgp.xml
+    sed -i "" "s/eee.eee.eee.eee/${12}/" config-vpngw-bgp.xml
 
     cp config-vpngw-bgp.xml /usr/local/etc/config.xml
 fi
