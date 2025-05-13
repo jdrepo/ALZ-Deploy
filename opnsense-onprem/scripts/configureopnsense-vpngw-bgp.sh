@@ -4,7 +4,7 @@
 # $1 = OPNScriptURI
 # $2 = OpnVersion
 # $3 = WALinuxVersion
-# $4 = Primary/Secondary/TwoNics
+# $4 = VPN GW scenario
 # $5 = Trusted Nic subnet prefix - used to get the gw
 # $6 = Azure VPN Gateway Public IP 1
 # $7 = Azure VPN Gateway Public IP 2
