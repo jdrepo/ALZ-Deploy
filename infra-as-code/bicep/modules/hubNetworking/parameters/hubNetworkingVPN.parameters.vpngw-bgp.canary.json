@@ -30,6 +30,9 @@
 		},
 		"parOnpremAsn": {
 			"value": "65001"
+		},
+		"parEnableBgp": {
+			"value": true
 		}
 	}
 }
