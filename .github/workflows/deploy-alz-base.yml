@@ -1172,6 +1172,7 @@ jobs:
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingVPN.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
             parOnpremVPNGatewayDNS="onprem-canary.ddns.net"
             parOnpremAddressSpace="['172.22.0.0/16']"
+            parOnpremBgpPeerAddress="172.22.0.36"
             parVPNGatewayResourceId=${{ steps.get_resources.outputs.vpnGatewayResourceId}}
           deploymentName: deploy-hubNetworkVPN-preview-${{ env.runNumber }}
           failOnStdErr: false
@@ -1228,6 +1229,7 @@ jobs:
             infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworkingVPN.parameters.${{inputs.vpngw}}.${{inputs.environment}}.json
             parOnpremVPNGatewayDNS="onprem-canary.ddns.net"
             parOnpremAddressSpace="['172.22.0.0/16']"
+            parOnpremBgpPeerAddress="172.22.0.36"
             parVPNGatewayResourceId=${{ steps.get_resources.outputs.vpnGatewayResourceId}}
           deploymentName: deploy-hubNetworkVPN-${{ env.runNumber }}
           failOnStdErr: false
