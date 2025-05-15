@@ -40,7 +40,7 @@ module modLocalNetworkGw 'br/public:avm/res/network/local-network-gateway:0.3.0'
   name: '${_dep}-lngw-${parLocationCode}-onprem'
   params: {
     name: 'lngw-${parLocationCode}-onprem'
-    localAddressPrefixes: !empty(parOnpremBgpPeerAddress) ? ['${parOnpremBgpPeerAddress}/32'] : parOnpremAddressSpace
+    localAddressPrefixes: empty(parOnpremBgpPeerAddress) ? parOnpremAddressSpace : ['']
     fqdn: parOnpremVPNGatewayDNS
     localGatewayPublicIpAddress: empty(parOnpremVPNGatewayDNS) ? parOnpremVPNGatewayIP : ''
     localAsn: parEnableBgp ? parOnpremAsn : ''
