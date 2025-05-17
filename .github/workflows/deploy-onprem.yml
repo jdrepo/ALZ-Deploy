@@ -133,18 +133,23 @@ jobs:
             vpnGwTunnelIp1=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[0].tunnelIpAddresses[0]" --output tsv)
             echo "vpnGwTunnelIp1: $vpnGwTunnelIp1"
             vpnGwTunnelIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].tunnelIpAddresses[0]" --output tsv)
-            echo "vpnGwTunnelIp2: $vpnGwTunnelIp2"
+            if [ -n "$vpnGwTunnelIp2" ]; 
+              echo "vpnGwTunnelIp2: $vpnGwTunnelIp2"
+            fi
             vpnGwBgpIp1=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[0].defaultBgpIpAddresses"  --output tsv)
             echo "vpnGwBgpIp1: $vpnGwBgpIp1"
             vpnGwBgpIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].defaultBgpIpAddresses"  --output tsv)
-            echo "vpnGwBgpIp2: $vpnGwBgpIp2"
-            publicIpId2=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName-aa'].id")
-            echo "publicIpId2: $publicIpId2"
-            if [ -n "$publicIpId2" ]; 
-              then vpnGatewayIp2=$(az network public-ip show --ids $publicIpId2 --query "ipAddress" --out tsv)         
+            if [ -n "$vpnGwBgpIp2" ]; 
+              echo "vpnGwBgpIp2: $vpnGwBgpIp2"
             fi
-            echo "vpnGatewayIp2: $vpnGatewayIp2"
-            echo "$opnSenseCustomScriptExtensionId"
+            publicIpId2=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName-aa'].id")
+            if [ -n "$publicIpId2" ]; 
+              then echo "publicIpId2: $publicIpId2"
+            fi
+            if [ -n "$publicIpId2" ]; 
+              then vpnGatewayIp2=$(az network public-ip show --ids $publicIpId2 --query "ipAddress" --out tsv) 
+              echo "vpnGatewayIp2: $vpnGatewayIp2"        
+            fi
             echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
             echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
             echo "publicIpId1=$publicIpId1" >> "$GITHUB_OUTPUT"
