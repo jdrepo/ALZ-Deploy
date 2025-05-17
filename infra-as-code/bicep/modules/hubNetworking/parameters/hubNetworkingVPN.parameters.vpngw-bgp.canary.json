@@ -20,7 +20,7 @@
 			"value": []
 		},
 		"parOnpremBgpPeerAddress": {
-			"value": ""
+			"value": "172.22.0.36"
 		},
 		"parOnpremVPNGatewayDNS": {
 			"value": ""
