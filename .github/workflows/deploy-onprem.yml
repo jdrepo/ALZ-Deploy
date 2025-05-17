@@ -8,10 +8,12 @@ on:
         #default: false
         type: boolean
       environment:
+        description: 'Environment'
         default: "canary"
         required: true
         type: string
       location:
+        description: 'Location'
         default: "northeurope"
         type: string
       nva:

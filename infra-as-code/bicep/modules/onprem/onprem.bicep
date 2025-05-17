@@ -56,9 +56,6 @@ param parTrustedSubnetRange string = '172.22.0.32/27'
 @sys.description('Windows subnet range.')
 param parWindowsSubnetRange string = ''
 
-@sys.description('External Load Balancer IP.')
-param parExternalLoadBalancerIp string = ''
-
 @sys.description('Secondary trusted NIC IP.')
 param parOpnSenseSecondaryTrustedNicIP string = ''
 
@@ -620,7 +617,7 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
       fileUris: [
         '${parOpnScriptURI}${parShellScriptName}'
       ]
-      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parWindowsSubnetRange} ${parExternalLoadBalancerIp} ${parOpnSenseSecondaryTrustedNicIP} ${parVpnGwPublicIp1}'
+      commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix} ${parVpnGwPublicIp1}'
     } : (parScenarioOption == 'vpngw-bgp') ? {
           fileUris: [
             '${parOpnScriptURI}${parShellScriptName}'
