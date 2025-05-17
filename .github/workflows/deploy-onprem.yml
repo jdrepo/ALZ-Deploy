@@ -134,13 +134,13 @@ jobs:
             echo "vpnGwTunnelIp1: $vpnGwTunnelIp1"
             vpnGwTunnelIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].tunnelIpAddresses[0]" --output tsv)
             if [ -n "$vpnGwTunnelIp2" ]; 
-              echo "vpnGwTunnelIp2: $vpnGwTunnelIp2"
+              then echo "vpnGwTunnelIp2: $vpnGwTunnelIp2"
             fi
             vpnGwBgpIp1=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[0].defaultBgpIpAddresses"  --output tsv)
             echo "vpnGwBgpIp1: $vpnGwBgpIp1"
             vpnGwBgpIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].defaultBgpIpAddresses"  --output tsv)
             if [ -n "$vpnGwBgpIp2" ]; 
-              echo "vpnGwBgpIp2: $vpnGwBgpIp2"
+              then echo "vpnGwBgpIp2: $vpnGwBgpIp2"
             fi
             publicIpId2=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName-aa'].id")
             if [ -n "$publicIpId2" ]; 
