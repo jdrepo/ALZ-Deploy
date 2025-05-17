@@ -160,34 +160,6 @@ jobs:
             echo "vpnGwTunnelIp2=$vpnGwTunnelIp2" >> "$GITHUB_OUTPUT"
             echo "vpnGwBgpIp1=$vpnGwBgpIp1" >> "$GITHUB_OUTPUT"
             echo "vpnGwBgpIp2=$vpnGwBgpIp2" >> "$GITHUB_OUTPUT"
-      # - name: Get existing Azure VPN Gateway resources
-      #   if: ${{ inputs.vpngw == 'vpngw-bgp'  }}        
-      #   id: get_vpngw_aa_resources
-      #   uses: azure/cli@v2
-      #   with:
-      #     azcliversion: latest
-      #     inlineScript: |
-      #       az account set -s "${{env.ConnectivitySubId}}"
-      #       publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
-      #       vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
-      #       publicIpId1=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
-      #       vpnGatewayIp1=$(az network public-ip show --ids $publicIpId1 --query "ipAddress" --out tsv)
-      #       publicIpId2=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName-aa'].id")
-      #       vpnGatewayIp2=$(az network public-ip show --ids $publicIpId2 --query "ipAddress" --out tsv)
-      #       echo "$publicIpPrefix"
-      #       echo "$vpnGatewayName"
-      #       echo "$publicIpId1"
-      #       echo "$publicIpId2"
-      #       echo "$vpnGatewayIp1"
-      #       echo "$vpnGatewayIp2"
-      #       echo "$opnSenseName"
-      #       echo "$opnSenseCustomScriptExtensionId"
-      #       echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
-      #       echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
-      #       echo "publicIpId1=$publicIpId1" >> "$GITHUB_OUTPUT"
-      #       echo "publicIpId2=$publicIpId2" >> "$GITHUB_OUTPUT"
-      #       echo "vpnGatewayIp1=$vpnGatewayIp1" >> "$GITHUB_OUTPUT"
-      #       echo "vpnGatewayIp2=$vpnGatewayIp2" >> "$GITHUB_OUTPUT"
       - name: Onprem RG - Validation
         id: onprem_rg_validation
         uses: azure/arm-deploy@v2
@@ -312,37 +284,44 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account set -s "${{env.ConnectivitySubId}}"
-          publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
-          vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
-          publicIpId1=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
-          vpnGatewayIp1=$(az network public-ip show --ids $publicIpId1 --query "ipAddress" --out tsv)
-          vpnGwTunnelIp1=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[0].tunnelIpAddresses[0]" --output tsv)
-          vpnGwTunnelIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].tunnelIpAddresses[0]" --output tsv)
-          vpnGwBgpIp1=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[0].defaultBgpIpAddresses"  --output tsv)
-          vpnGwBgpIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].defaultBgpIpAddresses"  --output tsv)
-          publicIpId2=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName-aa'].id")
-          vpnGatewayIp2=$(az network public-ip show --ids $publicIpId2 --query "ipAddress" --out tsv)
-          echo "publicIpPrefix: $publicIpPrefix"
-          echo "vpnGatewayName: $vpnGatewayName"
-          echo "publicIpId1: $publicIpId1"
-          echo "vpnGatewayIp1: $vpnGatewayIp1"
-          echo "publicIpId2: $publicIpId2"
-          echo "vpnGatewayIp2: $vpnGatewayIp2"
-          echo "vpnGwTunnelIp1: $vpnGwTunnelIp1"
-          echo "vpnGwTunnelIp2: $vpnGwTunnelIp2"
-          echo "vpnGwBgpIp1: $vpnGwBgpIp1"
-          echo "vpnGwBgpIp2: $vpnGwBgpIp2"
-          echo "$opnSenseCustomScriptExtensionId"
-          echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
-          echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
-          echo "publicIpId1=$publicIpId1" >> "$GITHUB_OUTPUT"
-          echo "vpnGatewayIp1=$vpnGatewayIp1" >> "$GITHUB_OUTPUT"
-          echo "publicIpId2=$publicIpId2" >> "$GITHUB_OUTPUT"
-          echo "vpnGatewayIp2=$vpnGatewayIp2" >> "$GITHUB_OUTPUT"
-          echo "vpnGwTunnelIp1=$vpnGwTunnelIp1" >> "$GITHUB_OUTPUT"
-          echo "vpnGwTunnelIp2=$vpnGwTunnelIp2" >> "$GITHUB_OUTPUT"
-          echo "vpnGwBgpIp1=$vpnGwBgpIp1" >> "$GITHUB_OUTPUT"
-          echo "vpnGwBgpIp2=$vpnGwBgpIp2" >> "$GITHUB_OUTPUT"
+            publicIpPrefix=$(jq -r .parameters.parPublicIpPrefix.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+            echo "publicIpPrefix: $publicIpPrefix"
+            vpnGatewayName=$(jq -r .parameters.parVpnGatewayConfig.value.name ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+            echo "vpnGatewayName: $vpnGatewayName"
+            publicIpId1=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName'].id")
+            echo "publicIpId1: $publicIpId1"
+            vpnGatewayIp1=$(az network public-ip show --ids $publicIpId1 --query "ipAddress" --out tsv)
+            echo "vpnGatewayIp1: $vpnGatewayIp1"
+            vpnGwTunnelIp1=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[0].tunnelIpAddresses[0]" --output tsv)
+            echo "vpnGwTunnelIp1: $vpnGwTunnelIp1"
+            vpnGwTunnelIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].tunnelIpAddresses[0]" --output tsv)
+            if [ -n "$vpnGwTunnelIp2" ]; 
+              then echo "vpnGwTunnelIp2: $vpnGwTunnelIp2"
+            fi
+            vpnGwBgpIp1=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[0].defaultBgpIpAddresses"  --output tsv)
+            echo "vpnGwBgpIp1: $vpnGwBgpIp1"
+            vpnGwBgpIp2=$(az network vnet-gateway show -n $vpnGatewayName -g ${{env.HubNetworkResourceGroupName}} --query "bgpSettings.bgpPeeringAddresses[1].defaultBgpIpAddresses"  --output tsv)
+            if [ -n "$vpnGwBgpIp2" ]; 
+              then echo "vpnGwBgpIp2: $vpnGwBgpIp2"
+            fi
+            publicIpId2=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName-aa'].id")
+            if [ -n "$publicIpId2" ]; 
+              then echo "publicIpId2: $publicIpId2"
+            fi
+            if [ -n "$publicIpId2" ]; 
+              then vpnGatewayIp2=$(az network public-ip show --ids $publicIpId2 --query "ipAddress" --out tsv) 
+              echo "vpnGatewayIp2: $vpnGatewayIp2"        
+            fi
+            echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
+            echo "vpnGatewayName=$vpnGatewayName" >> "$GITHUB_OUTPUT"
+            echo "publicIpId1=$publicIpId1" >> "$GITHUB_OUTPUT"
+            echo "vpnGatewayIp1=$vpnGatewayIp1" >> "$GITHUB_OUTPUT"
+            echo "publicIpId2=$publicIpId2" >> "$GITHUB_OUTPUT"
+            echo "vpnGatewayIp2=$vpnGatewayIp" >> "$GITHUB_OUTPUT"
+            echo "vpnGwTunnelIp1=$vpnGwTunnelIp1" >> "$GITHUB_OUTPUT"
+            echo "vpnGwTunnelIp2=$vpnGwTunnelIp2" >> "$GITHUB_OUTPUT"
+            echo "vpnGwBgpIp1=$vpnGwBgpIp1" >> "$GITHUB_OUTPUT"
+            echo "vpnGwBgpIp2=$vpnGwBgpIp2" >> "$GITHUB_OUTPUT"
     - name: Onprem RG - Deployment
       id: onprem_rg_deploy
       uses: azure/arm-deploy@v2
