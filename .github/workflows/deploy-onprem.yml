@@ -140,7 +140,9 @@ jobs:
             echo "vpnGwBgpIp2: $vpnGwBgpIp2"
             publicIpId2=$(az network public-ip list --out tsv --query "[?name=='$publicIpPrefix$vpnGatewayName-aa'].id")
             echo "publicIpId2: $publicIpId2"
-            vpnGatewayIp2=$(az network public-ip show --ids $publicIpId2 --query "ipAddress" --out tsv)         
+            if [ -n "$publicIpId2" ]; 
+              then vpnGatewayIp2=$(az network public-ip show --ids $publicIpId2 --query "ipAddress" --out tsv)         
+            fi
             echo "vpnGatewayIp2: $vpnGatewayIp2"
             echo "$opnSenseCustomScriptExtensionId"
             echo "publicIpPrefix=$publicIpPrefix" >> "$GITHUB_OUTPUT"
