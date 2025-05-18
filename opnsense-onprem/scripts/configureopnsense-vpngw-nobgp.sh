@@ -17,8 +17,8 @@ if [ "$4" = "vpngw-nobgp" ]; then
     fetch $1config-vpngw-nobgp.xml
     fetch $1get_nic_gw.py
     gwip=$(python get_nic_gw.py $5)
-    sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config.xml
-    sed -i "" "s/aaa.aaa.aaa.aaa/$6/" config.xml
+    sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config-vpngw-nobgp.xml
+    sed -i "" "s/aaa.aaa.aaa.aaa/$6/" config-vpngw-nobgp.xml
     cp config-vpngw-nobgp.xml /usr/local/etc/config.xml
 fi
 
