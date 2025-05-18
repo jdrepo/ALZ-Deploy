@@ -20,6 +20,8 @@ if [ "$4" = "vpngw-nobgp" ]; then
     sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config-vpngw-nobgp.xml
     sed -i "" "s/aaa.aaa.aaa.aaa/$6/" config-vpngw-nobgp.xml
     cp config-vpngw-nobgp.xml /usr/local/etc/config.xml
+    cp config-vpngw-nobgp.xml /usr/local/etc/config-save.xml
+    echo "gwip: $gwip"
 fi
 
 #Download OPNSense Bootstrap and Permit Root Remote Login
