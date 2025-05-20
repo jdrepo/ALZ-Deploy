@@ -1153,6 +1153,32 @@
         <loss_interval/>
         <data_length/>
       </gateway_item>
+      <gateway_item uuid="9271a211-b6bc-42bc-ab89-4e11f063e36f">
+        <disabled>0</disabled>
+        <name>LAN_GW</name>
+        <descr/>
+        <interface>lan</interface>
+        <ipprotocol>inet</ipprotocol>
+        <gateway>yyy.yyy.yyy.yyy</gateway>
+        <defaultgw>0</defaultgw>
+        <fargw>0</fargw>
+        <monitor_disable>1</monitor_disable>
+        <monitor_noroute>0</monitor_noroute>
+        <monitor_killstates>0</monitor_killstates>
+        <monitor_killstates_priority>0</monitor_killstates_priority>
+        <monitor/>
+        <force_down>0</force_down>
+        <priority>255</priority>
+        <weight>1</weight>
+        <latencylow/>
+        <latencyhigh/>
+        <losslow/>
+        <losshigh/>
+        <interval/>
+        <time_period/>
+        <loss_interval/>
+        <data_length/>
+      </gateway_item>
     </Gateways>
     <quagga>
       <ospf version="1.1.0">
@@ -1550,19 +1576,6 @@
       <mode>hybrid</mode>
     </outbound>
   </nat>
-  <gateways>
-    <gateway_item>
-      <interface>lan</interface>
-      <gateway>yyy.yyy.yyy.yyy</gateway>
-      <name>LAN_GW</name>
-      <priority>255</priority>
-      <weight>1</weight>
-      <ipprotocol>inet</ipprotocol>
-      <interval/>
-      <descr/>
-      <monitor_disable>1</monitor_disable>
-    </gateway_item>
-  </gateways>
   <laggs version="1.0.0">
     <lagg/>
   </laggs>
