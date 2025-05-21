@@ -1425,17 +1425,6 @@
     </outbound>
   </nat>
   <gateways>
-    <gateway_item>
-      <interface>lan</interface>
-      <gateway>yyy.yyy.yyy.yyy</gateway>
-      <name>LAN_GW</name>
-      <priority>255</priority>
-      <weight>1</weight>
-      <ipprotocol>inet</ipprotocol>
-      <interval/>
-      <descr/>
-      <monitor_disable>1</monitor_disable>
-    </gateway_item>
   </gateways>
   <laggs version="1.0.0">
     <lagg/>
@@ -1485,45 +1474,7 @@
   </wireless>
   <ca/>
   <ipsec>
-    <phase1>
-      <iketype>ikev2</iketype>
-      <interface>wan</interface>
-      <protocol>inet</protocol>
-      <myid_type>myaddress</myid_type>
-      <peerid_type>peeraddress</peerid_type>
-      <encryption-algorithm>
-        <name>aes</name>
-        <keylen>256</keylen>
-      </encryption-algorithm>
-      <lifetime>28800</lifetime>
-      <pre-shared-key>A1b2c3d4</pre-shared-key>
-      <authentication_method>pre_shared_key</authentication_method>
-      <descr>IPsec Azure</descr>
-      <nat_traversal>off</nat_traversal>
-      <auto>add</auto>
-      <dhgroup>2</dhgroup>
-      <hash-algorithm>sha256</hash-algorithm>
-      <noinstallpolicy>1</noinstallpolicy>
-      <private-key/>
-      <remote-gateway>aaa.aaa.aaa.aaa</remote-gateway>
-      <ikeid>1</ikeid>
-    </phase1>
-    <phase2>
-      <ikeid>1</ikeid>
-      <uniqid>67a8a1106049c</uniqid>
-      <mode>route-based</mode>
-      <lifetime>27000</lifetime>
-      <descr>Azure VNET</descr>
-      <protocol>esp</protocol>
-      <tunnel_local>10.111.1.1</tunnel_local>
-      <tunnel_remote>10.111.1.2</tunnel_remote>
-      <encryption-algorithm-option>
-        <name>aes256</name>
-      </encryption-algorithm-option>
-      <hash-algorithm-option>hmac_sha256</hash-algorithm-option>
-      <reqid>1</reqid>
-    </phase2>
     <client/>
-    <enable>1</enable>
+    <enable>0</enable>
   </ipsec>
 </opnsense>

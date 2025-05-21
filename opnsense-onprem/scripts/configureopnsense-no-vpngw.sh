@@ -5,10 +5,6 @@
 # $2 = OpnVersion
 # $3 = WALinuxVersion
 # $4 = VPN GW scenario
-# $5 = Trusted Nic subnet prefix - used to get the gw
-# $6 = Azure VPN Gateway Public IP
-# $7 = ELB VIP Address
-# $8 = Private IP Secondary Server
 
 # Check if Primary or Secondary Server to setup Firewal Sync
 # Note: Firewall Sync should only be setup in the Primary Server
@@ -16,22 +12,9 @@
 if [ "$4" = "no-vpngw" ]; then
     fetch $1config-no-vpngw.xml
     fetch $1get_nic_gw.py
-    gwip=$(python get_nic_gw.py $5)
-    sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config.xml
     cp config-no-vpngw.xml /usr/local/etc/config.xml
 fi
 
-
-#OPNSense default configuration template
-#fetch https://raw.githubusercontent.com/dmauser/opnazure/dev_active_active/scripts/$1
-#fetch https://raw.githubusercontent.com/dmauser/opnazure/master/scripts/$1
-#cp $1 /usr/local/etc/config.xml
-
-# 1. Package to get root certificate bundle from the Mozilla Project (FreeBSD)
-# 2. Install bash to support Azure Backup integration
-#env IGNORE_OSVERSION=yes
-#pkg bootstrap -f; pkg update -f
-#env ASSUME_ALWAYS_YES=YES pkg install ca_root_nss && pkg install -y bash
 
 #Download OPNSense Bootstrap and Permit Root Remote Login
 fetch https://raw.githubusercontent.com/opnsense/update/master/src/bootstrap/opnsense-bootstrap.sh.in
@@ -46,22 +29,8 @@ sed -i "" "s/set -e/#set -e/g" opnsense-bootstrap.sh.in
 sed -i "" "s/reboot/shutdown -r +2/g" opnsense-bootstrap.sh.in
 sh ./opnsense-bootstrap.sh.in -y -r "$2"
 
-Add Azure waagent
-fetch https://github.com/Azure/WALinuxAgent/archive/refs/tags/v$3.tar.gz
-tar -xvzf v$3.tar.gz
-cd WALinuxAgent-$3/
-python3 setup.py install --register-service --lnx-distro=freebsd --force
-cd ..
-
-# Fix waagent by replacing configuration settings
-ln -s /usr/local/bin/python3.11 /usr/local/bin/python
-# ##sed -i "" 's/command_interpreter="python"/command_interpreter="python3"/' /etc/rc.d/waagent
-# ##sed -i "" 's/#!\/usr\/bin\/env python/#!\/usr\/bin\/env python3/' /usr/local/sbin/waagent
-sed -i "" 's/ResourceDisk.EnableSwap=y/ResourceDisk.EnableSwap=n/' /etc/waagent.conf
-fetch $1actions_waagent.conf
-cp actions_waagent.conf /usr/local/opnsense/service/conf/actions.d
-
 # Installing bash - This is a requirement for Azure custom Script extension to run
+pkg install -y azure-agent
 pkg install -y bash
 pkg install -y os-frr
 pkg install -y os-ddclient

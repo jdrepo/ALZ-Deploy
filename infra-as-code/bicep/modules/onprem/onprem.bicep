@@ -160,8 +160,7 @@ var varSubnets = [
 
 @sys.description('Select a valid scenario. Active Active: Two OPNSenses deployed in HA mode using SLB and ILB. Two Nics: Single OPNSense deployed with two Nics.')
 @allowed([
-  'Active-Active'
-  'TwoNics'
+  'no-vpngw'
   'vpngw-nobgp'
   'vpngw-bgp'
 ])
@@ -627,7 +626,7 @@ module modScriptExtension '../../../../../bicep-registry-modules/avm/res/compute
               fileUris: [
                 '${parOpnScriptURI}${parShellScriptName}'
               ]
-              commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption} ${varSubnets[1].addressPrefix}'
+              commandToExecute: 'sh ${parShellScriptName} ${parOpnScriptURI} ${parOpnVersion} ${parWALinuxVersion} ${parScenarioOption}'
             } : {}
   }
 }
