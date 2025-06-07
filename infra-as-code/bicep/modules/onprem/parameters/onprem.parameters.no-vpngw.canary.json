@@ -33,6 +33,9 @@
     },
     "parOpnVersion" : {
       "value": "25.1"
+    },
+    "parBastionSku" : {
+      "value": "Standard"
     }
   }
 }
