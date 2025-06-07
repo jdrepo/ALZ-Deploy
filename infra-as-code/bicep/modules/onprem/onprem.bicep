@@ -91,6 +91,13 @@ param parLocalAsn string = ''
 @sys.description('Active Directory Domain scenario for onprem subscription.')
 param parActiveDirectoryScenario string = 'create-onprem-domain'
 
+@allowed([
+  'Developer'
+  'Standard'
+])
+@sys.description('Bastion SKU.')
+param parBastionSku string = 'Developer'
+
 
 var _dep = deployment().name
 var deployerObjectId = deployer().objectId
@@ -877,14 +884,42 @@ module modOnpremRouteTable 'br/public:avm/res/network/route-table:0.4.0' = {
   }
 }
 
-module modBastion 'bastion.bicep' = {
+// module modBastion 'bastion.bicep' = {
+//   scope: resourceGroup(parResourceGroupName)
+//   name: '${_dep}-bastion-${parLocationCode}-onprem'
+//   params: {
+//     parBastionName: 'bastion-${parLocationCode}-onprem'
+//     parLocation: parLocation
+//     parVnetResourceId: modVnet.outputs.resourceId
+//     parTags: parTags
+//   }
+// }
+
+module modBastion 'br/public:avm/res/network/bastion-host:0.6.1' = {
   scope: resourceGroup(parResourceGroupName)
-  name: '${_dep}-bastion-${parLocationCode}-onprem'
+  name: '${_dep}-bastion-${parLocationCode}-identity'
   params: {
-    parBastionName: 'bastion-${parLocationCode}-onprem'
-    parLocation: parLocation
-    parVnetResourceId: modVnet.outputs.resourceId
-    parTags: parTags
+    name: 'bastion-${parLocationCode}-onprem'
+    virtualNetworkResourceId: modVnet.outputs.resourceId
+    location: parLocation
+    tags: parTags
+    skuName: parBastionSku
+    publicIPAddressObject: parBastionSku == 'Standard' ? {
+      id: modBastionIp.outputs.resourceId
+    } : {}
+  }
+}
+
+module modBastionIp 'br/public:avm/res/network/public-ip-address:0.7.0' = {
+  scope: resourceGroup(parResourceGroupName)
+  name: '${_dep}-pip-${parLocationCode}-bastion'
+  params: {
+    name: 'pip-${parLocationCode}-bastion'
+    location: parLocation
+    tags: parTags
+    publicIPAllocationMethod: 'Static'
+    skuName: 'Standard'
+    skuTier: 'Regional'
   }
 }
 
