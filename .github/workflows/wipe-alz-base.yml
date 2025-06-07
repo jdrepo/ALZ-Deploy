@@ -1,14 +1,15 @@
 name: 84. Wipe ALZ Base / NVA / Identity 
-
 on:
   workflow_dispatch:
     inputs:
       environment:
+        description: "The deployment environment (e.g., canary, production)"
         default: "canary"
         required: true
         type: string
       alzBicepRelease:
-        default: "v0.22.1"
+        description: "The ALZ Bicep release version to use"
+        default: "v0.22.2"
         required: true
         type: choice
         options:
@@ -19,7 +20,9 @@ on:
           - "v0.21.0"
           - "v0.22.0"
           - "v0.22.1"
+          - "v0.22.2"
       managementGroupPrefix:
+        description: "The prefix for the management group"
         default: "alz"
         required: true
         type: string

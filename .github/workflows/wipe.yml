@@ -26,7 +26,7 @@ jobs:
     uses: ./.github/workflows/wipe-alz-base.yml
     with:
       environment: "canary"
-      alzBicepRelease: "v0.22.1"
+      alzBicepRelease: "v0.22.2"
       managementGroupPrefix: "alz"
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_CANARY}}
