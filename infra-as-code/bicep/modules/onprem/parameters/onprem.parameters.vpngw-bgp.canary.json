@@ -39,6 +39,9 @@
     },
     "parLocalAsn": {
       "value": "65001"
+    },
+    "parBastionSku": {
+      "value": "Standard"
     }
   }
 }
