@@ -897,20 +897,18 @@ module modOnpremRouteTable 'br/public:avm/res/network/route-table:0.4.0' = {
 
 module modBastion 'br/public:avm/res/network/bastion-host:0.6.1' = {
   scope: resourceGroup(parResourceGroupName)
-  name: '${_dep}-bastion-${parLocationCode}-identity'
+  name: '${_dep}-bastion-${parLocationCode}-onprem'
   params: {
     name: 'bastion-${parLocationCode}-onprem'
     virtualNetworkResourceId: modVnet.outputs.resourceId
     location: parLocation
     tags: parTags
     skuName: parBastionSku
-    publicIPAddressObject: parBastionSku == 'Standard' ? {
-      id: modBastionIp.outputs.resourceId
-    } : {}
+    bastionSubnetPublicIpResourceId: parBastionSku == 'Standard' ? modBastionIp.outputs.resourceId : ''
   }
 }
 
-module modBastionIp 'br/public:avm/res/network/public-ip-address:0.7.0' = {
+module modBastionIp 'br/public:avm/res/network/public-ip-address:0.7.0' = if (parBastionSku == 'Standard') {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-pip-${parLocationCode}-bastion'
   params: {
