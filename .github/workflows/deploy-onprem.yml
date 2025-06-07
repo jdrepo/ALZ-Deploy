@@ -17,7 +17,7 @@ on:
         default: "northeurope"
         type: string
       nva:
-        description: 'NVA solution'
+        description: 'NVA solution in Azure Hub Network'
         type: choice
         options:
           - no-nva
@@ -55,7 +55,7 @@ on:
         default: "northeurope"
         type: string
       nva:
-        description: 'NVA solution'
+        description: 'NVA solution in Azure Hub Network'
         type: string
       vpngw:
         description: 'VPN Gateway type'
