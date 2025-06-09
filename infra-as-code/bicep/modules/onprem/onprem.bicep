@@ -216,6 +216,20 @@ module modNsgUntrustedSubnet 'br/public:avm/res/network/network-security-group:0
         }
       }
       {
+        name: 'Allow-RDP-OPNsense-NAT-Portforwarding'
+        properties: {
+          description: 'Allow RDP to OPNsense for NAT Portforwarding'
+          access: 'Allow'
+          direction: 'Inbound'
+          priority: 4000
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '3389'
+          destinationAddressPrefix: '172.22.0.4'
+          sourceAddressPrefix: '77.21.192.145'
+        }
+      }
+      {
         name: 'AllowALZIdentitySubnetOutbound'
         properties: {
           description: 'Allow Azure identity subnet outbound access from OPNsense untrusted nic to onprem vnet'

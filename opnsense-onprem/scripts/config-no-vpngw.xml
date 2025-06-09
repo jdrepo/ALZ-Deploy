@@ -582,6 +582,24 @@
         <any>1</any>
       </destination>
     </rule>
+    <rule>
+      <type>pass</type>
+      <associated-rule-id>nat_6845da1091e7b2.34206801</associated-rule-id>
+      <source>
+        <address>77.21.192.145</address>
+      </source>
+      <interface>wan</interface>
+      <statetype>keep state</statetype>
+      <protocol>tcp</protocol>
+      <ipprotocol>inet</ipprotocol>
+      <destination>
+        <address>172.22.10.5</address>
+        <port>3389</port>
+      </destination>
+      <log>1</log>
+      <descr/>
+      <category/>
+    </rule>
   </filter>
   <rrd>
     <enable/>
@@ -1423,6 +1441,27 @@
       </rule>
       <mode>hybrid</mode>
     </outbound>
+    <rule>
+      <protocol>tcp</protocol>
+      <interface>wan</interface>
+      <category/>
+      <ipprotocol>inet</ipprotocol>
+      <descr/>
+      <tag/>
+      <tagged/>
+      <poolopts/>
+      <associated-rule-id>nat_6845da1091e7b2.34206801</associated-rule-id>
+      <log>1</log>
+      <target>172.22.10.5</target>
+      <local-port>3389</local-port>
+      <source>
+        <address>77.21.192.145</address>
+      </source>
+      <destination>
+        <network>wanip</network>
+        <port>3389</port>
+      </destination>
+    </rule>
   </nat>
   <gateways>
   </gateways>
