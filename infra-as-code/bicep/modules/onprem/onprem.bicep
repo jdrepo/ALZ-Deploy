@@ -681,7 +681,7 @@ module modVm1 'br/public:avm/res/compute/virtual-machine:0.12.0' =  {
             name: 'ipconfig01'
             subnetResourceId: modVnet.outputs.subnetResourceIds[2]
             privateIPAllocationMethod: 'Static'
-            privateIPAddress: cidrHost(varSubnets[2].addressPrefix, 4)
+            privateIPAddress: cidrHost(varSubnets[2].addressPrefix, 3)
           }
         ]
         nicSuffix: '-nic-01'
