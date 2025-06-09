@@ -243,18 +243,20 @@ module modNsgUntrustedSubnet 'br/public:avm/res/network/network-security-group:0
           sourceAddressPrefix: '10.20.1.0/24'
         }
       }
-      // {
-      //   name: 'Allow-ESP'
-      //   properties: {
-      //     access: 'Allow'
-      //     direction: 'Inbound'
-      //     priority: 4094
-      //     protocol: 'Esp'
-      //     sourcePortRange: '*'
-      //     destinationPortRange: '*'
-      //     destinationAddressPrefix: '172.22.0.4'
-      //     sourceAddressPrefix: '*'
-      //   }
+      {
+        name: 'Outbound-RDP-OPNsense-NAT-Portforwarding'
+        properties: {
+          description: 'Allow RDP to vm-neu-001 for NAT Portforwarding'
+          access: 'Allow'
+          direction: 'Outbound'
+          priority: 4000
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '3389'
+          destinationAddressPrefix: '172.22.10.4'
+          sourceAddressPrefix: '77.21.192.145'
+        }
+      }
     ]
   }
 }
