@@ -630,7 +630,7 @@
       <protocol>tcp</protocol>
       <ipprotocol>inet</ipprotocol>
       <destination>
-        <address>172.22.10.5</address>
+        <address>172.22.10.4</address>
         <port>3389</port>
       </destination>
       <log>1</log>
@@ -1604,7 +1604,7 @@
       <poolopts/>
       <associated-rule-id>nat_6845da1091e7b2.34206801</associated-rule-id>
       <log>1</log>
-      <target>172.22.10.5</target>
+      <target>172.22.10.4</target>
       <local-port>3389</local-port>
       <source>
         <address>77.21.192.145</address>

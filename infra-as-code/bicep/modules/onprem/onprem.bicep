@@ -216,7 +216,7 @@ module modNsgUntrustedSubnet 'br/public:avm/res/network/network-security-group:0
         }
       }
       {
-        name: 'Allow-RDP-OPNsense-NAT-Portforwarding'
+        name: 'Inbound-RDP-OPNsense-NAT-Portforwarding'
         properties: {
           description: 'Allow RDP to OPNsense for NAT Portforwarding'
           access: 'Allow'
