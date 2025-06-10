@@ -41,7 +41,7 @@
       "value": "65001"
     },
     "parBastionSku": {
-      "value": "Standard"
+      "value": "Developer"
     }
   }
 }
