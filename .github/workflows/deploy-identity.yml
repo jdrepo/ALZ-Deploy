@@ -8,14 +8,17 @@ on:
         default: false
         type: boolean
       environment:
+        description: 'Deployment environment'
         default: "canary"
         required: true
         type: string
       managementGroupPrefix:
+        description: 'Management Group Prefix'
         default: "alz"
         required: true
         type: string
       location:
+        description: 'Azure Region for deployment'
         default: "germanywestcentral"
         type: string
       nva:
@@ -45,6 +48,7 @@ on:
           - use-onprem-domain
           - no-identity-domain
       wipeAfterDeploy:
+        description: 'Wipe resources after deployment'
         default: false
         type: boolean
 
@@ -105,7 +109,7 @@ env:
   Location: ${{inputs.location}}
   runNumber: ${{ github.run_number }}
   adminUserName: 'azadmin'
-  onpremDns: "['172.22.10.5']"
+  onpremDns: "['172.22.10.4']"
   onpremDomainAdminName: 'azadmin'
   onpremDomainAdminPasswordSecretName: 'vm-neu-001-password'
   # onpremKvId: '/subscriptions/3ece3246-1ebe-45d1-a87e-b9a5ab5039ee/resourceGroups/rg-canary-onprem/providers/Microsoft.KeyVault/vaults/kv-neu-001-canary-vmsu'
