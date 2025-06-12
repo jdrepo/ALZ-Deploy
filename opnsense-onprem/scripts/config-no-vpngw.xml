@@ -1347,7 +1347,7 @@
     <DynDNS version="1.5.1">
       <general>
         <enabled>1</enabled>
-        <verbose>0</verbose>
+        <verbose>1</verbose>
         <allowipv6>0</allowipv6>
         <daemon_delay>300</daemon_delay>
         <backend>opnsense</backend>
@@ -1364,7 +1364,7 @@
           <hostnames>all.ddnskey.com</hostnames>
           <wildcard>0</wildcard>
           <zone/>
-          <checkip>web_noip-ipv4</checkip>
+          <checkip>web_nsupdate.info-ipv4</checkip>
           <checkip_timeout>10</checkip_timeout>
           <force_ssl>1</force_ssl>
           <ttl>300</ttl>
