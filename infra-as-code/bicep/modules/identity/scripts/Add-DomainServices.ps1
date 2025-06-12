@@ -8,9 +8,9 @@
 # Install-Module -name NetworkingDsc -force
 # Install-Module -Name DnsServerDsc -force
 # Install-Module -Name StorageDsc -force
-# Publish-AzVMDscConfiguration ".\Deploy-DomainServices.ps1" -OutputArchivePath ".\Deploy-DomainServices.ps1.zip" -Force
+# Publish-AzVMDscConfiguration ".\Add-DomainServices.ps1" -OutputArchivePath ".\Add-DomainServices.ps1.zip" -Force
 
-Configuration Deploy-DomainServices
+Configuration Add-DomainServices
 {
     Param
     (
@@ -27,10 +27,10 @@ Configuration Deploy-DomainServices
         [int] $ADDiskId = 0,
 
         [Parameter()]
-        [String] $ForestMode = "WinThreshold",
+        [Array] $DNSForwarder = @(),
 
         [Parameter()]
-        [Array] $DNSForwarder = @()
+        [Array] $DNSServer = @()
     )
 
     Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
@@ -42,7 +42,11 @@ Configuration Deploy-DomainServices
 
     # Create the NetBIOS name and domain credentials based on the domain FQDN
     [String] $domainNetBIOSName = (Get-NetBIOSName -DomainFQDN $domainFQDN)
-    [System.Management.Automation.PSCredential] $domainCredential = New-Object System.Management.Automation.PSCredential ("${domainNetBIOSName}\$($adminCredential.UserName)", $adminCredential.Password)
+    # [System.Management.Automation.PSCredential] $domainCredential = New-Object System.Management.Automation.PSCredential ("${domainNetBIOSName}\$($adminCredential.UserName)", $adminCredential.Password)
+
+    # Credentials based on UPN
+    [System.Management.Automation.PSCredential] $domainCredential = New-Object System.Management.Automation.PSCredential ("$($adminCredential.UserName)@$domainFQDN", $adminCredential.Password)
+
 
     $interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $interfaceAlias = $($interface.Name)
@@ -54,6 +58,15 @@ Configuration Deploy-DomainServices
             ConfigurationMode = 'ApplyOnly'
             RebootNodeIfNeeded = $true
             ActionAfterReboot = 'ContinueConfiguration'
+        }
+
+        Registry SetWindowsAzureGuestAgentDependencyOnDNS
+        {
+            Ensure      = "Present"  # You can also set Ensure to "Absent"
+            Key         = "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WindowsAzureGuestAgent"
+            ValueName   = "DependOnService"
+            ValueData   = "DNS"
+            ValueType   = "MultiString"
         }
 
         WindowsFeature InstallDNS 
@@ -71,7 +84,7 @@ Configuration Deploy-DomainServices
 
         DnsServerAddress SetDNS
         { 
-            Address = '127.0.0.1'
+            Address = $DNSServer
             InterfaceAlias = $interfaceAlias
             AddressFamily = 'IPv4'
             DependsOn = '[WindowsFeature]InstallDNS'
@@ -106,16 +119,17 @@ Configuration Deploy-DomainServices
             DependsOn = "[WindowsFeature]InstallADDSTools"
         }
 
-        OpticalDiskDriveLetter SetFirstOpticalDiskDriveLetterToZ
-        {
-            DiskId      = 1
-            DriveLetter = 'Z'
+        if (Get-CimInstance -ClassName Win32_CDROMDrive) {
+            OpticalDiskDriveLetter SetFirstOpticalDiskDriveLetterToZ {
+                DiskId      = 1
+                DriveLetter = 'Z'
+            }
         }
         WaitForDisk ADDataDisk
         {
              DiskId = $ADDiskId
-             RetryIntervalSec = 60
-             RetryCount = 60
+             RetryIntervalSec = 61
+             RetryCount = 61
         }
 
         Disk ADDataDisk {
@@ -124,33 +138,29 @@ Configuration Deploy-DomainServices
             DependsOn   = "[WaitForDisk]ADDataDisk"
         }
 
-        ADDomain CreateADForest
+         WaitForADDomain WaitForDomainController
         {
             DomainName = $domainFQDN
-            Credential = $domainCredential
-            SafemodeAdministratorPassword = $domainCredential
-            ForestMode = $ForestMode
-            DatabasePath = "$ADDSFilePath\NTDS"
-            LogPath = "$ADDSFilePath\NTDS"
-            SysvolPath = "$ADDSFilePath\SYSVOL"
-            DependsOn = '[DnsServerAddress]SetDNS', '[WindowsFeature]InstallADDS'
-        }
-
-        PendingReboot RebootAfterCreatingADForest
-        {
-            Name = 'RebootAfterCreatingADForest'
-            DependsOn = "[ADDomain]CreateADForest"
-        }
-
-        WaitForADDomain WaitForDomainController
-        {
-            DomainName = $domainFQDN
-            WaitTimeout = 300
-            RestartCount = 3
             Credential = $domainCredential
             WaitForValidCredentials = $true
-            DependsOn = "[PendingReboot]RebootAfterCreatingADForest"
+            DependsOn = "[Disk]ADDataDisk"
         }
+
+        ADDomainController 'DomainControllerAllProperties'
+        {
+            DomainName                    = $domainFQDN
+            Credential                    = $domainCredential
+            SafeModeAdministratorPassword = $domainCredential
+            DatabasePath                  = "$ADDSFilePath\NTDS"
+            LogPath                       = "$ADDSFilePath\NTDS"
+            SysvolPath                    = "$ADDSFilePath\SYSVOL"
+            IsGlobalCatalog               = $true
+
+            DependsOn                     = '[WaitForADDomain]WaitForDomainController'
+        }
+
+
+
     }
 }
 
@@ -176,5 +186,4 @@ function Get-NetBIOSName {
         }
     }
 }
-
 
