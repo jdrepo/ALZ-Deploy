@@ -900,17 +900,6 @@ module modOnpremRouteTable 'br/public:avm/res/network/route-table:0.4.0' = {
   }
 }
 
-// module modBastion 'bastion.bicep' = {
-//   scope: resourceGroup(parResourceGroupName)
-//   name: '${_dep}-bastion-${parLocationCode}-onprem'
-//   params: {
-//     parBastionName: 'bastion-${parLocationCode}-onprem'
-//     parLocation: parLocation
-//     parVnetResourceId: modVnet.outputs.resourceId
-//     parTags: parTags
-//   }
-// }
-
 module modBastion 'br/public:avm/res/network/bastion-host:0.6.1' = {
   scope: resourceGroup(parResourceGroupName)
   name: '${_dep}-bastion-${parLocationCode}-onprem'
