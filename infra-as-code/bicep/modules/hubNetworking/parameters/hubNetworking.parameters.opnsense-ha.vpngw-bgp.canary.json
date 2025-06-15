@@ -1,0 +1,248 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "parLocation": {
+      "value": "germanywestcentral"
+    },
+    "parCompanyPrefix": {
+      "value": "alz"
+    },
+    "parHubNetworkName": {
+      "value": "vnet-gwc-hub-alz-canary"
+    },
+    "parHubNetworkAddressPrefix": {
+      "value": "10.10.0.0/16"
+    },
+    "parPrivateDnsZonesResourceGroup": {
+      "value": "rg-alz-canary-privatedns"
+    },
+    "parSubnets": {
+      "value": [
+        {
+          "name": "AzureBastionSubnet",
+          "ipAddressRange": "10.10.15.0/24",
+          "networkSecurityGroupId": "",
+          "routeTableId": ""
+        },
+        {
+          "name": "GatewaySubnet",
+          "ipAddressRange": "10.10.252.0/24",
+          "networkSecurityGroupId": "",
+          "routeTableId": ""
+        },
+        {
+          "name": "AzureFirewallSubnet",
+          "ipAddressRange": "10.10.254.0/24",
+          "networkSecurityGroupId": "",
+          "routeTableId": ""
+        },
+        {
+          "name": "AzureFirewallManagementSubnet",
+          "ipAddressRange": "10.10.253.0/24",
+          "networkSecurityGroupId": "",
+          "routeTableId": ""
+        },
+        {
+          "name": "OPNS-Untrusted",
+          "ipAddressRange": "10.10.251.0/24",
+          "networkSecurityGroupId": "/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/networkSecurityGroups/nsg-untrusted-gwc-opnsense-alz-canary",
+          "routeTableId": ""
+        },
+        {
+          "name": "OPNS-Trusted",
+          "ipAddressRange": "10.10.250.0/24",
+          "networkSecurityGroupId": "/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/networkSecurityGroups/nsg-trusted-gwc-opnsense-alz-canary",
+          "routeTableId": ""
+        }
+      ]
+    },
+    "parDnsServerIps": {
+      "value": []
+    },
+    "parPublicIpSku": {
+      "value": "Standard"
+    },
+    "parPublicIpPrefix": {
+      "value": "pip-gwc-"
+    },
+    "parPublicIpSuffix": {
+      "value": ""
+    },
+    "parAzBastionEnabled": {
+      "value": true
+    },
+    "parAzBastionName": {
+      "value": "bas-gwc-alz-canary"
+    },
+    "parAzBastionSku": {
+      "value": "Basic"
+    },
+    "parAzBastionTunneling": {
+      "value": false
+    },
+    "parAzBastionNsgName": {
+      "value": "nsg-AzureBastionSubnet"
+    },
+    "parDdosEnabled": {
+      "value": false
+    },
+    "parDdosPlanName": {
+      "value": "ddos-gwc-alz-canary"
+    },
+    "parAzFirewallEnabled": {
+      "value": false
+    },
+    "parAzFirewallName": {
+      "value": "azfw-gwc-alz-canary"
+    },
+    "parAzFirewallPoliciesName": {
+      "value": "azfwpol-gwc-alz-canary"
+    },
+    "parAzFirewallTier": {
+      "value": "Standard"
+    },
+    "parAzFirewallIntelMode": {
+      "value": "Alert"
+    },
+    "parAzFirewallAvailabilityZones": {
+      "value": []
+    },
+    "parAzErGatewayAvailabilityZones": {
+      "value": []
+    },
+    "parAzVpnGatewayAvailabilityZones": {
+      "value": []
+    },
+    "parAzFirewallDnsProxyEnabled": {
+      "value": true
+    },
+    "parAzFirewallDnsServers": {
+      "value": []
+    },
+    "parHubRouteTableName": {
+      "value": "rt-gwc-hub-alz-canary"
+    },
+    "parDisableBgpRoutePropagation": {
+      "value": false
+    },
+    "parPrivateDnsZonesEnabled": {
+      "value": true
+    },
+    "parPrivateDnsZones": {
+      "value": [
+        "privatelink.file.core.windows.net",
+        "privatelink.wvd.microsoft.com",
+        "privatelink.{regionCode}.backup.windowsazure.com"
+      ]
+    },
+    "parVpnGatewayEnabled": {
+      "value": true
+    },
+    "parVpnGatewayConfig": {
+      "value": {
+        "name": "vpng-gwc-alz-canary",
+        "gatewayType": "Vpn",
+        "sku": "VpnGw1Az",
+        "vpnType": "RouteBased",
+        "generation": "Generation1",
+        "enableBgp": true,
+        "activeActive": true,
+        "enableBgpRouteTranslationForNat": false,
+        "enableDnsForwarding": false,
+        "bgpPeeringAddress": "",
+        "bgpsettings": {
+          "asn": "65515",
+          "peerWeight": "0"
+        },
+        "vpnClientConfiguration": {},
+        "ipConfigurationName": "vnetGatewayConfig",
+        "ipConfigurationActiveActiveName": "vnetGatewayConfig2"
+      }
+    },
+    "parExpressRouteGatewayEnabled": {
+      "value": false
+    },
+    "parExpressRouteGatewayConfig": {
+      "value": {
+        "name": "ergw-gwc-alz-canary",
+        "gatewayType": "ExpressRoute",
+        "sku": "Standard",
+        "vpnType": "RouteBased",
+        "generation": "None",
+        "enableBgp": false,
+        "activeActive": false,
+        "enableBgpRouteTranslationForNat": false,
+        "enableDnsForwarding": false,
+        "bgpPeeringAddress": "",
+        "bgpsettings": {
+          "asn": "65515",
+          "bgpPeeringAddress": "",
+          "peerWeight": "5"
+        }
+      }
+    },
+    "parTags": {
+      "value": {
+        "Environment": ""
+      }
+    },
+    "parTelemetryOptOut": {
+      "value": false
+    },
+    "parBastionOutboundSshRdpPorts": {
+      "value": [
+        "22",
+        "3389"
+      ]
+    },
+    "parGlobalResourceLock": {
+      "value": {
+        "kind": "None",
+        "notes": "This lock was created by the ALZ Bicep Hub Networking Module."
+      }
+    },
+    "parVirtualNetworkLock": {
+      "value": {
+        "kind": "None",
+        "notes": "This lock was created by the ALZ Bicep Hub Networking Module."
+      }
+    },
+    "parBastionLock": {
+      "value": {
+        "kind": "None",
+        "notes": "This lock was created by the ALZ Bicep Hub Networking Module."
+      }
+    },
+    "parDdosLock": {
+      "value": {
+        "kind": "None",
+        "notes": "This lock was created by the ALZ Bicep Hub Networking Module."
+      }
+    },
+    "parAzureFirewallLock": {
+      "value": {
+        "kind": "None",
+        "notes": "This lock was created by the ALZ Bicep Hub Networking Module."
+      }
+    },
+    "parHubRouteTableLock": {
+      "value": {
+        "kind": "None",
+        "notes": "This lock was created by the ALZ Bicep Hub Networking Module."
+      }
+    },
+    "parPrivateDNSZonesLock": {
+      "value": {
+        "kind": "None",
+        "notes": "This lock was created by the ALZ Bicep Hub Networking Module."
+      }
+    },
+    "parVirtualNetworkGatewayLock": {
+      "value": {
+        "kind": "None",
+        "notes": "This lock was created by the ALZ Bicep Hub Networking Module."
+      }
+    }
+  }
+}
