@@ -380,7 +380,7 @@ module modElb 'br/public:avm/res/network/load-balancer:0.4.2' = {
     ]
     outboundRules: [
       {
-        allocatedOutboundPorts: 63984
+        allocatedOutboundPorts: 32000
         backendAddressPoolName: 'opnsense'
         frontendIPConfigurationName: 'FW'
         name: 'opnsense'
