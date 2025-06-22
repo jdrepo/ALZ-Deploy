@@ -108,8 +108,8 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            if [az ad group list --query "[?displayName==${{ env.groupName }}] | length(@)") -gt 0];
-              then echo "Group ${{ env.groupName }} already exists.";
+            if [[ $(az ad group list --query "[?displayName=='${{ env.groupName }}'] | length(@)") -gt 0 ]]; then
+              echo "Group ${{ env.groupName }} already exists.";
             else
               az ad group create --display-name ${{ env.groupName }} --mail-nickname ${{ env.groupName }};
               echo "Group ${{ env.groupName }} created.";
