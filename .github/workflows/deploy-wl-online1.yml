@@ -1,0 +1,112 @@
+name: 10. Deploy Workload Online 1 
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy after preview'
+        #default: false
+        type: boolean
+      environment:
+        description: 'Environment'
+        default: "canary"
+        required: true
+        type: string
+      location:
+        description: 'Location'
+        default: "northeurope"
+        type: string
+
+  workflow_call:
+    inputs:
+      deploy:
+        description: 'Deploy after preview'
+        default: false
+        type: boolean
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      location:
+        default: "northeurope"
+        type: string
+
+    secrets:
+      WL_OL1_SUB_ID:
+        required: false
+      AZURE_CLIENT_ID:
+        required: false
+      AZURE_TENANT_ID:
+        required: false
+      AZURE_SUBSCRIPTION_ID:
+        required: false
+      
+
+env:
+  groupName: 'compute-admins-workload-online-001-${{ inputs.environment }}'
+
+jobs:
+  wl_ol1_validation_preview:
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    name: Onprem - Validation and Preview
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: 'ALZ-Deploy'
+      - name: Checkout Repo bicep-registry-modules
+        uses: actions/checkout@v4
+        with:
+            repository: Azure/bicep-registry-modules
+            path: 'bicep-registry-modules'
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Entra ID groups
+        id: create_groups
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            if [az ad group list --query "[?displayName==${{ env.groupName }}] | length(@)") -gt 0];
+              then echo "Group ${{ env.groupName }} already exists.";
+            else
+              echo "Group ${{ env.groupName }} creation skipped because of validation job.";
+            fi
+
+  wl_ol1_deployment:
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    name: Onprem - Validation and Preview
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: 'ALZ-Deploy'
+      - name: Checkout Repo bicep-registry-modules
+        uses: actions/checkout@v4
+        with:
+            repository: Azure/bicep-registry-modules
+            path: 'bicep-registry-modules'
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Entra ID groups
+        id: create_groups
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            if [az ad group list --query "[?displayName==${{ env.groupName }}] | length(@)") -gt 0];
+              then echo "Group ${{ env.groupName }} already exists.";
+            else
+              az ad group create --display-name ${{ env.groupName }} --mail-nickname ${{ env.groupName }};
+              echo "Group ${{ env.groupName }} created.";
+            fi
