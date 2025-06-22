@@ -8,10 +8,12 @@ on:
         default: false
         type: boolean
       environment:
+        description: 'Deployment environment'
         default: "canary"
         required: true
         type: string
       managementGroupPrefix:
+        description: 'Management group prefix'
         default: "alz"
         required: true
         type: string
@@ -24,9 +26,11 @@ on:
           - vpngw-nobgp
           - no-vpngw
       location:
+        description: 'Azure region for deployment'
         default: "germanywestcentral"
         type: string
       wipeAfterDeploy:
+        description: 'Wipe resources after deploy'
         default: false
         type: boolean
 
