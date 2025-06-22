@@ -90,7 +90,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Azure/bicep-registry-modules
-          path: bicep-registry-modules
+          # path: bicep-registry-modules
       - name: Show env
         run: env | sort
       - name: Azure Login with OIDC
