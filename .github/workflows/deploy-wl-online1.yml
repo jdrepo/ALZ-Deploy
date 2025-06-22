@@ -75,7 +75,7 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            if [[ $(az ad group list --query "[?displayName==${{ env.groupName }}] | length(@)") -gt 0 ]]; then
+            if [[ $(az ad group list --query "[?displayName=='${{ env.groupName }}'] | length(@)") -gt 0 ]]; then
               echo "Group ${{ env.groupName }} already exists.";
             else
               echo "Group ${{ env.groupName }} creation skipped because of validation job.";
