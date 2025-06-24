@@ -134,6 +134,16 @@ echo '#!/bin/bash
 while true; do nc -lk -p 1138; done & 
 while true; do nc -lk -p 1139; done &
 #sudo route add -host 168.63.129.16 gw 10.10.248.1 dev eth1
+ipaddint=`ip a | grep 10.10.248 | awk '"'"'{print $2}'"'"' | awk -F '"'"'/'"'"' '"'"'{print $1}'"'"'`   # either 10.10.248.12 or .13
+ipaddext=`ip a | grep 10.10.249 | awk '"'"'{print $2}'"'"' | awk -F '"'"'/'"'"' '"'"'{print $1}'"'"'`   # either 10.10.249.12 or .13
+
+# Create a custom routing table for internal LB probes
+sudo ip rule add from $ipaddint to 168.63.129.16 lookup slbint  # Note that this depends on the nva number!
+sudo ip route add 168.63.129.16 via 10.10.248.1 dev eth1 table slbint
+
+# Create a custom routing table for external LB probes
+sudo ip rule add from $ipaddext to 168.63.129.16 lookup slbext
+sudo ip route add 168.63.129.16 via 10.10.249.1 dev eth0 table slbext
 exit 0' | sudo tee -a /etc/rc.local
 
 sudo chmod +x /etc/rc.local
