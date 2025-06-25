@@ -8,10 +8,6 @@ on:
         default: "canary"
         required: true
         type: string
-      location:
-        description: 'Location'
-        default: "northeurope"
-        type: string
 
   workflow_call:
     inputs:
@@ -19,10 +15,7 @@ on:
         default: "canary"
         required: true
         type: string
-      location:
-        default: "northeurope"
-        type: string
-
+    
     secrets:
       WL_OL1_SUB_ID:
         required: false
