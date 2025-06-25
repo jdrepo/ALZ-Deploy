@@ -1,0 +1,83 @@
+name: 70. Wipe Workload Online 1
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        default: "canary"
+        required: true
+        type: string
+      location:
+        description: 'Location'
+        default: "northeurope"
+        type: string
+
+  workflow_call:
+    inputs:
+      environment:
+        default: "canary"
+        required: true
+        type: string
+      location:
+        default: "northeurope"
+        type: string
+
+    secrets:
+      WL_OL1_SUB_ID:
+        required: false
+      AZURE_CLIENT_ID:
+        required: false
+      AZURE_TENANT_ID:
+        required: false
+      AZURE_SUBSCRIPTION_ID:
+        required: false
+      
+
+env:
+  groupName: 'compute-admins-workload-online-001-${{ inputs.environment }}'
+  workloadSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  
+  wl_ol1_wipe:
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    name: WL-OL1 - Wipe
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: 'ALZ-Deploy'
+      - name: Checkout Repo bicep-registry-modules
+        uses: actions/checkout@v4
+        with:
+            repository: Azure/bicep-registry-modules
+            path: 'bicep-registry-modules'
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Remove Entra ID groups
+        id: wipe_groups
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            if [[ $(az ad group list --query "[?displayName=='${{ env.groupName }}'] | length(@)") -gt 0 ]]; then
+              echo "Delete group ${{ env.groupName }}";
+              az ad group delete --group ${{ env.groupName }};
+            else
+              echo "Group ${{ env.groupName }} does not exist.";
+            fi
+      - name: Cleaning up subscription
+        uses: azure/powershell@v2
+        with:
+          inlineScript: | 
+            ./scripts/Wipe-Subscription.ps1 -subscriptionId ${{ env.workloadSubscriptionId }} -resetMdfcTierOnSubs:$true
+          azPSVersion: "latest"
