@@ -19,7 +19,8 @@
     },
     "parLogAnalyticsWorkspaceSolutions": {
       "value": [
-        "SecurityInsights"
+        "SecurityInsights",
+        "ChangeTracking"
       ]
     },
     "parDataCollectionRuleVMInsightsName": {
@@ -57,9 +58,6 @@
         "Environment": "canary"
       }
     },
-    "parUseSentinelClassicPricingTiers": {
-      "value": false
-    },
     "parLogAnalyticsLinkedServiceAutomationAccountName": {
       "value": "Automation"
     },
@@ -84,12 +82,6 @@
         "notes": "This lock was created by the ALZ Bicep Logging Module."
       }
     },
-    "parLogAnalyticsWorkspaceSolutionsLock": {
-      "value": {
-        "kind": "None",
-        "notes": "This lock was created by the ALZ Bicep Logging Module."
-      }
-    },
     "parDataCollectionRuleVMInsightsLock": {
       "value": {
         "kind": "None",
@@ -97,6 +89,12 @@
       }
     },
     "parDataCollectionRuleChangeTrackingLock": {
+      "value": {
+        "kind": "None",
+        "notes": "This lock was created by the ALZ Bicep Logging Module."
+      }
+    },
+    "parSecurityInsightsOnboardingLock": {
       "value": {
         "kind": "None",
         "notes": "This lock was created by the ALZ Bicep Logging Module."
