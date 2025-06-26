@@ -1,8 +1,9 @@
-# vars.NVA-CANARY:  opnsense-single / opnsense-ha / no-nva / azfirewall-basic / ubuntu-single / ubuntu-ha
-# vars.VPNGW-CANARY: vpngw-bgp / vpngw-nobgp / no-vpngw / vpngw-opnsense?
-# vars.ONPREM_CANARY: create-onprem-environment / no-onprem-environment
-# vars.ONPREMAD_CANARY: create-onprem-domain / no-onprem-domain
-# vars.AZUREAD_CANARY: create-identity-domain / use-onprem-domain / no-identity-domain
+# vars.NVA-CANARY:  opnsense-single / opnsense-ha / #no-nva / #azfirewall-basic / ubuntu-single / ubuntu-ha
+# vars.VPNGW-CANARY: vpngw-bgp / vpngw-nobgp / #no-vpngw / vpngw-opnsense?
+# vars.ONPREM_CANARY: create-onprem-environment / #no-onprem-environment
+# vars.ONPREMAD_CANARY: create-onprem-domain / #no-onprem-domain
+# vars.AZUREAD_CANARY: #create-identity-domain / use-onprem-domain / no-identity-domain
+
 
 # az bicep build --file infra-as-code/bicep/modules/ubuntu/ubuntu-nva-ha.bicep
 #           az bicep build --file infra-as-code/bicep/modules/opnsense/ubuntu-nva-single.bicep
@@ -24,7 +25,7 @@ jobs:
     uses: ./.github/workflows/deploy-alz-base.yml
     with:
       environment: "canary"
-      alzBicepRelease: "v0.22.1"
+      alzBicepRelease: "v0.22.2"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
@@ -189,7 +190,7 @@ jobs:
     uses: ./.github/workflows/deploy-alz-base.yml
     with:
       environment: "prod"
-      alzBicepRelease: "v0.22.1"
+      alzBicepRelease: "v0.22.2"
       managementGroupPrefix: "alz"
       location: "germanywestcentral"
       wipeAfterDeploy: false
