@@ -67,5 +67,5 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: | 
-            ./scripts/Wipe-Subscription.ps1 -subscriptionId ${{secrets.WL_OL1_SUB_ID}} -resetMdfcTierOnSubs:$true
+            ./scripts/Wipe-Subscription.ps1 -subscriptionId ${{env.workloadSubscriptionId}} -resetMdfcTierOnSubs:$true
           azPSVersion: "latest"
