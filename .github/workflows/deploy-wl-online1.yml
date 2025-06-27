@@ -28,7 +28,7 @@ on:
         required: true
         type: string
       location:
-        default: "northeurope"
+        default: "germanywestcentral"
         type: string
 
     secrets:
@@ -44,6 +44,8 @@ on:
 
 env:
   groupName: 'compute-admins-workload-online-001-${{ inputs.environment }}'
+  workloadSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
+
 
 permissions:
   id-token: write
@@ -111,6 +113,6 @@ jobs:
             if [[ $(az ad group list --query "[?displayName=='${{ env.groupName }}'] | length(@)") -gt 0 ]]; then
               echo "Group ${{ env.groupName }} already exists.";
             else
-              az ad group create --display-name ${{ env.groupName }} --mail-nickname ${{ env.groupName }};
+              az ad group create --group ${{ env.groupName }} --mail-nickname ${{ env.groupName }};
               echo "Group ${{ env.groupName }} created.";
             fi
