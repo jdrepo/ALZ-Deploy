@@ -128,7 +128,7 @@ $StopWatch = New-Object -TypeName System.Diagnostics.Stopwatch
 $StopWatch.Start()
 
 
-$subscription = Search-AzGraph -Query "resourcecontainers | where type =~ 'microsoft.resources/subscriptions' | where subscriptionId == '$subscriptionId' | mv-expand mgmtGroups=properties.managementGroupAncestorsChain | project subName=name, subID=subscriptionId, subState=properties.state, aadTenantID=tenantId, mgID=mgmtGroups.name, mgDisplayName=mgmtGroups.displayName"
+$subscription = Search-AzGraph -Query "resourcecontainers | where type =~ 'microsoft.resources/subscriptions' | where subscriptionId == '$subscriptionId' | extend mgmtGroups=properties.managementGroupAncestorsChain | project subName=name, subID=subscriptionId, subState=properties.state, aadTenantID=tenantId, mgID=mgmtGroups[0].name, mgDisplayName=mgmtGroups[0].displayName"
 
 if ($null -ne $subscription) {
     $userConfirmationSubsToMove
