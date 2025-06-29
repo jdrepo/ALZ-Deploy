@@ -12,10 +12,33 @@ on:
         default: "canary"
         required: true
         type: string
+      managementGroupPrefix:
+        description: 'Management Group Prefix'
+        default: "alz"
+        required: true
+        type: string
       location:
         description: 'Location'
         default: "northeurope"
         type: string
+      nva:
+        description: 'NVA solution'
+        default: 'no-nva'
+        type: choice
+        options:
+          - opnsense-single
+          - opnsense-ha
+          - no-nva
+          - azfirewall-basic
+          - ubuntu-single
+      vpngw:
+        description: 'VPN Gateway'
+        default: 'no-vpngw'
+        type: choice
+        options:
+          - vpngw-bgp
+          - vpngw-nobgp
+          - no-vpngw
 
   workflow_call:
     inputs:
@@ -27,8 +50,18 @@ on:
         default: "canary"
         required: true
         type: string
+      managementGroupPrefix:
+        default: "alz"
+        required: true
+        type: string
       location:
         default: "germanywestcentral"
+        type: string
+      nva:
+        description: 'NVA solution'
+        type: string
+      vpngw:
+        description: 'VPN Gateway type'
         type: string
 
     secrets:
@@ -45,6 +78,11 @@ on:
 env:
   groupName: 'compute-admins-workload-online-001-${{ inputs.environment }}'
   workloadSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
+  location: ${{inputs.location}}
+  runNumber: ${{ github.run_number }}
+  managementGroupSuffix: "-${{inputs.environment}}"
+  managementGroupPrefix: ${{inputs.managementGroupPrefix}}
+
 
 
 permissions:
@@ -82,6 +120,25 @@ jobs:
             else
               echo "Group ${{ env.groupName }} creation skipped because of validation job.";
             fi
+      - name: Subscription Vending - Validation
+        id: sub_vend_validation
+        uses: azure/bicep-deploy@v2
+        with:
+          type: deployment
+          operation: validate
+          name: sub_vend_validation-${{ env.runNumber }}
+          location: ${{ env.Location }}
+          scope: managementGroup
+          management-group-id: '${{ env.ManagementGroupPrefix }}${{env.ManagementGroupSuffix}}'
+          template-file: ALZ-Bicep/infra-as-code/bicep/modules/workload-online1/subvend-workload-online1.bicep
+          parameters: >-
+             infra-as-code/bicep/modules/workload-online1/parameters/subvend-workload-online1.parameters.${{inputs.nva}}.${{inputs.vpngw}}.json
+             parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}-landingzones-online${{ env.ManagementGroupSuffix }}
+             parExistingSubscriptionId="066b4cea-43ad-40d2-a4cc-e5caf5d19e1c"
+             parHubNetworkResourceId="/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/virtualNetworks/vnet-gwc-hub-alz-canary"
+             parVirtualNetworkDnsServers="['10.20.1.4']"
+             parHubNetworkNvaIpAddress="10.10.254.4"
+
 
   wl_ol1_deployment:
     runs-on: ubuntu-latest
@@ -116,3 +173,4 @@ jobs:
               az ad group create --display-name ${{ env.groupName }} --mail-nickname ${{ env.groupName }};
               echo "Group ${{ env.groupName }} created.";
             fi
+      
