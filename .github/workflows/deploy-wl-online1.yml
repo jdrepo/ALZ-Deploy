@@ -103,6 +103,8 @@ jobs:
         with:
             repository: Azure/bicep-registry-modules
             path: 'bicep-registry-modules'
+      - name: Show env
+        run: env | sort
       - name: Azure Login with OIDC
         uses: azure/login@v2
         with:
@@ -129,7 +131,8 @@ jobs:
           name: sub_vend_validation-${{ env.runNumber }}
           location: ${{ env.Location }}
           scope: managementGroup
-          management-group-id: ${{ env.ManagementGroupPrefix }}${{env.ManagementGroupSuffix}}
+          #management-group-id: ${{ env.ManagementGroupPrefix }}${{env.ManagementGroupSuffix}}
+          management-group-id: 'alz-canary'
           template-file: ALZ-Bicep/infra-as-code/bicep/modules/workload-online1/subvend-workload-online1.bicep
           parameters-file: infra-as-code/bicep/modules/workload-online1/parameters/subvend-workload-online1.parameters.${{inputs.nva}}.${{inputs.vpngw}}.json
           parameters: >-
