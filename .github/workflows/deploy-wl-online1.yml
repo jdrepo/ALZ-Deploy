@@ -129,7 +129,7 @@ jobs:
           name: sub_vend_validation-${{ env.runNumber }}
           location: ${{ env.Location }}
           scope: managementGroup
-          management-group-id: '${{ env.ManagementGroupPrefix }}${{env.ManagementGroupSuffix}}'
+          management-group-id: ${{ env.ManagementGroupPrefix }}${{env.ManagementGroupSuffix}}
           template-file: ALZ-Bicep/infra-as-code/bicep/modules/workload-online1/subvend-workload-online1.bicep
           parameters-file: infra-as-code/bicep/modules/workload-online1/parameters/subvend-workload-online1.parameters.${{inputs.nva}}.${{inputs.vpngw}}.json
           parameters: >-
