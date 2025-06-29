@@ -129,7 +129,7 @@ jobs:
           type: deployment
           operation: validate
           name: sub_vend_validation-${{ env.runNumber }}
-          location: ${{ env.Location }}
+          location: '${{ env.Location }}'
           scope: managementGroup
           #management-group-id: ${{ env.ManagementGroupPrefix }}${{env.ManagementGroupSuffix}}
           management-group-id: 'alz-canary'
