@@ -86,7 +86,6 @@ env:
   runNumber: ${{ github.run_number }}
   managementGroupSuffix: "-${{inputs.environment}}"
   managementGroupPrefix: ${{inputs.managementGroupPrefix}}
-  hubNetworkDns: "['172.22.10.4']"
 
 
 
@@ -153,8 +152,6 @@ jobs:
           parameters: |
             parHubNetworkResourceId: ${{steps.get_resources.outputs.hubNetworkResourceId}}
             parExistingSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
-            parVirtualNetworkDnsServers: ${{env.hubNetworkDns}}
-            parHubNetworkNvaIpAddress: "10.10.254.4"
 
 
   wl_ol1_deployment:

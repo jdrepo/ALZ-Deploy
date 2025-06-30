@@ -8,7 +8,7 @@
     "parLocation": {
       "value": "germanywestcentral"
     },
-    "parSubscriptionManagementGroupId" : {
+    "parSubscriptionManagementGroupId": {
       "value": "alz-landingzones-online-canary"
     },
     "parVirtualNetworkResourceGroupName": {
@@ -22,7 +22,7 @@
     },
     "parVirtualNetworkAddressSpace": {
       "value": [
-      "10.240.0.0/21"
+        "10.240.0.0/21"
       ]
     },
     "parVirtualNetworkUseRemoteGateways": {
@@ -30,6 +30,14 @@
     },
     "parVirtualNetworkPeeringEnabled": {
       "value": true
+    },
+    "parHubNetworkNvaIpAddress": {
+      "value": "10.10.254.4"
+    },
+    "parVirtualNetworkDnsServers": {
+      "value": [
+        "10.20.1.4"
+      ]
     }
   }
 }
