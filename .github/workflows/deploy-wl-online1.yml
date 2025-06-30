@@ -67,6 +67,8 @@ on:
     secrets:
       WL_OL1_SUB_ID:
         required: false
+      CONNECTIVITY_SUB_ID:
+        required: false
       AZURE_CLIENT_ID:
         required: false
       AZURE_TENANT_ID:
@@ -78,10 +80,13 @@ on:
 env:
   groupName: 'compute-admins-workload-online-001-${{ inputs.environment }}'
   workloadSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
+  ConnectivitySubscriptionId: ${{secrets.CONNECTIVITY_SUB_ID}}
+  hubNetworkResourceGroupName: "rg-${{inputs.managementGroupPrefix}}-${{inputs.environment}}-hub-networking-001"
   location: ${{inputs.location}}
   runNumber: ${{ github.run_number }}
   managementGroupSuffix: "-${{inputs.environment}}"
   managementGroupPrefix: ${{inputs.managementGroupPrefix}}
+  hubNetworkDns: "['172.22.10.4']"
 
 
 
@@ -122,6 +127,17 @@ jobs:
             else
               echo "Group ${{ env.groupName }} creation skipped because of validation job.";
             fi
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.ConnectivitySubscriptionId}}"
+            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.ubuntu-ha.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+            hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.hubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+            echo "$hubNetworkResourceId"
+            echo "hubNetworkResourceId=$hubNetworkResourceId" >> $GITHUB_OUTPUT
       - name: Subscription Vending - Validation
         id: sub_vend_validation
         uses: azure/bicep-deploy@v2
@@ -135,9 +151,9 @@ jobs:
           template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/subvend-workload-online1.bicep
           parameters-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/parameters/subvend-workload-online1.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
           parameters: |
-            parHubNetworkResourceId: "/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/virtualNetworks/vnet-gwc-hub-alz-canary"
-            parExistingSubscriptionId: "066b4cea-43ad-40d2-a4cc-e5caf5d19e1c"
-            parVirtualNetworkDnsServers: [10.20.1.4]
+            parHubNetworkResourceId: ${{steps.get_resources.outputs.hubNetworkResourceId}}
+            parExistingSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
+            parVirtualNetworkDnsServers: ${{env.hubNetworkDns}}
             parHubNetworkNvaIpAddress: "10.10.254.4"
 
 
