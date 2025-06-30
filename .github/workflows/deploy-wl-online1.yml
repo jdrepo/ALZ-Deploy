@@ -131,12 +131,11 @@ jobs:
           name: sub_vend_validation-${{ env.runNumber }}
           location: ${{ env.location }}
           scope: managementGroup
-          #management-group-id: ${{ env.ManagementGroupPrefix }}${{env.ManagementGroupSuffix}}
-          management-group-id: 'alz-canary'
+          management-group-id: ${{ env.managementGroupPrefix }}${{env.managementGroupSuffix}}
+          # management-group-id: 'alz-canary'
           template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/subvend-workload-online1.bicep
           parameters-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/parameters/subvend-workload-online1.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
-          parameters: |
-            '{"parTargetManagementGroupId": "${{ env.managementGroupPrefix }}${{ env.managementGroupSuffix }}" }'
+          # parameters: '{"parTargetManagementGroupId": "${{ env.managementGroupPrefix }}${{ env.managementGroupSuffix }}"}'
 
             
 
