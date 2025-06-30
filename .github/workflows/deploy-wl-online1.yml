@@ -136,13 +136,9 @@ jobs:
           template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/subvend-workload-online1.bicep
           parameters-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/parameters/subvend-workload-online1.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
           parameters: >-
-            '{"parTargetManagementGroupId": "${{ env.ManagementGroupPrefix }}${{ env.ManagementGroupSuffix }}" }'
+            '{"parTargetManagementGroupId": "${{ env.managementGroupPrefix }}${{ env.managementGroupSuffix }}" }'
 
-            #  parTargetManagementGroupId=${{ env.ManagementGroupPrefix }}-landingzones-online${{ env.ManagementGroupSuffix }}
-            #  parExistingSubscriptionId="066b4cea-43ad-40d2-a4cc-e5caf5d19e1c"
-            #  parHubNetworkResourceId="/subscriptions/c1d4ca0c-0641-4f99-83b8-8a6f2c87a670/resourceGroups/rg-alz-canary-hub-networking-001/providers/Microsoft.Network/virtualNetworks/vnet-gwc-hub-alz-canary"
-            #  parVirtualNetworkDnsServers="['10.20.1.4']"
-            #  parHubNetworkNvaIpAddress="10.10.254.4"
+            
 
 
   wl_ol1_deployment:
