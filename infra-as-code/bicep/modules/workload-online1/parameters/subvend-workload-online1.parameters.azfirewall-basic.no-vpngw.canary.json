@@ -12,13 +12,13 @@
       "value": "alz-landingzones-online-canary"
     },
     "parVirtualNetworkResourceGroupName": {
-      "value": "alz-workload-online1-canary"
+      "value": "rg-alz-workload-online-001-spoke-gwc-canary"
     },
     "parVirtualNetworkName": {
       "value": "vnet-gwc-workload-online-001-canary"
     },
     "parIpGroupBastionRangesInHubName": {
-      "value": "ipg-gwc-hub-bastions"
+      "value": "ipg-gwc-hub-bastions-canary"
     },
     "parVirtualNetworkAddressSpace": {
       "value": [
