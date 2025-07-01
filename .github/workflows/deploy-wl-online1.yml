@@ -152,6 +152,21 @@ jobs:
           parameters: |
             parHubNetworkResourceId: ${{steps.get_resources.outputs.hubNetworkResourceId}}
             parExistingSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
+      - name: Subscription Vending - Preview
+        id: sub_vend_preview
+        uses: azure/bicep-deploy@v2
+        with:
+          type: deployment
+          operation: whatIf
+          name: sub_vend_preview-${{ env.runNumber }}
+          location: ${{ env.location }}
+          scope: managementGroup
+          management-group-id: ${{ env.managementGroupPrefix }}${{env.managementGroupSuffix}}
+          template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/subvend-workload-online1.bicep
+          parameters-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/parameters/subvend-workload-online1.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
+          parameters: |
+            parHubNetworkResourceId: ${{steps.get_resources.outputs.hubNetworkResourceId}}
+            parExistingSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
 
 
   wl_ol1_deployment:
@@ -187,4 +202,30 @@ jobs:
               az ad group create --display-name ${{ env.groupName }} --mail-nickname ${{ env.groupName }};
               echo "Group ${{ env.groupName }} created.";
             fi
+      - name: Get existing resources
+        id: get_resources
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{env.ConnectivitySubscriptionId}}"
+            hubNetworkName=$(jq -r .parameters.parHubNetworkName.value ./ALZ-Deploy/infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.ubuntu-ha.${{inputs.vpngw}}.${{inputs.environment}}.json) 
+            hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.hubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+            echo "$hubNetworkResourceId"
+            echo "hubNetworkResourceId=$hubNetworkResourceId" >> $GITHUB_OUTPUT
+      - name: Subscription Vending - Deployment
+        id: sub_vend_deployment
+        uses: azure/bicep-deploy@v2
+        with:
+          type: deployment
+          operation: create
+          name: sub_vend_deploy-${{ env.runNumber }}
+          location: ${{ env.location }}
+          scope: managementGroup
+          management-group-id: ${{ env.managementGroupPrefix }}${{env.managementGroupSuffix}}
+          template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/subvend-workload-online1.bicep
+          parameters-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/parameters/subvend-workload-online1.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json
+          parameters: |
+            parHubNetworkResourceId: ${{steps.get_resources.outputs.hubNetworkResourceId}}
+            parExistingSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
       
