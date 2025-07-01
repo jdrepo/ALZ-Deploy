@@ -9,11 +9,13 @@ on:
   workflow_dispatch:
     inputs:
       environment:
+        description: "Target deployment environment"
         default: "canary"
         required: true
         type: string
       alzBicepRelease:
-        default: "v0.22.1"
+        description: "Select the ALZ Bicep release version"
+        default: "v0.22.2"
         required: true
         type: choice
         options:
@@ -24,11 +26,14 @@ on:
           - "v0.21.0"
           - "v0.22.0"
           - "v0.22.1"
+          - "v0.22.2"
       managementGroupPrefix:
+        description: "Prefix for the management group names"
         default: "alz"
         required: true
         type: string
       location:
+        description: "Azure region for deployment"
         default: 'germanywestcentral'
         type: string
       nva:
@@ -50,9 +55,11 @@ on:
           - vpngw-nobgp
           - no-vpngw
       wipeAfterDeploy:
+        description: "Wipe resources after deployment"
         default: false
         type: boolean
       validateBeforeDeploy:
+        description: "Validate before deployment"
         default: false
         type: boolean
 
@@ -63,7 +70,7 @@ on:
         required: true
         type: string
       alzBicepRelease:
-        default: "v0.22.1"
+        default: "v0.22.2"
         required: true
         type: string
       managementGroupPrefix:
