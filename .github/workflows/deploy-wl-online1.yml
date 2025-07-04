@@ -186,7 +186,7 @@ jobs:
         uses: azure/bicep-deploy@v2
         with:
           type: deployment
-          operation: whatif
+          operation: whatIf
           name: pol_exempt_preview-${{ env.runNumber }}
           location: ${{ env.location }}
           scope: subscription
@@ -214,7 +214,7 @@ jobs:
         uses: azure/bicep-deploy@v2
         with:
           type: deployment
-          operation: whatif
+          operation: whatIf
           name: pol_assign_preview-${{ env.runNumber }}
           location: ${{ env.location }}
           scope: subscription
