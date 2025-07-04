@@ -1523,7 +1523,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/alzDefaultPolicyExemptions.bicep
           parameters: >-
-            ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExcemptions.parameters.${{inputs.environment}}.json
+            ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExemptions.parameters.${{inputs.environment}}.json
           deploymentName: validate_default_policy_exemptions-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -1536,7 +1536,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/alzDefaultPolicyExemptions.bicep
           parameters: >-
-            ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExcemptions.parameters.${{inputs.environment}}.json
+            ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExemptions.parameters.${{inputs.environment}}.json
           deploymentName: preview_default_policy_exemptions-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -1572,7 +1572,7 @@ jobs:
           region: ${{ env.Location }}
           template: ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/alzDefaultPolicyExemptions.bicep
           parameters: >-
-            ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExcemptions.parameters.${{inputs.environment}}.json
+            ALZ-Deploy/infra-as-code/bicep/modules/policy/exemptions/parameters/alzDefaultPolicyExemptions.parameters.${{inputs.environment}}.json
           deploymentName: deploy_default_policy_exemptions-${{ env.runNumber }}
           failOnStdErr: false
   validate_preview_networkwatcher_rg:
