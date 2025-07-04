@@ -1,0 +1,15 @@
+{
+    "name": "Exemption-Deny-Certificate-IntegratedCA",
+    "type": "Microsoft.Authorization/policyExemptions",
+    "apiVersion": "2022-07-01-preview",
+    "properties": {
+      "description": "Exempt - Certificates should be issued by the specified integrated certificate authority",
+      "displayName": "Exempt - Certificates should be issued by the specified integrated certificate authority",
+      "policyAssignmentId" : "/providers/microsoft.management/managementgroups/alz-platform-canary/providers/microsoft.authorization/policyassignments/enforce-gr-keyvault",
+      "assignmentScopeValidation" : "Default",
+      "ExemptionCategory" : "Waiver",
+      "policyDefinitionReferenceIds": [
+              "Deny-Kv-Integrated-Ca"
+              ]
+    }
+  }

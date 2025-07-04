@@ -167,7 +167,62 @@ jobs:
           parameters: |
             parHubNetworkResourceId: ${{steps.get_resources.outputs.hubNetworkResourceId}}
             parExistingSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
-
+      - name: Policy Exemption - Validation
+        id: pol_exempt_validation
+        uses: azure/bicep-deploy@v2
+        with:
+          type: deployment
+          operation: validate
+          name: pol_exempt_validation-${{ env.runNumber }}
+          location: ${{ env.location }}
+          scope: subscription
+          subscription-id: ${{secrets.WL_OL1_SUB_ID}}
+          template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/policy-exemptions-workload-online1.bicep
+          parameters: |
+            parTopLevelManagementGroupPrefix: ${{env.managementGroupPrefix}}
+            parTopLevelManagementGroupSuffix: ${{env.managementGroupSuffix}}
+      - name: Policy Exemption - Preview
+        id: pol_exempt_preview
+        uses: azure/bicep-deploy@v2
+        with:
+          type: deployment
+          operation: whatif
+          name: pol_exempt_preview-${{ env.runNumber }}
+          location: ${{ env.location }}
+          scope: subscription
+          subscription-id: ${{secrets.WL_OL1_SUB_ID}}
+          template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/policy-exemptions-workload-online1.bicep
+          parameters: |
+            parTopLevelManagementGroupPrefix: ${{env.managementGroupPrefix}}
+            parTopLevelManagementGroupSuffix: ${{env.managementGroupSuffix}}
+      - name: Custom Policy Assignment - Validation
+        id: pol_assign_validation
+        uses: azure/bicep-deploy@v2
+        with:
+          type: deployment
+          operation: validate
+          name: pol_assign_validation-${{ env.runNumber }}
+          location: ${{ env.location }}
+          scope: subscription
+          subscription-id: ${{secrets.WL_OL1_SUB_ID}}
+          template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/policy-assignments-workload-online1.bicep
+          parameters: |
+            parTopLevelManagementGroupPrefix: ${{env.managementGroupPrefix}}
+            parTopLevelManagementGroupSuffix: ${{env.managementGroupSuffix}}
+      - name: Custom Policy Assignment - Preview
+        id: pol_assign_preview
+        uses: azure/bicep-deploy@v2
+        with:
+          type: deployment
+          operation: whatif
+          name: pol_assign_preview-${{ env.runNumber }}
+          location: ${{ env.location }}
+          scope: subscription
+          subscription-id: ${{secrets.WL_OL1_SUB_ID}}
+          template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/policy-assignments-workload-online1.bicep
+          parameters: |
+            parTopLevelManagementGroupPrefix: ${{env.managementGroupPrefix}}
+            parTopLevelManagementGroupSuffix: ${{env.managementGroupSuffix}}
 
   wl_ol1_deployment:
     runs-on: ubuntu-latest

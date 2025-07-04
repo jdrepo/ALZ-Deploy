@@ -1,0 +1,15 @@
+{
+    "name": "Exemption-Deny-Certificate-ExpireDays",
+    "type": "Microsoft.Authorization/policyExemptions",
+    "apiVersion": "2022-07-01-preview",
+    "properties": {
+      "description": "Exempt - Certificates should not expire within the specified number of days",
+      "displayName": "Exempt - Certificates should not expire within the specified number of days",
+      "policyAssignmentId" : "/providers/microsoft.management/managementgroups/alz-platform-canary/providers/microsoft.authorization/policyassignments/enforce-gr-keyvault",
+      "assignmentScopeValidation" : "Default",
+      "ExemptionCategory" : "Waiver",
+      "policyDefinitionReferenceIds": [
+              "Deny-Kv-Cert-Expiration-Within-Specific-Number-Days"
+              ]
+    }
+  }

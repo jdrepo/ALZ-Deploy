@@ -1,0 +1,25 @@
+{
+	"name": "Deny-KeyVault-Cert-Expire-Days",
+	"type": "Microsoft.Authorization/policyAssignments",
+	"apiVersion": "2024-04-01",
+	"properties": {
+		"description": "Manage certificates that will expire within a specified number of days to ensure your organization has sufficient time to rotate the certificate prior to expiration.",
+		"displayName": "Certificates should not expire within the specified number of days.",
+		"notScopes": [],
+		"parameters": {
+			"effect": {
+				"value": "Deny"
+			},
+			"daysToExpire": {
+				"value": 30
+			}
+		},
+		"policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/f772fb64-8e40-40ad-87bc-7706e1949427",
+		"scope": null,
+		"enforcementMode": "Default"
+	},
+	"location": null,
+	"identity": {
+		"type": "None"
+	}
+}
