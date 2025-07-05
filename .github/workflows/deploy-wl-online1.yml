@@ -283,4 +283,32 @@ jobs:
           parameters: |
             parHubNetworkResourceId: ${{steps.get_resources.outputs.hubNetworkResourceId}}
             parExistingSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
+      - name: Policy Exemption - Deployment
+        id: pol_exempt_deployment
+        uses: azure/bicep-deploy@v2
+        with:
+          type: deployment
+          operation: create
+          name: pol_exempt_deployment-${{ env.runNumber }}
+          location: ${{ env.location }}
+          scope: subscription
+          subscription-id: ${{secrets.WL_OL1_SUB_ID}}
+          template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/policy-exemptions-workload-online1.bicep
+          parameters: |
+            parTopLevelManagementGroupPrefix: ${{env.managementGroupPrefix}}
+            parTopLevelManagementGroupSuffix: ${{env.managementGroupSuffix}}
+      - name: Custom Policy Assignment - Deployment
+        id: pol_assign_deployment
+        uses: azure/bicep-deploy@v2
+        with:
+          type: deployment
+          operation: create
+          name: pol_assign_deployment-${{ env.runNumber }}
+          location: ${{ env.location }}
+          scope: subscription
+          subscription-id: ${{secrets.WL_OL1_SUB_ID}}
+          template-file: ./ALZ-Deploy/infra-as-code/bicep/modules/workload-online1/policy-assignments-workload-online1.bicep
+          parameters: |
+            parTopLevelManagementGroupPrefix: ${{env.managementGroupPrefix}}
+            parTopLevelManagementGroupSuffix: ${{env.managementGroupSuffix}}
       

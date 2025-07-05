@@ -29,7 +29,7 @@ var varPolicyAssignmentKvCertExpireDays = {
 }
 
 module modPolicyAssignmentDenyKvCertExpireDays '../../../../../bicep-registry-modules/avm/ptn/authorization/policy-assignment/modules/subscription.bicep' = {
-  name: 'polAssi-DenyKvCertExpireDays'
+  name: '${_dep}-polAssi-DenyKvCertExpireDays'
   params: {
     policyDefinitionId: varPolicyAssignmentKvCertExpireDays.definitionId
     name: varPolicyAssignmentKvCertExpireDays.libDefinition.name
