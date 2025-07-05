@@ -62,7 +62,7 @@ resource hubVirtualNetwork 'Microsoft.Network/virtualNetworks@2022-11-01' existi
   }
 }
 
-module modSubVending  'br/public:avm/ptn/lz/sub-vending:0.3.3' = {
+module modSubVending  'br/public:avm/ptn/lz/sub-vending:0.3.4' = {
   name: '${_dep}-sub-vending-online1'
   params: {
     resourceProviders: {
