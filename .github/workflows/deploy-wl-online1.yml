@@ -143,7 +143,7 @@ jobs:
         with:
           type: deployment
           operation: validate
-          name: sub_vend_validation-${{ env.runNumber }}
+          name: sub_vend_validate
           location: ${{ env.location }}
           scope: managementGroup
           management-group-id: ${{ env.managementGroupPrefix }}${{env.managementGroupSuffix}}
@@ -158,7 +158,7 @@ jobs:
         with:
           type: deployment
           operation: whatIf
-          name: sub_vend_preview-${{ env.runNumber }}
+          name: sub_vend_preview
           location: ${{ env.location }}
           scope: managementGroup
           management-group-id: ${{ env.managementGroupPrefix }}${{env.managementGroupSuffix}}
@@ -274,7 +274,7 @@ jobs:
         with:
           type: deployment
           operation: create
-          name: sub_vend_deploy-${{ env.runNumber }}
+          name: sub_vend_deploy
           location: ${{ env.location }}
           scope: managementGroup
           management-group-id: ${{ env.managementGroupPrefix }}${{env.managementGroupSuffix}}
