@@ -177,8 +177,8 @@ jobs:
           location: ${{ env.location }}
           scope: subscription
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
-          template-file: ..\..\..\..\bicep-registry-modules\avm\res\resources\resource-group\resourceGroup.bicep
-          parameters-file: ..\..\..\workloads\workload-online1\parameters\rg-compute-workload-online1.parameters.${{inputs.environment}}.json
+          template-file: ./bicep-registry-modules/avm/res/resources/resource-group/main.bicep
+          parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/rg-compute-workload-online1.parameters.${{inputs.environment}}.json
           parameters: |
             name: ${{ env.appRgName }}
             location: ${{ env.location }}
