@@ -1,4 +1,4 @@
-name: 10. Deploy Workload Online 1 - Platform Team
+name: 10a. Deploy Workload Online 1 - Application Team
 
 on:
   workflow_dispatch:
