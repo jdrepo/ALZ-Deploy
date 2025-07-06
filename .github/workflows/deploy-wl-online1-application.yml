@@ -212,7 +212,6 @@ jobs:
           type: deployment
           operation: validate
           name: application_validate-${{env.runNumber}}
-          location: ${{ env.location }}
           scope: resourceGroup
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
           resource-group-name: ${{ env.appRgName }}
@@ -227,7 +226,6 @@ jobs:
           type: deployment
           operation: whatIf
           name: application_preview-${{env.runNumber}}
-          location: ${{ env.location }}
           scope: resourceGroup
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
           resource-group-name: ${{ env.appRgName }}
