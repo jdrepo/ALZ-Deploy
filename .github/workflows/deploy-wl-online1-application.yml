@@ -12,6 +12,10 @@ on:
         default: "canary"
         required: true
         type: string
+      location:
+        description: 'Location'
+        default: "germanywestcentral"
+        type: string
       nva:
         description: 'NVA solution'
         default: 'no-nva'
