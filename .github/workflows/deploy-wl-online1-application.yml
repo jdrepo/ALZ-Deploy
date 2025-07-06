@@ -126,7 +126,7 @@ jobs:
           location: ${{ env.location }}
           scope: subscription
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
-          template-file: ./bicep-registry-modules/avm/res/resources/resource-group/resourceGroup.bicep
+          template-file: ./bicep-registry-modules/avm/res/resources/resource-group/main.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/rg-compute-workload-online1.parameters.${{inputs.environment}}.json
       - name: Compute RG - Preview
         id: compute_rg_preview
@@ -138,7 +138,7 @@ jobs:
           location: ${{ env.location }}
           scope: subscription
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
-          template-file: ./bicep-registry-modules/avm/res/resources/resource-group/resourceGroup.bicep
+          template-file: ./bicep-registry-modules/avm/res/resources/resource-group/main.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/rg-compute-workload-online1.parameters.${{inputs.environment}}.json
   deploy_compute_rg:
     runs-on: ubuntu-latest
