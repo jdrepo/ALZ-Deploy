@@ -271,3 +271,11 @@ jobs:
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/workload-online1.parameters.${{inputs.environment}}.json
           parameters: |
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
+      - name: Fix function app authentication
+        id: fix_function_auth
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account set -s "${{secrets.WL_OL1_SUB_ID}}"
+            az webapp auth update --name ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled true 

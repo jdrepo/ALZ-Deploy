@@ -3,6 +3,9 @@ metadata description = 'ALZ Bicep Module used to set up IaaS Online Application 
 
 targetScope = 'resourceGroup'
 
+extension microsoftGraphV1
+
+
 @sys.description('The Azure Region to deploy the resources into.')
 param parLocation string = resourceGroup().location
 
@@ -16,10 +19,12 @@ param parVnetResourceId string
 param parPublicDnsZoneName string
 
 // Object containing a mapping for location / region code
-var varRegionCodes = {
+var varLocationCodes = {
   germanywestcentral: 'gwc'
   westeurope: 'weu'
 }
+
+var varLocationCode = varLocationCodes[parLocation]
 
 var _dep = deployment().name
 
@@ -28,13 +33,21 @@ resource resVnet1 'Microsoft.Network/virtualNetworks@2024-07-01' existing = {
   name: last(split(parVnetResourceId, '/'))
 }
 
+module modLogWorkSpace 'br/public:avm/res/operational-insights/workspace:0.12.0' = {
+  name: '${_dep}-logworkspace'
+  scope: resourceGroup()
+  params: {
+    name: 'log-${varLocationCode}-001-${parEnvironment}'
+    location: parLocation
+  }
+}
 
 
 module modKeyVault 'br/public:avm/res/key-vault/vault:0.13.0' = {
   scope: resourceGroup()
   name: '${_dep}-keyvault'  
   params: {
-    name: 'kv-${varRegionCodes[parLocation]}-001-${parEnvironment}-${take(uniqueString(resourceGroup().name,subscription().id),6)}'
+    name: 'kv-${varLocationCode}-001-${parEnvironment}-${take(uniqueString(resourceGroup().name,subscription().id),6)}'
     location: parLocation
     enablePurgeProtection: true
   }
@@ -77,11 +90,20 @@ module modKeyVaultAcmeBot 'modules/keyvault-acmebot.bicep' = {
     mailAddress: 'noreply@noreply.org'
     createWithKeyVault: false
     keyVaultBaseUrl: modKeyVault.outputs.uri
+    parLogWorkspaceResourceId: modLogWorkSpace.outputs.resourceId
     additionalAppSettings: [
       {
         name: 'Acmebot:AzureDns:SubscriptionId'
         value: last(split(subscription().id, '/'))
       }
+
     ]
+    parEnableMiAsFic: true
   }
 }
+
+
+output acmeBotAppName string = modKeyVaultAcmeBot.outputs.functionAppName
+
+
+
