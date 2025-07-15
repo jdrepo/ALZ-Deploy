@@ -278,4 +278,6 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az account set -s "${{secrets.WL_OL1_SUB_ID}}"
+            az config set extension.use_dynamic_install=yes_without_prompt
+            az extension add --name authV2  
             az webapp auth update --name ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled true 
