@@ -282,6 +282,8 @@ jobs:
             az extension add --name authV2  
             az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled false
             echo "functionAppKey: ${{steps.application_deploy.outputs.outFunctionAppKey}}"
-            $functionAppKey=$(az functionapp keys list -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --query functionKeys.default --output tsv)
+            az account show
+            az functionapp list
             echo "functionAppKey: $functionAppKey"
+        #   $functionAppKey=$(az functionapp keys list -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --query functionKeys.default --output tsv)
 
