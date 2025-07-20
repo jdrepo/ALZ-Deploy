@@ -51,7 +51,8 @@ var _dep = deployment().name
 
 var issuer = '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
 
-var functionAppName = 'func-${appNamePrefix}-${substring(uniqueString(resourceGroup().id, deployment().name), 0, 4)}'
+var functionAppName = 'func-${appNamePrefix}-${substring(uniqueString(resourceGroup().id), 0, 4)}'
+
 var appServicePlanName = 'plan-${appNamePrefix}-${substring(uniqueString(resourceGroup().id, deployment().name), 0, 4)}'
 var appInsightsName = 'appi-${appNamePrefix}-${substring(uniqueString(resourceGroup().id, deployment().name), 0, 4)}'
 var storageAccountName = 'st${uniqueString(resourceGroup().id, deployment().name)}func'
@@ -165,6 +166,8 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+
+
 module modFunctionApp 'br/public:avm/res/web/site:0.16.0' = {
   name: '${_dep}-func-keyvault-acmebot'
   scope: resourceGroup()
@@ -189,7 +192,7 @@ module modFunctionApp 'br/public:avm/res/web/site:0.16.0' = {
           }
           identityProviders: {
             azureActiveDirectory: {
-              enabled: true
+              enabled: false
               registration: {
                 clientId: appRegistrationKeyVaultAcmeBot.appId
                 clientSecretSettingName: 'OVERRIDE_USE_MI_FIC_ASSERTION_CLIENTID'
@@ -303,6 +306,21 @@ resource keyVault_roleAssignment 'Microsoft.Authorization/roleAssignments@2022-0
   }
 }
 
-output functionAppName string = modFunctionApp.outputs.name
+resource resFuncKeyVaultAcmeBot 'Microsoft.Web/sites@2024-11-01' existing = {
+  dependsOn: [
+    modFunctionApp
+  ]
+  scope: resourceGroup()
+  name: functionAppName
+}
+
+
+
+output functionAppName string = functionAppName
 output principalId string = modFunctionApp.outputs.systemAssignedMIPrincipalId! 
 output keyVaultName string = createWithKeyVault ? keyVault.name : ''
+output functionAppId string = modFunctionApp.outputs.resourceId
+
+@secure()
+output outFunctionAppKey string = listKeys('${resFuncKeyVaultAcmeBot.id}/host/default','2024-11-01').functionKeys.default
+
