@@ -105,5 +105,8 @@ module modKeyVaultAcmeBot 'modules/keyvault-acmebot.bicep' = {
 
 output acmeBotAppName string = modKeyVaultAcmeBot.outputs.functionAppName
 
+@secure()
+output outFunctionAppKey string = modKeyVaultAcmeBot.outputs.outFunctionAppKey
+
 
 
