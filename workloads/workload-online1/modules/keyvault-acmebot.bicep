@@ -306,14 +306,25 @@ resource keyVault_roleAssignment 'Microsoft.Authorization/roleAssignments@2022-0
   }
 }
 
-resource resFuncKeyVaultAcmeBot 'Microsoft.Web/sites@2024-11-01' existing = {
-  dependsOn: [
-    modFunctionApp
-  ]
-  scope: resourceGroup()
-  name: functionAppName
+module listKeysHelperFunctionApp'./list-keys-helper.bicep' = {
+  name: '${_dep}-list-keys-helper-functionapp'
+  params: {
+    //resourceId: '${resFuncKeyVaultAcmeBot.id}/host/default'
+    resourceId: modFunctionApp.outputs.resourceId
+    apiVersion: '2024-11-01'
+  }
+  // dependsOn: [
+  //   modFunctionApp
+  // ]
 }
 
+// resource resFuncKeyVaultAcmeBot 'Microsoft.Web/sites@2024-11-01' existing = {
+//   dependsOn: [
+//     modFunctionApp
+//   ]
+//   scope: resourceGroup()
+//   name: functionAppName
+// }
 
 
 output functionAppName string = functionAppName
@@ -322,5 +333,7 @@ output keyVaultName string = createWithKeyVault ? keyVault.name : ''
 output functionAppId string = modFunctionApp.outputs.resourceId
 
 @secure()
-output outFunctionAppKey string = listKeys('${resFuncKeyVaultAcmeBot.id}/host/default','2024-11-01').functionKeys.default
+//output outFunctionAppKey string = listKeys('${resFuncKeyVaultAcmeBot.id}/host/default','2024-11-01').functionKeys.default
+output outFunctionAppKey string = listKeysHelperFunctionApp.outputs.key
+
 
