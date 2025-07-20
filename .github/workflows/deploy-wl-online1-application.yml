@@ -280,5 +280,8 @@ jobs:
             az account set -s "${{secrets.WL_OL1_SUB_ID}}"
             az config set extension.use_dynamic_install=yes_without_prompt
             az extension add --name authV2  
-            az webapp auth update --name ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled false
-            echo "functionAppKey: ${{steps.application_deploy.outputs.outFunctionAppKey}}" 
+            az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled false
+            echo "functionAppKey: ${{steps.application_deploy.outputs.outFunctionAppKey}}"
+            $functionAppKey = $(az functionapp keys list -n ${{steps.application_deploy.outputs.acmeBotAppName}} -group ${{ env.appRgName }} --query functionKeys.default --output tsv)
+            echo "functionAppKey: $functionAppKey"
+
