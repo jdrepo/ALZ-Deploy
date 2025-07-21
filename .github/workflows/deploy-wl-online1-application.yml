@@ -271,7 +271,7 @@ jobs:
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/workload-online1.parameters.${{inputs.environment}}.json
           parameters: |
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
-      - name: Disable function app authentication
+      - name: Get function app key
         id: fix_function_auth
         uses: azure/cli@v2
         with:
@@ -283,4 +283,7 @@ jobs:
             az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled false
             echo "functionAppKey: ${{steps.application_deploy.outputs.outFunctionAppKey}}"
             functionAppKey=$(az functionapp keys list -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --query functionKeys.default --output tsv)
+            echo FUNCTION_APP_KEY=$functionAppKey >> $GITHUB_ENV
+            curl -v -X GET https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates --header "X-Functions-Key: $functionAppKey" | jq .
+
 
