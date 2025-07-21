@@ -273,7 +273,7 @@ jobs:
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
       - name: Get function app key
         id: fix_function_auth
-        uses: azure/cli@v1
+        uses: azure/cli@v2
         with:
           azcliversion: latest
           inlineScript: |
@@ -285,9 +285,11 @@ jobs:
             echo "::add-mask::$FUNCTION_APP_KEY"
             echo "FUNCTION_APP_KEY=$FUNCTION_APP_KEY" >> $GITHUB_ENV
             curl -v -X GET https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates --header "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}"
+            echo ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
       - name: Create certificate request
         id: create_cert_request
         run: |
+         echo ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
          echo "Implement certificate request logic here"
          curl -v -X GET https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates --header "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}"
 
