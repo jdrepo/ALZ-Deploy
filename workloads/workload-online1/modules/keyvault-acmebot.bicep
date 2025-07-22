@@ -186,13 +186,13 @@ module modFunctionApp 'br/public:avm/res/web/site:0.16.0' = {
         name: 'authsettingsV2'
         properties: {
           globalValidation: {
-            requireAuthentication: true
+            requireAuthentication: false
             unauthenticatedClientAction: 'RedirectToLoginPage'
             redirectToProvider: 'azureactivedirectory'
           }
           identityProviders: {
             azureActiveDirectory: {
-              enabled: false
+              enabled: true
               registration: {
                 clientId: appRegistrationKeyVaultAcmeBot.appId
                 clientSecretSettingName: 'OVERRIDE_USE_MI_FIC_ASSERTION_CLIENTID'
