@@ -186,7 +186,7 @@ module modFunctionApp 'br/public:avm/res/web/site:0.16.0' = {
         name: 'authsettingsV2'
         properties: {
           globalValidation: {
-            requireAuthentication: false
+            requireAuthentication: true
             unauthenticatedClientAction: 'RedirectToLoginPage'
             redirectToProvider: 'azureactivedirectory'
           }
@@ -209,6 +209,9 @@ module modFunctionApp 'br/public:avm/res/web/site:0.16.0' = {
             tokenStore: {
               enabled: true
             }
+          }
+          platform: {
+            enabled: false
           }
         }
       }
