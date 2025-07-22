@@ -284,14 +284,21 @@ jobs:
             FUNCTION_APP_KEY=$(az functionapp keys list -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --query functionKeys.default --output tsv)
             echo "::add-mask::$FUNCTION_APP_KEY"
             echo "FUNCTION_APP_KEY=$FUNCTION_APP_KEY" >> $GITHUB_ENV
-            echo: output1 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
+            echo output1 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
             curl -v -X GET https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates --header "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}"
       - name: Create certificate request curl
         id: create_cert_request
+        shell: bash
         run: |
           echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
           echo "Implement certificate request logic here"
           curl -v -X GET https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates --header "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}"
+          
+          
+      - name: Create certificate request ps
+        id: create_cert_request_ps
+        shell: pwsh
+        run: |
           $Header = @{"X-Functions-Key" = "${{env.FUNCTION_APP_KEY}}}"
           $Parameters = @{
               Method      = "GET"
