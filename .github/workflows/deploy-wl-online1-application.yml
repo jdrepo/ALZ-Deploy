@@ -299,10 +299,10 @@ jobs:
         id: create_cert_request_ps
         shell: pwsh
         run: |
-          $Header = @{\"X-Functions-Key\" = \"${{env.FUNCTION_APP_KEY}}}\"
+          $Header = @{"X-Functions-Key" = "${{env.FUNCTION_APP_KEY}}"}
           $Parameters = @{
-              Method      = \"GET\"
-              Uri         = \"https://func-jdacmebot01-cdv3.azurewebsites.net/api/certificates\"
+              Method      = "GET"
+              Uri         = "https://func-jdacmebot01-cdv3.azurewebsites.net/api/certificates"
               Headers     = $Header
             }
           Invoke-RestMethod @Parameters 
