@@ -291,8 +291,7 @@ jobs:
         run: |
           # echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
           echo "Implement certificate request logic here"
-          curl -v -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates 
-          # curl -v -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://func-jdacmebot01-cdv3.azurewebsites.net/api/certificates 
+          curl -v -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates | jq .
       # - name: Create certificate request ps
       #   id: create_cert_request_ps
       #   shell: pwsh
@@ -300,7 +299,7 @@ jobs:
       #     $Header = @{"X-Functions-Key" = "${{env.FUNCTION_APP_KEY}}"}
       #     $Parameters = @{
       #         Method      = "GET"
-      #         Uri         = "https://func-jdacmebot01-cdv3.azurewebsites.net/api/certificates"
+      #         Uri         = "https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates"
       #         Headers     = $Header
       #       }
       #     Invoke-RestMethod @Parameters 
