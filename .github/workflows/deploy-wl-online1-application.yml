@@ -292,9 +292,10 @@ jobs:
           az extension add --name authV2  
           az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled false
           echo "Get all assigned certificates"
-          curl -v -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates | jq .
+          curl -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates | jq .
           az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled true
           echo "Request new cert for: "
+          curl -v -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "i1.schoolscloud.eu", "i11.schoolscloud.eu" ] }'
       # - name: Create certificate request with PowerShell
       #   id: create_cert_request_ps
       #   shell: pwsh
