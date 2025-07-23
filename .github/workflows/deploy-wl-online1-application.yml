@@ -284,40 +284,26 @@ jobs:
             FUNCTION_APP_KEY=$(az functionapp keys list -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --query functionKeys.default --output tsv)
             echo "::add-mask::$FUNCTION_APP_KEY"
             echo "FUNCTION_APP_KEY=$FUNCTION_APP_KEY" >> $GITHUB_ENV
-            echo output1 $FUNCTION_APP_KEY | sed 's/./& /g'
-            curl -v -H "X-Functions-Key: $FUNCTION_APP_KEY" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates
-          # inlineScript: |
-          #   az account set -s "${{secrets.WL_OL1_SUB_ID}}"
-          #   az config set extension.use_dynamic_install=yes_without_prompt
-          #   az extension add --name authV2  
-          #   az webapp auth update -n func-jdacmebot01-cdv3 -g ${{ env.appRgName }} --enabled false
-          #   FUNCTION_APP_KEY=$(az functionapp keys list -n func-jdacmebot01-cdv3 -g ${{ env.appRgName }} --query functionKeys.default --output tsv)
-          #   echo "::add-mask::$FUNCTION_APP_KEY"
-          #   echo "FUNCTION_APP_KEY=$FUNCTION_APP_KEY" >> $GITHUB_ENV
-          #   echo output1 $FUNCTION_APP_KEY | sed 's/./& /g'
-          #   curl -v -H "X-Functions-Key: $FUNCTION_APP_KEY" https://func-jdacmebot01-cdv3.azurewebsites.net/api/certificates  
+            # echo output1 $FUNCTION_APP_KEY | sed 's/./& /g'
       - name: Create certificate request curl
         id: create_cert_request
         shell: bash
         run: |
-          echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
+          # echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
           echo "Implement certificate request logic here"
-          # curl -v -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates 
-          curl -v -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://func-jdacmebot01-cdv3.azurewebsites.net/api/certificates 
-
-          
-          
-      - name: Create certificate request ps
-        id: create_cert_request_ps
-        shell: pwsh
-        run: |
-          $Header = @{"X-Functions-Key" = "${{env.FUNCTION_APP_KEY}}"}
-          $Parameters = @{
-              Method      = "GET"
-              Uri         = "https://func-jdacmebot01-cdv3.azurewebsites.net/api/certificates"
-              Headers     = $Header
-            }
-          Invoke-RestMethod @Parameters 
+          curl -v -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates 
+          # curl -v -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://func-jdacmebot01-cdv3.azurewebsites.net/api/certificates 
+      # - name: Create certificate request ps
+      #   id: create_cert_request_ps
+      #   shell: pwsh
+      #   run: |
+      #     $Header = @{"X-Functions-Key" = "${{env.FUNCTION_APP_KEY}}"}
+      #     $Parameters = @{
+      #         Method      = "GET"
+      #         Uri         = "https://func-jdacmebot01-cdv3.azurewebsites.net/api/certificates"
+      #         Headers     = $Header
+      #       }
+      #     Invoke-RestMethod @Parameters 
 
           
 
