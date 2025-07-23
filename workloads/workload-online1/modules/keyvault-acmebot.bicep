@@ -211,7 +211,7 @@ module modFunctionApp 'br/public:avm/res/web/site:0.16.0' = {
             }
           }
           platform: {
-            enabled: false
+            enabled: true
           }
         }
       }
