@@ -288,14 +288,14 @@ jobs:
         run: |
           # echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
           az account set -s "${{secrets.WL_OL1_SUB_ID}}"
-          az config set extension.use_dynamic_install=yes_without_prompt
-          az extension add --name authV2  
-          az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled false
+          az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors -o none
+          az extension add --name authV2 --only-show-errors -o none
+          az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled false --only-show-errors -o none
           echo "Get all assigned certificates"
-          curl -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates | jq .
-          az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled true
+          curl -s -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates | jq .
+          az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled true --only-show-errors -o none
           echo "Request new cert for: "
-          curl -v -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "i1.schoolscloud.eu", "i11.schoolscloud.eu" ] }'
+          curl -s -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "i1.schoolscloud.eu", "i11.schoolscloud.eu" ] }'
       # - name: Create certificate request with PowerShell
       #   id: create_cert_request_ps
       #   shell: pwsh
