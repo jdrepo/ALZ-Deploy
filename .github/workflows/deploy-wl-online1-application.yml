@@ -277,6 +277,7 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
+            az account set -s "${{secrets.WL_OL1_SUB_ID}}"
             FUNCTION_APP_KEY=$(az functionapp keys list -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --query functionKeys.default --output tsv)
             echo "::add-mask::$FUNCTION_APP_KEY"
             echo "FUNCTION_APP_KEY=$FUNCTION_APP_KEY" >> $GITHUB_ENV
