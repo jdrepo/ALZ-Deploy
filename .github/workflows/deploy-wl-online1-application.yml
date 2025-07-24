@@ -45,7 +45,7 @@ on:
       certcn:
         description: 'Certificate common name'
         type: string
-        default: '*.app01.schools-cloud.eu'
+        default: '*.app01.schoolscloud.eu'
 
 
 
@@ -79,7 +79,7 @@ on:
       certcn:
         description: 'Certificate common name'
         type: string
-        default: '*.app01.schools-cloud.eu'
+        default: '*.app01.schoolscloud.eu'
 
     secrets:
       WL_OL1_SUB_ID:
