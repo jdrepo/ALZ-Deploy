@@ -42,6 +42,10 @@ on:
         description: 'Spoke VNet Name'
         type: string
         default: 'vnet-gwc-workload-online-001'
+      certcn:
+        description: 'Certificate common name'
+        type: string
+        default: '*.app01.schools-cloud.eu'
 
 
 
@@ -72,6 +76,10 @@ on:
         description: 'Spoke VNet Name'
         type: string
         default: 'vnet-gwc-workload-online-001'
+      certcn:
+        description: 'Certificate common name'
+        type: string
+        default: '*.app01.schools-cloud.eu'
 
     secrets:
       WL_OL1_SUB_ID:
@@ -293,12 +301,12 @@ jobs:
           az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled false --only-show-errors -o none
           echo "Get all assigned certificates"
           certs=$(curl --no-progress-meter -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates)
-          certexists=$(echo $certs | jq '.[]  | select( .dnsNames | contains(["jd00.schoolscloud.eu"]))')
+          certexists=$(echo $certs | jq '.[]  | select( .dnsNames | contains([${{inputs.certcn}}]))')
           echo $certexists
           az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled true --only-show-errors -o none
-          echo "Request new cert for: "
+          echo "Request new cert for: ${{inputs.certcn}}"
 
-          #curl --no-progress-meter -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "i1.schoolscloud.eu", "i11.schoolscloud.eu" ] }'
+          #curl --no-progress-meter -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "${{inputs.certcn}}" ] }'
       # - name: Create certificate request with PowerShell
       #   id: create_cert_request_ps
       #   shell: pwsh
