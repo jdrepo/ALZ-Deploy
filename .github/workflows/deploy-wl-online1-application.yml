@@ -304,13 +304,13 @@ jobs:
           echo "Assigned certificates: $certs"
           certexists=$(echo $certs | jq '.[]  | select( .dnsNames | contains(["${{inputs.certcn}}"]))')
           echo $certexists
-          az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled true --only-show-errors -o none          
           if [ -n "$certexists" ]; 
             then echo "Certificate for ${{inputs.certcn}} already exists"
           else
             echo "Request new cert for: ${{inputs.certcn}}"
             curl --no-progress-meter -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "${{inputs.certcn}}" ] }'
           fi
+          az webapp auth update -n ${{steps.application_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled true --only-show-errors -o none          
           #curl --no-progress-meter -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.application_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "${{inputs.certcn}}" ] }'
       # - name: Create certificate request with PowerShell
       #   id: create_cert_request_ps
