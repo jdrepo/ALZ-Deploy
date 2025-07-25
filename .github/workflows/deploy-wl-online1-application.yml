@@ -194,7 +194,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy_compute_rg
     environment: ${{inputs.environment}}
-    name: WL-OL1 Application - Validation and Preview
+    name: Key Vault Acmebot - Validation and Preview
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -213,32 +213,32 @@ jobs:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Application - Validate
-        id: application_validate
+      - name: Key Vault Acmebot - Validate
+        id: kv_acmebot_validate
         uses: azure/bicep-deploy@v2
         with:
           type: deployment
           operation: validate
-          name: application_validate-${{env.runNumber}}
+          name: kv_acmebot_validate-${{env.runNumber}}
           scope: resourceGroup
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
           resource-group-name: ${{ env.appRgName }}
-          template-file: ./ALZ-Deploy/workloads/workload-online1/main.bicep
-          parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/workload-online1.parameters.${{inputs.environment}}.json
+          template-file: ./ALZ-Deploy/workloads/workload-online1/kv-acmebot.bicep
+          parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/kv-acmebot.parameters.${{inputs.environment}}.json
           parameters: |
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
-      - name: Application - Preview
-        id: application_preview
+      - name: Key Vault Acmebot - Preview
+        id: kv_acmebot_preview
         uses: azure/bicep-deploy@v2
         with:
           type: deployment
           operation: whatIf
-          name: application_preview-${{env.runNumber}}
+          name: kv_acmebot_preview-${{env.runNumber}}
           scope: resourceGroup
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
           resource-group-name: ${{ env.appRgName }}
-          template-file: ./ALZ-Deploy/workloads/workload-online1/main.bicep
-          parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/workload-online1.parameters.${{inputs.environment}}.json
+          template-file: ./ALZ-Deploy/workloads/kv-acmebot.bicep
+          parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/kv-acmebot.parameters.${{inputs.environment}}.json
           parameters: |
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
   wl_ol1_app_deploy:
@@ -246,7 +246,7 @@ jobs:
     needs: wl_ol1_app_validation_preview
     if: ${{ inputs.deploy == true }}
     environment: ${{inputs.environment}}
-    name: WL-OL1 Application - Deploy
+    name: Key Vault Acmebot - Deploy
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -265,18 +265,18 @@ jobs:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Application - Deploy
-        id: application_deploy
+      - name: Key Vault Acmebot - Deploy
+        id: kv_acmebot_deploy
         uses: azure/bicep-deploy@v2
         with:
           type: deployment
           operation: create
-          name: application_deploy-${{env.runNumber}}
+          name: kv_acmebot_deploy-${{env.runNumber}}
           scope: resourceGroup
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
           resource-group-name: ${{ env.appRgName }}
-          template-file: ./ALZ-Deploy/workloads/workload-online1/main.bicep
-          parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/workload-online1.parameters.${{inputs.environment}}.json
+          template-file: ./ALZ-Deploy/workloads/workload-online1/kv-acmebot.bicep
+          parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/kv-acmebot.parameters.${{inputs.environment}}.json
           parameters: |
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
       - name: Get function app key

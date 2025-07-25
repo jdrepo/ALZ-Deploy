@@ -1,4 +1,4 @@
-metadata name = 'ALZ IaaS Online Landing Zone'
+metadata name = 'ALZ IaaS Online Landing Zone '
 metadata description = 'ALZ Bicep Module used to set up IaaS Online Application Landing Zone'
 
 targetScope = 'resourceGroup'
