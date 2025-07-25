@@ -237,7 +237,7 @@ jobs:
           scope: resourceGroup
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
           resource-group-name: ${{ env.appRgName }}
-          template-file: ./ALZ-Deploy/workloads/kv-acmebot.bicep
+          template-file: ./ALZ-Deploy/workloads/workload-online1/kv-acmebot.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/kv-acmebot.parameters.${{inputs.environment}}.json
           parameters: |
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
