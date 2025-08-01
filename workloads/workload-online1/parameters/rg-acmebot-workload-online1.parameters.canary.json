@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "name": {
-      "value": "rg-alz-workload-online-001-compute-gwc-canary"
+      "value": "rg-alz-workload-online-001-acmebot-gwc-canary"
     },
     "location": {
         "value": "germanywestcentral"
