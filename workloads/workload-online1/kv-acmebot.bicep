@@ -412,5 +412,6 @@ output acmeBotAppName string = modKeyVaultAcmeBot.outputs.name
 @secure()
 output outFunctionAppKey string = modListKeysHelperFunctionApp.outputs.key
 
+output outLogWorkspaceResourceId string = modLogWorkSpace.outputs.resourceId
 
 
