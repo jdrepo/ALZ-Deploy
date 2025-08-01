@@ -8,8 +8,11 @@
     "parLocation": {
       "value": "germanywestcentral"
     },
-	"parPublicDnsZoneName": {
-		"value": "schoolscloud.eu"
-	}
+    "parPublicDnsZoneName": {
+      "value": "schoolscloud.eu"
+    },
+    "parAppNamePrefix": {
+      "value": "kvacmebot"
+    }
   }
 }
