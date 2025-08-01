@@ -1,5 +1,5 @@
-metadata name = 'ALZ IaaS Online Landing Zone '
-metadata description = 'ALZ Bicep Module used to set up IaaS Online Application Landing Zone'
+metadata name = 'KeyVault ACME Bot '
+metadata description = 'Setup and configure KeyVault ACME Bot'
 
 targetScope = 'resourceGroup'
 
