@@ -99,6 +99,7 @@ env:
   vnetName: '${{inputs.vnetname}}-${{inputs.environment}}'
   vnetRg: '${{inputs.vnetrg}}-${{inputs.environment}}'
   appRgName: 'rg-alz-workload-online-001-compute-gwc-${{inputs.environment}}'
+  acmeBotRgName: 'rg-alz-workload-online-001-acmebot-gwc-${{inputs.environment}}'
 
 
 
@@ -140,6 +141,9 @@ jobs:
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
           template-file: ./bicep-registry-modules/avm/res/resources/resource-group/main.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/rg-compute-workload-online1.parameters.${{inputs.environment}}.json
+          parameters: |
+            name: ${{ env.acmeBotRgName }}
+            location: ${{ env.location }}
       - name: Compute RG - Preview
         id: compute_rg_preview
         uses: azure/bicep-deploy@v2
@@ -152,6 +156,9 @@ jobs:
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
           template-file: ./bicep-registry-modules/avm/res/resources/resource-group/main.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/rg-compute-workload-online1.parameters.${{inputs.environment}}.json
+          parameters: |
+            name: ${{ env.acmeBotRgName }}
+            location: ${{ env.location }}
   deploy_compute_rg:
     runs-on: ubuntu-latest
     needs: validate_preview_compute_rg
@@ -188,7 +195,7 @@ jobs:
           template-file: ./bicep-registry-modules/avm/res/resources/resource-group/main.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/rg-compute-workload-online1.parameters.${{inputs.environment}}.json
           parameters: |
-            name: ${{ env.appRgName }}
+            name: ${{ env.acmeBotRgName }}
             location: ${{ env.location }}
   wl_ol1_app_validation_preview:
     runs-on: ubuntu-latest
@@ -222,7 +229,7 @@ jobs:
           name: kv_acmebot_validate-${{env.runNumber}}
           scope: resourceGroup
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
-          resource-group-name: ${{ env.appRgName }}
+          resource-group-name: ${{ env.acmeBotRgName }}
           template-file: ./ALZ-Deploy/workloads/workload-online1/kv-acmebot.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/kv-acmebot.parameters.${{inputs.environment}}.json
           parameters: |
@@ -236,7 +243,7 @@ jobs:
           name: kv_acmebot_preview-${{env.runNumber}}
           scope: resourceGroup
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
-          resource-group-name: ${{ env.appRgName }}
+          resource-group-name: ${{ env.acmeBotRgName }}
           template-file: ./ALZ-Deploy/workloads/workload-online1/kv-acmebot.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/kv-acmebot.parameters.${{inputs.environment}}.json
           parameters: |
@@ -274,7 +281,7 @@ jobs:
           name: kv_acmebot_deploy-${{env.runNumber}}
           scope: resourceGroup
           subscription-id: ${{secrets.WL_OL1_SUB_ID}}
-          resource-group-name: ${{ env.appRgName }}
+          resource-group-name: ${{ env.acmeBotRgName }}
           template-file: ./ALZ-Deploy/workloads/workload-online1/kv-acmebot.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/kv-acmebot.parameters.${{inputs.environment}}.json
           parameters: |
@@ -286,7 +293,7 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az account set -s "${{secrets.WL_OL1_SUB_ID}}"
-            FUNCTION_APP_KEY=$(az functionapp keys list -n ${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --query functionKeys.default --output tsv)
+            FUNCTION_APP_KEY=$(az functionapp keys list -n ${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}} -g ${{ env.acmeBotRgName }} --query functionKeys.default --output tsv)
             echo "::add-mask::$FUNCTION_APP_KEY"
             echo "FUNCTION_APP_KEY=$FUNCTION_APP_KEY" >> $GITHUB_ENV
             # echo output1 $FUNCTION_APP_KEY | sed 's/./& /g'
@@ -298,7 +305,7 @@ jobs:
           az account set -s "${{secrets.WL_OL1_SUB_ID}}"
           az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors -o none
           az extension add --name authV2 --only-show-errors -o none
-          az webapp auth update -n ${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled false --only-show-errors -o none
+          az webapp auth update -n ${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}} -g ${{ env.acmeBotRgName }} --enabled false --only-show-errors -o none
           echo "sleep for 10 seconds for auth settings"
           sleep 10
           echo "Get all assigned certificates"
@@ -312,7 +319,7 @@ jobs:
             echo "Request new cert for: ${{inputs.certcn}}"
             curl --no-progress-meter -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "${{inputs.certcn}}" ] }'
           fi
-          az webapp auth update -n ${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}} -g ${{ env.appRgName }} --enabled true --only-show-errors -o none          
+          az webapp auth update -n ${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}} -g ${{ env.acmeBotRgName }} --enabled true --only-show-errors -o none          
           #curl --no-progress-meter -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "${{inputs.certcn}}" ] }'
       # - name: Create certificate request with PowerShell
       #   id: create_cert_request_ps
