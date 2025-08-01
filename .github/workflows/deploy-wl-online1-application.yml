@@ -307,14 +307,11 @@ jobs:
           az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors -o none
           az extension add --name authV2 --only-show-errors -o none
           az webapp auth update -n ${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}} -g ${{ env.acmeBotRgName }} --enabled false --only-show-errors -o none
-          echo "sleep for 20 seconds for auth settings"
-          sleep 20
+          echo "sleep for 10 seconds for auth settings"
+          sleep 10
           echo "Get all assigned certificates"
-          echo $(curl --no-progress-meter -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates)
           certs=$(curl --no-progress-meter -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates) 
-          certs2=$(curl --no-progress-meter -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates) | jq .
           echo "Assigned certificates: $certs"
-          echo "Assigned certificates2: $certs2"
           certexists=$(echo $certs | jq '.[]  | select( .dnsNames | contains(["${{inputs.certcn}}"]))')
           echo $certexists
           if [ -n "$certexists" ]; 
