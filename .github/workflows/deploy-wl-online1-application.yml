@@ -192,7 +192,7 @@ jobs:
   deploy_rgs:
     runs-on: ubuntu-latest
     needs: validate_preview_rgs
-    name: AcmeBot Resource Group - Deploy
+    name: Resource Groups - Deploy
     if: ${{ inputs.deploy == true }}
     steps:
       - name: Checkout Repo
