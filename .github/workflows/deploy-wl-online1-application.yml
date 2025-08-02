@@ -242,7 +242,7 @@ jobs:
           parameters: |
             name: ${{ env.appRgName }}
             location: ${{ env.location }}
-  wl_ol1_app_validation_preview:
+  acmebot_validation_preview:
     runs-on: ubuntu-latest
     needs: deploy_rgs
     environment: ${{inputs.environment}}
@@ -294,9 +294,9 @@ jobs:
           parameters: |
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
             
-  wl_ol1_app_deploy:
+  acmebot_deploy:
     runs-on: ubuntu-latest
-    needs: wl_ol1_app_validation_preview
+    needs: acmebot_validation_preview
     if: ${{ inputs.deploy == true }}
     environment: ${{inputs.environment}}
     name: Key Vault Acmebot - Deploy
