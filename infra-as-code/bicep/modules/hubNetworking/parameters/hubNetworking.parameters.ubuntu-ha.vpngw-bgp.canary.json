@@ -133,7 +133,8 @@
       "value": [
         "privatelink.file.core.windows.net",
         "privatelink.wvd.microsoft.com",
-        "privatelink.{regionCode}.backup.windowsazure.com"
+        "privatelink.{regionCode}.backup.windowsazure.com",
+        "privatelink.vaultcore.azure.net"
       ]
     },
     "parVpnGatewayEnabled": {
