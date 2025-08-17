@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "parExistingSubscriptionId": {
+      "value": ""
+    },
+    "parLocation": {
+      "value": "germanywestcentral"
+    },
+    "parSubscriptionManagementGroupId": {
+      "value": "alz-landingzones-online-canary"
+    },
+    "parVirtualNetworkResourceGroupName": {
+      "value": "rg-alz-workload-online-001-spoke-gwc-canary"
+    },
+    "parVirtualNetworkName": {
+      "value": "vnet-gwc-workload-online-001-canary"
+    },
+    "parIpGroupBastionRangesInHubName": {
+      "value": "ipg-gwc-hub-bastions-canary"
+    },
+    "parVirtualNetworkAddressSpace": {
+      "value": [
+        "10.240.0.0/21"
+      ]
+    },
+    "parVirtualNetworkUseRemoteGateways": {
+      "value": false
+    },
+    "parVirtualNetworkPeeringEnabled": {
+      "value": true
+    },
+    "parHubNetworkNvaIpAddress": {
+      "value": "10.10.250.4"
+    },
+    "parVirtualNetworkDnsServers": {
+      "value": [
+        "10.20.1.4"
+      ]
+    }
+  }
+}
