@@ -445,6 +445,78 @@
         <any/>
       </destination>
     </rule>
+    <rule>
+      <type>pass</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Allow workload_online_001_snet_be to any</descr>
+      <interface>lan</interface>
+      <source>
+        <network>workload_online_001_snet_be</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Allow workload_online_001_snet_fe to any</descr>
+      <interface>lan</interface>
+      <source>
+        <network>workload_online_001_snet_fe</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Allow workload_online_001_snet_ilb to any</descr>
+      <interface>lan</interface>
+      <source>
+        <network>workload_online_001_snet_ilb</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Allow workload_online_001_snet_pl_ep to any</descr>
+      <interface>lan</interface>
+      <source>
+        <network>workload_online_001_snet_pl_ep</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Allow workload_online_001_snet_agent to any</descr>
+      <interface>lan</interface>
+      <source>
+        <network>workload_online_001_snet_agent</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Allow workload_online_001_snet_agw to any</descr>
+      <interface>lan</interface>
+      <source>
+        <network>workload_online_001_snet_agw</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+    </rule>
   </filter>
   <rrd>
     <enable/>
@@ -678,6 +750,78 @@
             <counters>0</counters>
             <updatefreq/>
             <content>10.20.1.0/24</content>
+            <categories/>
+            <description/>
+          </alias>
+          <alias>
+            <enabled>1</enabled>
+            <name>workload_online_001_snet_be</name>
+            <type>network</type>
+            <proto/>
+            <interface/>
+            <counters>0</counters>
+            <updatefreq/>
+            <content>10.240.1.0/24</content>
+            <categories/>
+            <description/>
+          </alias>
+          <alias>
+            <enabled>1</enabled>
+            <name>workload_online_001_snet_fe</name>
+            <type>network</type>
+            <proto/>
+            <interface/>
+            <counters>0</counters>
+            <updatefreq/>
+            <content>10.240.0.0/24</content>
+            <categories/>
+            <description/>
+          </alias>
+          <alias>
+            <enabled>1</enabled>
+            <name>workload_online_001_snet_ilb</name>
+            <type>network</type>
+            <proto/>
+            <interface/>
+            <counters>0</counters>
+            <updatefreq/>
+            <content>10.240.4.0/28</content>
+            <categories/>
+            <description/>
+          </alias>
+          <alias>
+            <enabled>1</enabled>
+            <name>workload_online_001_snet_pl_ep</name>
+            <type>network</type>
+            <proto/>
+            <interface/>
+            <counters>0</counters>
+            <updatefreq/>
+            <content>10.240.4.32/28</content>
+            <categories/>
+            <description/>
+          </alias>
+          <alias>
+            <enabled>1</enabled>
+            <name>workload_online_001_snet_agent</name>
+            <type>network</type>
+            <proto/>
+            <interface/>
+            <counters>0</counters>
+            <updatefreq/>
+            <content>10.240.4.96/28</content>
+            <categories/>
+            <description/>
+          </alias>
+          <alias>
+            <enabled>1</enabled>
+            <name>workload_online_001_snet_agw</name>
+            <type>network</type>
+            <proto/>
+            <interface/>
+            <counters>0</counters>
+            <updatefreq/>
+            <content>10.240.5.0/24</content>
             <categories/>
             <description/>
           </alias>
@@ -1227,6 +1371,96 @@
         </destination>
         <natport/>
         <descr>External access for identity-subnet1</descr>
+        <created/>
+        <dstport/>
+      </rule>
+      <rule>
+        <interface>wan</interface>
+        <source>
+          <network>workload_online_001_snet_be</network>
+        </source>
+        <sourceport/>
+        <target/>
+        <destination>
+          <any>1</any>
+        </destination>
+        <natport/>
+        <descr>External access for workload_online_001_snet_be</descr>
+        <created/>
+        <dstport/>
+      </rule>
+      <rule>
+        <interface>wan</interface>
+        <source>
+          <network>workload_online_001_snet_fe</network>
+        </source>
+        <sourceport/>
+        <target/>
+        <destination>
+          <any>1</any>
+        </destination>
+        <natport/>
+        <descr>External access for workload_online_001_snet_fe</descr>
+        <created/>
+        <dstport/>
+      </rule>
+      <rule>
+        <interface>wan</interface>
+        <source>
+          <network>workload_online_001_snet_ilb</network>
+        </source>
+        <sourceport/>
+        <target/>
+        <destination>
+          <any>1</any>
+        </destination>
+        <natport/>
+        <descr>External access for workload_online_001_snet_ilb</descr>
+        <created/>
+        <dstport/>
+      </rule>
+      <rule>
+        <interface>wan</interface>
+        <source>
+          <network>workload_online_001_snet_pl_ep</network>
+        </source>
+        <sourceport/>
+        <target/>
+        <destination>
+          <any>1</any>
+        </destination>
+        <natport/>
+        <descr>External access for workload_online_001_snet_pl_ep</descr>
+        <created/>
+        <dstport/>
+      </rule>
+      <rule>
+        <interface>wan</interface>
+        <source>
+          <network>workload_online_001_snet_agent</network>
+        </source>
+        <sourceport/>
+        <target/>
+        <destination>
+          <any>1</any>
+        </destination>
+        <natport/>
+        <descr>External access for workload_online_001_snet_agent</descr>
+        <created/>
+        <dstport/>
+      </rule>
+      <rule>
+        <interface>wan</interface>
+        <source>
+          <network>workload_online_001_snet_agw</network>
+        </source>
+        <sourceport/>
+        <target/>
+        <destination>
+          <any>1</any>
+        </destination>
+        <natport/>
+        <descr>External access for workload_online_001_snet_agw</descr>
         <created/>
         <dstport/>
       </rule>
