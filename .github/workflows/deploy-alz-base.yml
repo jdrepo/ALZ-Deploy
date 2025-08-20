@@ -1804,6 +1804,7 @@ jobs:
             parLogStorageAccountResourceId=${{steps.get_resources.outputs.logStorageAccountResourceId}}
             parNetworkWatcherResourceId=${{steps.get_resources.outputs.networkWatcherResourceId}}
             parPlatformPrimaryLocation=${{steps.get_resources.outputs.platformPrimaryLocation}}
+            parPrivateDnsResourceGroupId=${{ steps.get_resources.outputs.privateDnsResourceGroupId }}
           deploymentName: deploy_custPolAssign_validate-${{ env.runNumber }}
           failOnStdErr: false
           deploymentMode: Validate
@@ -1823,6 +1824,7 @@ jobs:
             parLogStorageAccountResourceId=${{steps.get_resources.outputs.logStorageAccountResourceId}}
             parNetworkWatcherResourceId=${{steps.get_resources.outputs.networkWatcherResourceId}}
             parPlatformPrimaryLocation=${{steps.get_resources.outputs.platformPrimaryLocation}}
+            parPrivateDnsResourceGroupId=${{ steps.get_resources.outputs.privateDnsResourceGroupId }}
           deploymentName: deploy_custPolAssign_preview-${{ env.runNumber }}
           failOnStdErr: false
           additionalArguments: "--what-if"
@@ -1888,6 +1890,7 @@ jobs:
               parLogStorageAccountResourceId=${{steps.get_resources.outputs.logStorageAccountResourceId}}
               parNetworkWatcherResourceId=${{steps.get_resources.outputs.networkWatcherResourceId}}
               parPlatformPrimaryLocation=${{steps.get_resources.outputs.platformPrimaryLocation}}
+              parPrivateDnsResourceGroupId=${{ steps.get_resources.outputs.privateDnsResourceGroupId }}
             deploymentName: deploy_custPolAssign-deployment${{ env.runNumber }}
             failOnStdErr: false
   validate_preview_identityNetwork_rg:

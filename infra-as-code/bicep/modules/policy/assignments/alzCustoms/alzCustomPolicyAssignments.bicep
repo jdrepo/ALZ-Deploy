@@ -635,7 +635,7 @@ module modPolicyAssignmentLzsCorpDenyPrivateDNSZones '../../../policy/assignment
 
 // Modules - Policy Assignments - Online Management Group
 // Module - Policy Assignment - Deploy-Private-DNS-Zones
-module modPolAssiConnDeployPrivateDnsZones '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = [for mgScope in varOnlineManagementGroupIds: if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployPrivateDNSZones.libDefinition.name)) {
+module modPolAssiConnDeployPrivateDnsZones '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = [for mgScope in varOnlineManagementGroupIds: if ((!empty(varPrivateDnsZonesResourceGroupSubscriptionId)) && (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployPrivateDNSZones.libDefinition.name))) {
   scope: managementGroup(mgScope)
   name: varModuleDeploymentNames.modPolAssiLzsOnlineDeployPrivateDnsZones
   params: {
