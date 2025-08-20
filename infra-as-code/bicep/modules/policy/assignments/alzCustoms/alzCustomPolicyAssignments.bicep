@@ -102,7 +102,7 @@ var varModuleDeploymentNames = {
     modPolicyAssignmentPlatformDeployTrafficAnalytics: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployTrafficAnalytics-platform-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentIdentAuditKVSecretExpire: take('${varDeploymentNameWrappers.basePrefix}-polAssi-auditKVSecretExpire-identity-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
     modPolicyAssignmentPlatformDeployDiagFirewall: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployDiagnosticsFirewall-conn-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
-    modPolAssiLzsOnlineDeployPrivateDnsZones: take('${varDeploymentNameWrappers.basePrefix}-deployPrivDns-online-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
+    modPolAssiLzsOnlineDeployPrivateDnsZones: take('${varDeploymentNameWrappers.basePrefix}-polAssi-deployPrivDns-online-${varDeploymentNameWrappers.baseSuffixTenantAndManagementGroup}', 64)
 
 }
 
@@ -203,6 +203,10 @@ var varManagementGroupIds = {
 var varCorpManagementGroupIds = [
   varManagementGroupIds.landingZonesCorp
   varManagementGroupIds.landingZonesConfidentialCorp
+]
+
+var varOnlineManagementGroupIds = [
+   varManagementGroupIds.landingZonesOnline
 ]
 
 var varCorpManagementGroupIdsFiltered = parLandingZoneMgConfidentialEnable ? varCorpManagementGroupIds : filter(varCorpManagementGroupIds, mg => !contains(toLower(mg), 'confidential'))
@@ -631,7 +635,7 @@ module modPolicyAssignmentLzsCorpDenyPrivateDNSZones '../../../policy/assignment
 
 // Modules - Policy Assignments - Online Management Group
 // Module - Policy Assignment - Deploy-Private-DNS-Zones
-module modPolAssiConnDeployPrivateDnsZones '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = [for mgScope in varCorpManagementGroupIdsFiltered: if ((!empty(varPrivateDnsZonesResourceGroupSubscriptionId)) && (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployPrivateDNSZones.libDefinition.name)) ) {
+module modPolAssiConnDeployPrivateDnsZones '../../../policy/assignments/policyAssignmentManagementGroup.bicep' = [for mgScope in varOnlineManagementGroupIds: if (!contains(parExcludedPolicyAssignments, varPolicyAssignmentDeployPrivateDNSZones.libDefinition.name)) {
   scope: managementGroup(mgScope)
   name: varModuleDeploymentNames.modPolAssiLzsOnlineDeployPrivateDnsZones
   params: {
