@@ -222,6 +222,8 @@
       <compression/>
       <nohttpreferercheck>1</nohttpreferercheck>
       <noantilockout>1</noantilockout>
+      <interfaces/>
+      <nodnsrebindcheck>1</nodnsrebindcheck>
     </webgui>
     <disablenatreflection>yes</disablenatreflection>
     <usevirtualterminal>1</usevirtualterminal>
@@ -240,8 +242,7 @@
     <backupcount>60</backupcount>
     <crypto_hardware>aesni</crypto_hardware>
     <language>en_US</language>
-    <dnsserver>8.8.8.8</dnsserver>
-    <dnsserver>8.8.4.4</dnsserver>
+    <dnsserver>168.63.129.16</dnsserver>
     <sudo_allow_wheel>1</sudo_allow_wheel>
     <serialspeed>115200</serialspeed>
     <primaryconsole>video</primaryconsole>
@@ -268,7 +269,7 @@
       <subscription/>
       <reboot/>
     </firmware>
-    <dnsallowoverride_exclude/>
+    <dnslocalhost>1</dnslocalhost>
   </system>
   <interfaces>
     <wan>
@@ -1515,4 +1516,8 @@
   <wireless>
     <clone/>
   </wireless>
+  <dnsmasq>
+    <log_queries>1</log_queries>
+    <interface>lan</interface>
+  </dnsmasq>
 </opnsense>
