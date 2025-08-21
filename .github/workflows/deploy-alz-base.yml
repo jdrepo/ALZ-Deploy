@@ -1778,6 +1778,7 @@ jobs:
             az account set -s "${{env.ConnectivitySubId}}"
             hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
             hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+            privateDnsResourceGroupId=$(az group show --name ${{ env.HubPrivateDNSResourceGroupName }} --query id)
             echo "$hubNetworkResourceId"
             echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
             echo "$logAnalyticsWorkspaceResourceId"
@@ -1788,6 +1789,7 @@ jobs:
             echo "networkWatcherResourceId=$networkWatcherResourceId" >> "$GITHUB_OUTPUT"
             echo "$platformPrimaryLocation"
             echo "platformPrimaryLocation=$platformPrimaryLocation" >> "$GITHUB_OUTPUT"
+            echo "privateDnsResourceGroupId=$privateDnsResourceGroupId" >> "$GITHUB_OUTPUT"
       - name: Custom Policy Assignment - Validation
         id: deploy_custPolAssignment_validation
         uses: azure/arm-deploy@v2
@@ -1864,6 +1866,7 @@ jobs:
               az account set -s "${{env.ConnectivitySubId}}"
               hubNetworkName=$(jq -r .parameters.parHubNetworkName.value infra-as-code/bicep/modules/hubNetworking/parameters/hubNetworking.parameters.${{inputs.nva}}.${{inputs.vpngw}}.${{inputs.environment}}.json) 
               hubNetworkResourceId=$(az network vnet show --resource-group ${{ env.HubNetworkResourceGroupName }} --name $hubNetworkName --query id)
+              privateDnsResourceGroupId=$(az group show --name ${{ env.HubPrivateDNSResourceGroupName }} --query id)
               echo "$hubNetworkResourceId"
               echo "hubNetworkResourceId=$hubNetworkResourceId" >> "$GITHUB_OUTPUT"
               echo "$logAnalyticsWorkspaceResourceId"
@@ -1874,6 +1877,7 @@ jobs:
               echo "networkWatcherResourceId=$networkWatcherResourceId" >> "$GITHUB_OUTPUT"
               echo "$platformPrimaryLocation"
               echo "platformPrimaryLocation=$platformPrimaryLocation" >> "$GITHUB_OUTPUT"
+              echo "privateDnsResourceGroupId=$privateDnsResourceGroupId" >> "$GITHUB_OUTPUT"
         - name: Custom Policy Assignment - Deployment
           id: deploy_custPolAssignment_deployment
           uses: azure/arm-deploy@v2
