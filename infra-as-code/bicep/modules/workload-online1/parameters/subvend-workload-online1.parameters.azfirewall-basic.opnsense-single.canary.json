@@ -36,7 +36,7 @@
     },
     "parVirtualNetworkDnsServers": {
       "value": [
-        "10.20.1.4"
+        "10.10.250.4"
       ]
     }
   }
