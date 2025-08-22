@@ -1211,7 +1211,7 @@
     <DHCRelay version="1.0.1"/>
     <unboundplus version="1.0.9">
       <general>
-        <enabled>1</enabled>
+        <enabled>0</enabled>
         <port>53</port>
         <stats/>
         <active_interface/>
