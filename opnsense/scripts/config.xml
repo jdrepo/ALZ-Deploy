@@ -1517,6 +1517,7 @@
     <clone/>
   </wireless>
   <dnsmasq>
+    <enable>1</enable>
     <log_queries>1</log_queries>
     <interface>lan</interface>
   </dnsmasq>
