@@ -93,6 +93,7 @@ on:
       
 
 env:
+  groupName: 'compute-admins-workload-online-001-${{ inputs.environment }}'
   workloadSubscriptionId: ${{secrets.WL_OL1_SUB_ID}}
   location: ${{inputs.location}}
   runNumber: ${{ github.run_number }}
