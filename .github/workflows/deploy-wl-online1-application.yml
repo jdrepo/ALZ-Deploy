@@ -42,6 +42,22 @@ on:
         description: 'Spoke VNet Name'
         type: string
         default: 'vnet-gwc-workload-online-001'
+      bastionipgname:
+        description: 'Bastion Hub IP Group Name'
+        type: string
+        default: 'ipg-gwc-hub-bastions-canary'
+      routetablename:
+        description: 'Route Table to Hub firewall'
+        type: string
+        default: 'route-to-connectivity-germanywestcentral-hub-fw'
+      objectid:
+        description: 'Entra Id admin user group id'
+        type: string
+        default: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
+      keyvaultname:
+        description: 'Certificate Key vault Name'
+        type: string
+        default: 'kv-gwc-kvacmebot-dyql'
       certcn:
         description: 'Certificate common name'
         type: string
@@ -76,6 +92,22 @@ on:
         description: 'Spoke VNet Name'
         type: string
         default: 'vnet-gwc-workload-online-001'
+      bastionipgname:
+        description: 'Bastion Hub IP Group Name'
+        type: string
+        default: 'ipg-gwc-hub-bastions-canary'
+      routetablename:
+        description: 'Route Table to Hub firewall'
+        type: string
+        default: 'route-to-connectivity-germanywestcentral-hub-fw'
+      objectid:
+        description: 'Entra Id admin user group id'
+        type: string
+        default: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
+      keyvaultname:
+        description: 'Certificate Key vault Name'
+        type: string
+        default: 'kv-gwc-kvacmebot-dyql'
       certcn:
         description: 'Certificate common name'
         type: string
@@ -298,6 +330,8 @@ jobs:
   acmebot_deploy:
     runs-on: ubuntu-latest
     needs: acmebot_validation_preview
+    outputs: 
+      keyVaultResourceId: ${{steps.kv_acmebot_deploy.outputs.outKeyVaultResourceId}}
     if: ${{ inputs.deploy == true }}
     environment: ${{inputs.environment}}
     name: Key Vault Acmebot - Deploy
@@ -414,7 +448,12 @@ jobs:
           template-file: ./ALZ-Deploy/workloads/workload-online1/app-compute.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/app-compute.parameters.${{inputs.environment}}.json
           parameters: |
-            parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
+            parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetname}}'
+            parBastionHostIpGroupResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/ipGroups/${{inputs.bastionipgname}}'
+            parRouteTableNextHopToFirewallResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/routeTables/${{inputs.routetablename}}'
+            parAdminSecurityPrincipalObjectId: ${{inputs.objectid}}
+            parKeyVaultResourceId: ${{needs.acmebot_deploy.outputs.keyVaultResourceId}}
+            parKeyVaultSecretId: 'https://${{inputs.keyvaultname}}.vault.azure.net/secrets/wildcard-app01-schoolscloud-eu'
       - name: Compute - Preview
         id: compute_preview
         uses: azure/bicep-deploy@v2
@@ -431,7 +470,10 @@ jobs:
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
   compute_deploy:
     runs-on: ubuntu-latest
-    needs: compute_validation_preview
+    needs: [
+      compute_validation_preview,
+      acmebot_deploy
+    ]
     if: ${{ inputs.deploy == true }}
     environment: ${{inputs.environment}}
     name: Compute - Deploy
