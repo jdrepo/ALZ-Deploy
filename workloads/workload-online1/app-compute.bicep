@@ -1145,7 +1145,7 @@ module modVmssKeyVaultExtension '../../../bicep-registry-modules/avm/res/compute
   }
 }
 
-module modVmssBackendCustomScriptExtension '../../infra-as-code/bicep/modules/compute/virtual-machine-scale-set/extension/main.bicep' = {
+module modVmssBackendCustomScriptExtension '../../infra-as-code/bicep/modules/Compute/virtual-machine-scale-set/extension/main.bicep' = {
   params: {
     provisionAfterExtensions: [
       modVmssKeyVaultExtension.outputs.name
