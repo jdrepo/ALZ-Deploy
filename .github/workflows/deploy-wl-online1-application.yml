@@ -50,14 +50,6 @@ on:
         description: 'Route Table to Hub firewall'
         type: string
         default: 'route-to-connectivity-germanywestcentral-hub-fw'
-      objectid:
-        description: 'Entra Id admin user group id'
-        type: string
-        default: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
-      keyvaultname:
-        description: 'Certificate Key vault Name'
-        type: string
-        default: 'kv-gwc-kvacmebot-dyql'
       certcn:
         description: 'Certificate common name'
         type: string
@@ -100,14 +92,6 @@ on:
         description: 'Route Table to Hub firewall'
         type: string
         default: 'route-to-connectivity-germanywestcentral-hub-fw'
-      objectid:
-        description: 'Entra Id admin user group id'
-        type: string
-        default: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
-      keyvaultname:
-        description: 'Certificate Key vault Name'
-        type: string
-        default: 'kv-gwc-kvacmebot-dyql'
       certcn:
         description: 'Certificate common name'
         type: string
@@ -451,9 +435,9 @@ jobs:
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetname}}'
             parBastionHostIpGroupResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/ipGroups/${{inputs.bastionipgname}}'
             parRouteTableNextHopToFirewallResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/routeTables/${{inputs.routetablename}}'
-            parAdminSecurityPrincipalObjectId: ${{inputs.objectid}}
+            parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
             parKeyVaultResourceId: ${{needs.acmebot_deploy.outputs.keyVaultResourceId}}
-            parKeyVaultSecretId: 'https://${{inputs.keyvaultname}}.vault.azure.net/secrets/wildcard-app01-schoolscloud-eu'
+            parKeyVaultSecretId: 'https://kv-gwc-kvacmebot-dyql.vault.azure.net/secrets/wildcard-app01-schoolscloud-eu'
       - name: Compute - Preview
         id: compute_preview
         uses: azure/bicep-deploy@v2
