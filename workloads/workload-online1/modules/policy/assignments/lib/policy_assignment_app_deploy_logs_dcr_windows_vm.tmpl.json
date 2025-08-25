@@ -1,0 +1,28 @@
+{
+	"name": "Deploy-LogsDcr-WindowsVm",
+	"type": "Microsoft.Authorization/policyAssignments",
+	"apiVersion": "2024-04-01",
+	"properties": {
+		"description": "Deploy Association to link Windows virtual machines, virtual machine scale sets, and Arc machines to the specified Data Collection Rule or the specified Data Collection Endpoint.",
+		"displayName": "Configure Windows virtual machines with logs data collection rules.",
+		"notScopes": [],
+		"parameters": {
+			"effect": {
+				"value": "DeployIfNotExists"
+			},
+			"dcrResourceId": {
+				"value": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/rg-alz-workload-online-001-compute-gwc-canary/providers/Microsoft.Insights/dataCollectionRules/dcr-gwc-windows-logs"
+			},
+            "resourceType" : {
+                "value": "Microsoft.Insights/dataCollectionRules"
+            }
+		},
+		"policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/eab1f514-22e3-42e3-9a1f-e1dc9199355c",
+		"scope": null,
+		"enforcementMode": "Default"
+	},
+	"location": null,
+	"identity": {
+		"type": "SystemAssigned"
+	}
+}
