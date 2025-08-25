@@ -155,7 +155,7 @@ var acmebotAuthSettings = (parEnableMiAsFic)
 // Modules and Resources
 
 // function app
-module modKeyVaultAcmeBot 'br/public:avm/res/web/site:0.19.0' = {
+module modFuncKeyVaultAcmeBot 'br/public:avm/res/web/site:0.19.0' = {
   name: '${_dep}-func-keyvault-acmebot'
   scope: resourceGroup()
   params: {
@@ -275,7 +275,7 @@ resource ServicePrincipalKeyVaultAcmeBot 'Microsoft.Graph/servicePrincipals@v1.0
 module modListKeysHelperFunctionApp'./modules/list-keys-helper.bicep' = {
   name: '${_dep}-list-keys-helper-functionapp'
   params: {
-    resourceId: modKeyVaultAcmeBot.outputs.resourceId
+    resourceId: modFuncKeyVaultAcmeBot.outputs.resourceId
     apiVersion: '2024-11-01'
   }
 }
@@ -381,7 +381,7 @@ module modRbacNewKeyVaultAcmeBot '../../../bicep-registry-modules/avm/ptn/author
   name: '${_dep}-rbac-keyvault-acmebot'
   scope: resourceGroup()
   params: {
-    principalId: modKeyVaultAcmeBot.outputs.systemAssignedMIPrincipalId!
+    principalId: modFuncKeyVaultAcmeBot.outputs.systemAssignedMIPrincipalId!
     roleDefinitionId: 'a4417e6f-fecd-4de8-b567-7b0420556985' // Key Vault Certificates Officer
     resourceId: modKeyVault.outputs.resourceId
   }
@@ -391,7 +391,7 @@ module modRbacExistingKeyVaultAcmeBot '../../../bicep-registry-modules/avm/ptn/a
   name: '${_dep}-rbac-keyvault-acmebot'
   scope: resourceGroup(varExistingKeyVault.subscriptionId,varExistingKeyVault.resourceGroupName)
   params: {
-    principalId: modKeyVaultAcmeBot.outputs.systemAssignedMIPrincipalId!
+    principalId: modFuncKeyVaultAcmeBot.outputs.systemAssignedMIPrincipalId!
     roleDefinitionId: 'a4417e6f-fecd-4de8-b567-7b0420556985' // Key Vault Certificates Officer
     resourceId: resKeyVault.id
   }
@@ -401,17 +401,17 @@ module modRbacDnsZoneKeyVaultAcme '../../../bicep-registry-modules/avm/ptn/autho
   name: '${_dep}-rbac-dnszone-keyvault-acmebot'
   scope: resourceGroup()
   params: {
-    principalId: modKeyVaultAcmeBot.outputs.systemAssignedMIPrincipalId!
+    principalId: modFuncKeyVaultAcmeBot.outputs.systemAssignedMIPrincipalId!
     roleDefinitionId: 'befefa01-2a29-4197-83a8-272ff33ce314' // DNS Zone Contributor
     resourceId: modPublicDnsZone.outputs.resourceId
   }
 }
 
-output acmeBotAppName string = modKeyVaultAcmeBot.outputs.name
+output acmeBotAppName string = modFuncKeyVaultAcmeBot.outputs.name
 
 @secure()
 output outFunctionAppKey string = modListKeysHelperFunctionApp.outputs.key
 
 output outLogWorkspaceResourceId string = modLogWorkSpace.outputs.resourceId
 
-
+output outKeyVaultResourceId string = parCreateKeyVault ? (modKeyVault.?outputs.resourceId ?? '') : ''
