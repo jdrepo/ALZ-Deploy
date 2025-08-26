@@ -372,7 +372,8 @@ jobs:
         shell: bash
         run: |
           # echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
-          certcnarray=$(echo $certcn | jq -r 'split(",")')
+          echo "certcn: ${{inputs.certcn}}"
+          certcnarray=$(echo ${{inputs.certcn}} | jq -r 'split(",")')
           echo "certcnarray: $certcnarray"
           cn=$(echo $certcnarray | jq -r '.[0]')
           echo "cn: $cn"
