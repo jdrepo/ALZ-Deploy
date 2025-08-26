@@ -316,6 +316,7 @@ jobs:
     needs: acmebot_validation_preview
     outputs: 
       keyVaultResourceId: ${{steps.kv_acmebot_deploy.outputs.outKeyVaultResourceId}}
+      keyVaultName: ${{steps.kv_acmebot_deploy.outputs.outKeyVaultName}}
     if: ${{ inputs.deploy == true }}
     environment: ${{inputs.environment}}
     name: Key Vault Acmebot - Deploy
@@ -351,6 +352,10 @@ jobs:
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/kv-acmebot.parameters.${{inputs.environment}}.json
           parameters: |
             parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
+      - name: Print Deployment Outputs
+        run: |
+          echo "outKeyVaultResourceId: ${{ steps.kv_acmebot_deploy.outputs.outKeyVaultResourceId }}"
+          echo "outKeyVaultName: ${{ steps.kv_acmebot_deploy.outputs.outKeyVaultName }}"
       - name: Get function app key
         id: fix_function_auth
         uses: azure/cli@v2
@@ -419,6 +424,10 @@ jobs:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Print AcmeBot Deployment Outputs
+        run: |
+          echo "outKeyVaultResourceId: ${{needs.acmebot_deploy.outputs.keyVaultResourceId}}"
+          echo "outKeyVaultName: ${{needs.acmebot_deploy.outputs.keyVaultName}}"
       - name: Compute - Validate
         id: compute_validate
         uses: azure/bicep-deploy@v2
@@ -436,7 +445,7 @@ jobs:
             parBastionHostIpGroupResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/ipGroups/${{inputs.bastionipgname}}'
             parRouteTableNextHopToFirewallResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/routeTables/${{inputs.routetablename}}'
             parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
-            parKeyVaultResourceId: ${{needs.acmebot_deploy.outputs.keyVaultResourceId}}
+            parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
             parKeyVaultSecretId: 'https://kv-gwc-kvacmebot-dyql.vault.azure.net/secrets/wildcard-app01-schoolscloud-eu'
       - name: Compute - Preview
         id: compute_preview

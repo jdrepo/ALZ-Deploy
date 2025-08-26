@@ -415,3 +415,4 @@ output outFunctionAppKey string = modListKeysHelperFunctionApp.outputs.key
 output outLogWorkspaceResourceId string = modLogWorkSpace.outputs.resourceId
 
 output outKeyVaultResourceId string = parCreateKeyVault ? (modKeyVault.?outputs.resourceId ?? '') : ''
+output outKeyVaultName string = parCreateKeyVault ? varKeyVaultName : ''
