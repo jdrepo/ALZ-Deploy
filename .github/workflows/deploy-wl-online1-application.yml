@@ -366,7 +366,7 @@ jobs:
         id: create_cert_request_curl
         shell: bash
         run: |
-          echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
+          # echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
           az account set -s "${{secrets.WL_OL1_SUB_ID}}"
           az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors -o none
           az extension add --name authV2 --only-show-errors -o none
