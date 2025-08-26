@@ -366,16 +366,16 @@ jobs:
         id: create_cert_request_curl
         shell: bash
         run: |
-          #echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
+          echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
           az account set -s "${{secrets.WL_OL1_SUB_ID}}"
           az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors -o none
           az extension add --name authV2 --only-show-errors -o none
           az webapp auth update -n ${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}} -g ${{ env.acmeBotRgName }} --enabled false --only-show-errors -o none
-          echo "sleep for 10 seconds for auth settings"
-          sleep 10
+          echo "sleep for 20 seconds for auth settings"
+          sleep 20
           echo "Get all assigned certificates"
           certs=$(curl --no-progress-meter -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates ) 
-          echo "Assigned certificates: $(echo $certs | jq .)"
+          echo "Assigned certificates: $certs - $(echo $certs | jq .)"
           certexists=$(echo $certs | jq '.[]  | select( .dnsNames | contains(["${{inputs.certcn}}"]))')
           echo "Existing certificates: $(echo $certexists | jq .)" 
           if [ -n "$certexists" ]; 
