@@ -53,7 +53,7 @@ on:
       certcn:
         description: 'Certificate common name'
         type: string
-        default: '*.app01.schoolscloud.eu'
+        default: '"*.app01.schoolscloud.eu"'
 
 
 
@@ -95,7 +95,7 @@ on:
       certcn:
         description: 'Certificate common name'
         type: string
-        default: '*.app01.schoolscloud.eu'
+        default: '"*.app01.schoolscloud.eu"'
 
     secrets:
       WL_OL1_SUB_ID:
@@ -372,6 +372,10 @@ jobs:
         shell: bash
         run: |
           # echo  output2 ${{env.FUNCTION_APP_KEY}} | sed 's/./& /g'
+          certcnarray=$(echo $certcn | jq -r 'split(",")')
+          echo "certcnarray: $certcnarray"
+          cn=$(echo $certcnarray | jq -r '.[0]')
+          echo "cn: $cn"
           az account set -s "${{secrets.WL_OL1_SUB_ID}}"
           az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors -o none
           az extension add --name authV2 --only-show-errors -o none
@@ -380,14 +384,15 @@ jobs:
           sleep 20
           echo "Get all assigned certificates"
           certs=$(curl --no-progress-meter -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" https://${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificates ) 
-          echo "Assigned certificates: $certs - $(echo $certs | jq .)"
-          certexists=$(echo $certs | jq '.[]  | select( .dnsNames | contains(["${{inputs.certcn}}"]))')
+          echo "Assigned certificates: $(echo $certs | jq .)"
+          # certexists=$(echo $certs | jq '.[]  | select( .dnsNames | contains(["${{inputs.certcn}}"]))')
+          certexists=$(echo $certs | jq --arg cn "${cn}" -r '.[]  | select( .dnsNames | contains([$cn]))')
           echo "Existing certificates: $(echo $certexists | jq .)" 
           if [ -n "$certexists" ]; 
             then echo "Certificate for ${{inputs.certcn}} already exists"
           else
             echo "Request new cert for: ${{inputs.certcn}}"
-            curl --no-progress-meter -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d '{ "DnsNames": [ "${{inputs.certcn}}" ] }' | jq .
+            curl --no-progress-meter -X POST -H "X-Functions-Key: ${{env.FUNCTION_APP_KEY}}" -H "Content-Type: application/json" https://${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}}.azurewebsites.net/api/certificate  -d "{ "DnsNames": $certcnarray }" | jq .
           fi
           az webapp auth update -n ${{steps.kv_acmebot_deploy.outputs.acmeBotAppName}} -g ${{ env.acmeBotRgName }} --enabled true --only-show-errors -o none          
       # - name: Create certificate request with PowerShell
@@ -442,7 +447,7 @@ jobs:
             parRouteTableNextHopToFirewallResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/routeTables/${{inputs.routetablename}}'
             parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
             parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
-            parKeyVaultSecretId: 'https://kv-gwc-kvacmebot-dyql.vault.azure.net/secrets/wildcard-app01-schoolscloud-eu'
+            parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/wildcard-app01-schoolscloud-eu'
       - name: Compute - Preview
         id: compute_preview
         uses: azure/bicep-deploy@v2
@@ -456,7 +461,12 @@ jobs:
           template-file: ./ALZ-Deploy/workloads/workload-online1/app-compute.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/app-compute.parameters.${{inputs.environment}}.json
           parameters: |
-            parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
+            parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetname}}'
+            parBastionHostIpGroupResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/ipGroups/${{inputs.bastionipgname}}'
+            parRouteTableNextHopToFirewallResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/routeTables/${{inputs.routetablename}}'
+            parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
+            parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
+            parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/wildcard-app01-schoolscloud-eu'
   compute_deploy:
     runs-on: ubuntu-latest
     needs: [
@@ -497,7 +507,12 @@ jobs:
           template-file: ./ALZ-Deploy/workloads/workload-online1/app-compute.bicep
           parameters-file: ./ALZ-Deploy/workloads/workload-online1/parameters/app-compute.parameters.${{inputs.environment}}.json
           parameters: |
-            parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetrg}}'
-         
+            parVnetResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/virtualNetworks/${{inputs.vnetname}}'
+            parBastionHostIpGroupResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/ipGroups/${{inputs.bastionipgname}}'
+            parRouteTableNextHopToFirewallResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/routeTables/${{inputs.routetablename}}'
+            parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
+            parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
+            parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/wildcard-app01-schoolscloud-eu'
+
           
 
