@@ -379,7 +379,7 @@ jobs:
           echo "cn: $cn"
           certname=$(echo $cn | sed -e 's/\./-/g' -e 's/*/wildcard/g')
           echo "certname: $certname"
-          echo "$certname" >> $GITHUB_OUTPUT
+          echo "$certname" >> "$GITHUB_OUTPUT"
           az account set -s "${{secrets.WL_OL1_SUB_ID}}"
           az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors -o none
           az extension add --name authV2 --only-show-errors -o none
