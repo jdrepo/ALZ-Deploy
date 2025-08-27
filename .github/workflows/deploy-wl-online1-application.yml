@@ -37,7 +37,7 @@ on:
       vnetrg:
         description: 'Spoke VNet Resource Group'
         type: string
-        default: 'rg-alz-workload-online-001-spoke-gwc'
+        default: 'rg-alz-workload-online-001-spoke-gwc-canary'
       vnetname:
         description: 'Spoke VNet Name'
         type: string
@@ -79,7 +79,7 @@ on:
       vnetrg:
         description: 'Spoke VNet Resource Group'
         type: string
-        default: 'rg-alz-workload-online-001-spoke-gwc'
+        default: 'rg-alz-workload-online-001-spoke-gwc-canary'
       vnetname:
         description: 'Spoke VNet Name'
         type: string
