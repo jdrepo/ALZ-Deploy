@@ -379,7 +379,7 @@ jobs:
           echo "cn: $cn"
           certname=$(echo $cn | sed -e 's/\./-/g' -e 's/*/wildcard/g')
           echo "certname: $certname"
-          echo "$certname" >> "$GITHUB_OUTPUT"
+          echo "certname=$certname" >> "$GITHUB_OUTPUT"
           az account set -s "${{secrets.WL_OL1_SUB_ID}}"
           az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors -o none
           az extension add --name authV2 --only-show-errors -o none
@@ -451,7 +451,7 @@ jobs:
             parRouteTableNextHopToFirewallResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/routeTables/${{inputs.routetablename}}'
             parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
             parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
-            parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/${{needs.acmebot_deploy.outputs.certname}}'
+            parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/${{needs.acmebot_deploy.outputs.certName}}'
       - name: Compute - Preview
         id: compute_preview
         uses: azure/bicep-deploy@v2
@@ -470,7 +470,7 @@ jobs:
             parRouteTableNextHopToFirewallResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/routeTables/${{inputs.routetablename}}'
             parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
             parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
-            parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/${{needs.acmebot_deploy.outputs.certname}}'
+            parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/${{needs.acmebot_deploy.outputs.certName}}'
   compute_deploy:
     runs-on: ubuntu-latest
     needs: [
@@ -516,7 +516,7 @@ jobs:
             parRouteTableNextHopToFirewallResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{inputs.vnetrg}}/providers/Microsoft.Network/routeTables/${{inputs.routetablename}}'
             parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
             parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
-            parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/${{needs.acmebot_deploy.outputs.certname}}'
+            parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/${{needs.acmebot_deploy.outputs.certName}}'
 
           
 
