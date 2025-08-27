@@ -889,7 +889,7 @@ module modIdVmssBackend 'br/public:avm/res/managed-identity/user-assigned-identi
   }
 }
 
-module modBastion 'br/public:avm/res/network/bastion-host:0.7.0' = {
+module modBastion 'br/public:avm/res/network/bastion-host:0.8.0' = {
   name: '${_dep}-bastion'
   params: {
     name: 'bas-${varLocationCode}-001-${parEnvironment}'
