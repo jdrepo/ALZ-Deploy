@@ -995,7 +995,7 @@ module modBastion 'br/public:avm/res/network/bastion-host:0.8.0' = {
 //   }
 // }
 
-module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:0.9.0' = {
+module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:0.10.1' = {
   params: {
     name: 'vmss-${varLocationCode}-backend-00'
     location: parLocation
@@ -1089,6 +1089,12 @@ module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:
       requestPath: '/favicon.ico'
       intervalInSeconds: 5
       numberOfProbes: 3
+    }
+    extensionMonitoringAgentConfig: {
+      enabled: true
+      typeHandlerVersion: '1.3'
+      autoUpgradeMinorVersion: true
+      enableAutomaticUpgrade: false
     }
   }
 }
