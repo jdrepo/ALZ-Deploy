@@ -416,6 +416,9 @@ jobs:
   compute_validation_preview:
     runs-on: ubuntu-latest
     needs: acmebot_deploy
+    if: |
+      always() && 
+      (needs.acmebot_deploy.result == 'skipped' || needs.acmebot_deploy.result == 'success')
     environment: ${{inputs.environment}}
     name: Compute - Validation and Preview
     steps:
