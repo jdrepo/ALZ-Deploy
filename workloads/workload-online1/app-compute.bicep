@@ -1181,6 +1181,7 @@ module modRoleAssignAppGwKvSecretsUser '../../../bicep-registry-modules/avm/ptn/
     principalId: modIdAppGatewayFrontend.outputs.principalId
     resourceId: parKeyVaultResourceId
     roleDefinitionId: varRbacRoleDefinitionIds.keyVaultSecretsUser
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -1191,6 +1192,7 @@ module modRoleAssignAppGwKvReader '../../../bicep-registry-modules/avm/ptn/autho
     principalId: modIdAppGatewayFrontend.outputs.principalId
     resourceId: parKeyVaultResourceId
     roleDefinitionId: varRbacRoleDefinitionIds.keyVaultReader
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -1201,6 +1203,7 @@ module modRoleAssignFrontendKvSecretsUser '../../../bicep-registry-modules/avm/p
     principalId: modIdVmssFrontend.outputs.principalId
     resourceId: parKeyVaultResourceId
     roleDefinitionId: varRbacRoleDefinitionIds.keyVaultSecretsUser
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -1211,6 +1214,7 @@ module modRoleAssignFrontendKvReader '../../../bicep-registry-modules/avm/ptn/au
     principalId: modIdVmssFrontend.outputs.principalId
     resourceId: parKeyVaultResourceId
     roleDefinitionId: varRbacRoleDefinitionIds.keyVaultReader
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -1221,6 +1225,7 @@ module modRoleAssignBackendKvSecretsUser '../../../bicep-registry-modules/avm/pt
     principalId: modIdVmssBackend.outputs.principalId
     resourceId: parKeyVaultResourceId
     roleDefinitionId: varRbacRoleDefinitionIds.keyVaultSecretsUser
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -1231,6 +1236,7 @@ module modRoleAssignBackendKvReader '../../../bicep-registry-modules/avm/ptn/aut
     principalId: modIdVmssBackend.outputs.principalId
     resourceId: parKeyVaultResourceId
     roleDefinitionId: varRbacRoleDefinitionIds.keyVaultReader
+    principalType: 'ServicePrincipal'
   }
 }
 
