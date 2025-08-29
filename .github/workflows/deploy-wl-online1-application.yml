@@ -439,8 +439,9 @@ jobs:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Compute - Validate
-        id: compute_validate
+      - name: Compute - Validate - Deploy after preview enabled
+        if: needs.acmebot_deploy.result == 'success'
+        id: compute_validate_deploy_enabled
         uses: azure/bicep-deploy@v2
         with:
           type: deployment
