@@ -1092,7 +1092,7 @@ module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:
     }
     extensionMonitoringAgentConfig: {
       enabled: true
-      typeHandlerVersion: '1.3'
+      typeHandlerVersion: '1.36'
       autoUpgradeMinorVersion: true
       enableAutomaticUpgrade: false
     }
