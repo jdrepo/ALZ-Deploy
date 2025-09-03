@@ -25,9 +25,9 @@ param parRouteTableNextHopToFirewallResourceId string
 @sys.description('Required. Key Vault Resource Id with certificates.')
 param parKeyVaultResourceId string
 
-@description('Optional. KeyVault Secret Identifier for certificate')
+@description('Required. KeyVault Secret Identifier for certificate')
 #disable-next-line secure-secrets-in-params // Only returning the references, not any secret value
-param parKeyVaultSecretId string?
+param parKeyVaultSecretId string
 
 @description('The Entra ID group/user object id (guid) that will be assigned as the admin users for all deployed virtual machines.')
 @minLength(36)
@@ -46,6 +46,7 @@ var varVirtualNetwork = funcGetResourceInformation(parVnetResourceId)
 var varBastionHostIpGroup = funcGetResourceInformation(parBastionHostIpGroupResourceId)
 var varRouteTableNextHopToFirewall = funcGetResourceInformation(parRouteTableNextHopToFirewallResourceId)
 var varKeyVault = funcGetResourceInformation(parKeyVaultResourceId)
+var varCertSubject = replace(replace((funcGetResourceInformation(parKeyVaultSecretId)).resourceName,'-','.'),'wildcard','*')
 var varLogWorkSpaceName = 'log-${varLocationCode}-compute-${parEnvironment}'
 var varAgwName = 'agw-${varLocationCode}-frontend-${parEnvironment}'
 var varIlbName = 'ilb-${parLocation}-backend-${parEnvironment}'
@@ -1541,3 +1542,5 @@ module modPrivateEndpointKeyVaultForAppGw 'br/public:avm/res/network/private-end
     modPrivateEndpointKeyVault // Deploying both endpoints at the same time can cause ConflictErrors
   ]
 }
+
+output outCertSubject string = varCertSubject
