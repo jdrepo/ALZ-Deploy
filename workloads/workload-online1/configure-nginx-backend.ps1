@@ -3,6 +3,11 @@
         Downloads, configures Nginx as workload sample and process its requests.
 #>
 
+param (
+    [Parameter(Mandatory = $True)]
+    [string]$certSubject
+)
+
 # Initialize Managed Data Disk
 $dataDisk = (Get-Disk | Where partitionstyle -eq 'raw' | sort number)[0]
 $dataDisk | Initialize-Disk -PartitionStyle MBR -PassThru | New-Partition -UseMaximumSize -DriveLetter 'W' | Format-Volume -FileSystem NTFS -NewFileSystemLabel 'dataDisk' -Confirm:$false -Force
@@ -24,7 +29,9 @@ New-Item -ItemType Directory w:/nginx/ssl
 New-Item -ItemType Directory w:/nginx/data
 
 # Export Ssl crt and pfx from LocalMachine
-$cert = Get-ChildItem -path Cert:\* -Recurse | where {$_.Subject -eq 'CN=*.app99.schoolscloud.eu'}
+#$cert = Get-ChildItem -path Cert:\* -Recurse | where {$_.Subject -eq 'CN=*.app99.schoolscloud.eu'}
+$cert = Get-ChildItem -path Cert:\* -Recurse | Where-Object {$_.Subject -eq $certSubject}
+
 
 @(
  '-----BEGIN CERTIFICATE-----'

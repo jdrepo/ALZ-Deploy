@@ -1165,7 +1165,7 @@ module modVmssBackendCustomScriptExtension '../../infra-as-code/bicep/modules/co
     typeHandlerVersion: '1.10'
     virtualMachineScaleSetName: modVmssBackendend00.outputs.name
     protectedSettings: {
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File configure-nginx-backend.ps1'
+      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File configure-nginx-backend.ps1 -certSubject ${varCertSubject}'
       // The following installs and configure Nginx for the backend Windows machine, which is used as an application stand-in for this reference implementation.
       // Using the CustomScript extension can be useful for bootstrapping VMs in leu of a larger DSC solution, but is generally not recommended for application deployments.
       fileUris: [
