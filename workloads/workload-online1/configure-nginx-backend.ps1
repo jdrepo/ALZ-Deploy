@@ -30,7 +30,7 @@ New-Item -ItemType Directory w:/nginx/data
 
 # Export Ssl crt and pfx from LocalMachine
 #$cert = Get-ChildItem -path Cert:\* -Recurse | where {$_.Subject -eq 'CN=*.app99.schoolscloud.eu'}
-$cert = Get-ChildItem -path Cert:\* -Recurse | Where-Object {$_.Subject -eq $certSubject}
+$cert = Get-ChildItem -path Cert:\* -Recurse | Where-Object {$_.Subject -eq 'CN="$certSubject"'}
 
 
 @(
