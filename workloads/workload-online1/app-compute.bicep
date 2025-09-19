@@ -996,7 +996,9 @@ module modBastion 'br/public:avm/res/network/bastion-host:0.8.0' = {
 //   }
 // }
 
-module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:0.10.1' = {
+
+
+module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:0.11.0' = {
   params: {
     name: 'vmss-${varLocationCode}-backend-00'
     location: parLocation
@@ -1047,7 +1049,7 @@ module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:
         caching: 'None'
         createOption: 'Empty'
         deleteOption: 'Delete'
-        diskSizeGB: '4'
+        diskSizeGB: 4
         lun: 0
         managedDisk: {
           storageAccountType: 'Premium_ZRS'
@@ -1058,12 +1060,9 @@ module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:
       {
         name: 'nic-backend'
         nicSuffix: ''
-        primary: true
-        enableIPForwarding: false
         enableAcceleratedNetworking: false
-        networkSecurityGroup: null
-        deleteOption: 'Delete'
-        ipconfigurations: [
+        networkSecurityGroupResourceId: null
+        ipConfigurations: [
           {
             name: 'default'
             properties: {
@@ -1073,6 +1072,12 @@ module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:
               applicationSecurityGroups: [
                 {
                   id: modAsgVmssBackend.outputs.resourceId
+                }
+              ]
+              loadBalancerBackendAddressPools: [
+                {
+                  id: modInternalLoadBalancer.outputs.backendpools[0].id
+                  //id: backend.id
                 }
               ]
             }
@@ -1152,10 +1157,11 @@ module modVmssKeyVaultExtension '../../../bicep-registry-modules/avm/res/compute
   }
 }
 
-module modVmssBackendCustomScriptExtension '../../infra-as-code/bicep/modules/compute/virtual-machine-scale-set/extension/main.bicep' = {
+module modVmssBackendCustomScriptExtension '../../../bicep-registry-modules/avm/res/compute/virtual-machine-scale-set/extension/main.bicep' = {
   params: {
     provisionAfterExtensions: [
-      modVmssKeyVaultExtension.outputs.name
+      //modVmssKeyVaultExtension.outputs.name
+      'KeyVaultForWindows'
     ]
     name: 'CustomScript'
     autoUpgradeMinorVersion: true
@@ -1266,7 +1272,7 @@ module modPrivateEndpointKeyVault 'br/public:avm/res/network/private-endpoint:0.
 
 
 
-module modPrivateDnsZoneBackend 'br/public:avm/res/network/private-dns-zone:0.7.1' = {
+module modPrivateDnsZoneBackend 'br/public:avm/res/network/private-dns-zone:0.8.0' = {
   params: {
     name: 'schoolscloud.eu'
     virtualNetworkLinks: [
@@ -1440,6 +1446,14 @@ module modPrivateDnsZoneBackend 'br/public:avm/res/network/private-dns-zone:0.7.
 //   }
 // }
 
+resource ilb 'Microsoft.Network/loadBalancers@2024-07-01' existing = {
+  name: varIlbName
+}
+
+resource backend 'Microsoft.Network/loadBalancers/backendAddressPools@2024-07-01' existing = {
+  name: 'vmss-backend'
+  parent: ilb
+}
 module modInternalLoadBalancer 'br/public:avm/res/network/load-balancer:0.4.2' = {
   params: {
     name: varIlbName
@@ -1497,7 +1511,7 @@ module modInternalLoadBalancer 'br/public:avm/res/network/load-balancer:0.4.2' =
 // https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-private-deployment?tabs=portal
 
 @description('Deploy Key Vault private DNS zone so that Application Gateway can resolve at resource deployment time.')
-module modKeyVaultPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.7.1' = {
+module modKeyVaultPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.8.0' = {
   params: {
     name: 'privatelink.vaultcore.azure.net'
     virtualNetworkLinks: [
