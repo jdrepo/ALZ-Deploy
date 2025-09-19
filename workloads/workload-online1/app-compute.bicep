@@ -1061,7 +1061,6 @@ module modVmssBackendend00 'br/public:avm/res/compute/virtual-machine-scale-set:
         name: 'nic-backend'
         nicSuffix: ''
         enableAcceleratedNetworking: false
-        networkSecurityGroupResourceId: null
         ipConfigurations: [
           {
             name: 'default'
