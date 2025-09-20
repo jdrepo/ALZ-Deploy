@@ -1159,8 +1159,7 @@ module modVmssKeyVaultExtension '../../../bicep-registry-modules/avm/res/compute
 module modVmssBackendCustomScriptExtension '../../../bicep-registry-modules/avm/res/compute/virtual-machine-scale-set/extension/main.bicep' = {
   params: {
     provisionAfterExtensions: [
-      //modVmssKeyVaultExtension.outputs.name
-      'KeyVaultForWindows'
+      modVmssKeyVaultExtension.outputs.name
     ]
     name: 'CustomScript'
     autoUpgradeMinorVersion: true
@@ -1504,6 +1503,7 @@ module modInternalLoadBalancer 'br/public:avm/res/network/load-balancer:0.4.2' =
 // of the service. To that end, we have a local private DNS zone that is in place just to support Application Gateway.
 // No other resources in this virtual network benefit from this.  If this is ever resolved both modKeyVaultPrivateDnsZone and
 // modPrivateEndpointKeyVaultForAppGw can be removed.
+// Resolved with private deployment ?
 // https://medium.com/@petrutbelingher/application-gateway-private-dns-resolvers-dns-resolution-private-endpoints-in-azure-489b01f6694c
 // https://learn.microsoft.com/en-us/answers/questions/714888/azure-application-gateways-do-not-resolve-private
 // https://learn.microsoft.com/en-us/azure/application-gateway/key-vault-certs#verify-firewall-permissions-to-key-vault
