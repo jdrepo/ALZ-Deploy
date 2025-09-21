@@ -5,7 +5,9 @@
 
 param (
     [Parameter(Mandatory = $True)]
-    [string]$certSubject
+    [string]$certSubject,
+    [Parameter(Mandatory = $True)]
+    [string]$serverName
 )
 
 # Initialize Managed Data Disk
@@ -29,9 +31,16 @@ netsh advfirewall firewall add rule name="https" dir=in action=allow protocol=TC
 Set-Location w:\
 Invoke-WebRequest 'https://nginx.org/download/nginx-1.24.0.zip' -OutFile 'w:/nginx.zip'
 
+# Download NSSM
+Invoke-WebRequest 'https://github.com/jensdiedrich/vmdeploy/raw/main/nssm-2.24.zip' -OutFile 'w:/nssm.zip'
+
 # Install Nginx.
 Expand-Archive w:/nginx.zip w:/
 Move-Item w:/nginx-1.24.0 w:/nginx
+
+# Install NSSM.
+Expand-Archive w:/nssm.zip w:/
+Copy-Item w:/nssm-2.24/win64/nssm.exe w:/nginx
 
 # Create addtional folders
 New-Item -ItemType Directory w:/nginx/ssl
@@ -91,7 +100,7 @@ http {
 
     server {
         listen 443 ssl;
-        server_name backend-00.iaas-ingress.contoso.com;
+        server_name $serverName;
         ssl_certificate w:/nginx/ssl/nginx-backend-tls.crt;
         ssl_certificate_key w:/nginx/ssl/nginx-backend-tls.key;
         ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
@@ -114,8 +123,12 @@ http {
 "@ | Out-File -FilePath w:/nginx/conf/nginx.conf -Encoding ascii
 
 # Start nginx
-cd w:/nginx
-start nginx
+#cd w:/nginx
+#start nginx
+
+# Install nginx as service and start
+w:\nginx\nssm.exe install nginx w:\nginx\nginx.exe
+w:\nginx\nssm.exe start nginx
 
 # Task Scheduler to rotate and process workload total number of requests.
 

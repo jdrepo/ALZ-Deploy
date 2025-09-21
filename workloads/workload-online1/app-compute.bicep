@@ -29,6 +29,9 @@ param parKeyVaultResourceId string
 #disable-next-line secure-secrets-in-params // Only returning the references, not any secret value
 param parKeyVaultSecretId string
 
+@description('Required. Backend Host Name')
+param parBackendHostName string
+
 @description('The Entra ID group/user object id (guid) that will be assigned as the admin users for all deployed virtual machines.')
 @minLength(36)
 param parAdminSecurityPrincipalObjectId string
@@ -1169,7 +1172,7 @@ module modVmssBackendCustomScriptExtension '../../../bicep-registry-modules/avm/
     typeHandlerVersion: '1.10'
     virtualMachineScaleSetName: modVmssBackendend00.outputs.name
     protectedSettings: {
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File configure-nginx-backend.ps1 -certSubject ${varCertSubject}'
+      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File configure-nginx-backend.ps1 -certSubject ${varCertSubject} -hostName ${parBackendHostName}'
       // The following installs and configure Nginx for the backend Windows machine, which is used as an application stand-in for this reference implementation.
       // Using the CustomScript extension can be useful for bootstrapping VMs in leu of a larger DSC solution, but is generally not recommended for application deployments.
       fileUris: [
@@ -1282,7 +1285,7 @@ module modPrivateDnsZoneBackend 'br/public:avm/res/network/private-dns-zone:0.8.
     ]
     a: [
       {
-        name: 'app01'
+        name: parBackendHostName
         aRecords: [
           {
             ipv4Address: varIlbPrivateIp
