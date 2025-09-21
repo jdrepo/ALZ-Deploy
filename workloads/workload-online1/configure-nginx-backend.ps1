@@ -9,15 +9,24 @@ param (
 )
 
 # Initialize Managed Data Disk
-$dataDisk = (Get-Disk | Where partitionstyle -eq 'raw' | sort number)[0]
-$dataDisk | Initialize-Disk -PartitionStyle MBR -PassThru | New-Partition -UseMaximumSize -DriveLetter 'W' | Format-Volume -FileSystem NTFS -NewFileSystemLabel 'dataDisk' -Confirm:$false -Force
+$RawDataDisk = (Get-Disk | Where-Object partitionstyle -eq 'raw' | Sort-Object number)
+if ($null -ne $RawDatadisk) {
+  $RawDataDisk[0] | Initialize-Disk -PartitionStyle MBR -PassThru | New-Partition -UseMaximumSize -DriveLetter 'W' | Format-Volume -FileSystem NTFS -NewFileSystemLabel 'dataDisk' -Confirm:$false -Force
+}
+
+# Get already initialized Data Disk (e.g. after reimaging)
+$dataDisk = Get-Disk | Where-Object Number -eq 2
+$dataPartitions = Get-Partition -DiskNumber $dataDisk.Number
+if ($dataPartitions[0].DriveLetter -ne 'W') {
+    $dataPartitions[0] | Set-Partition -NewDriveLetter W
+}
 
 # Firewall config
 netsh advfirewall firewall add rule name="http" dir=in action=allow protocol=TCP localport=80
 netsh advfirewall firewall add rule name="https" dir=in action=allow protocol=TCP localport=443
 
 # Download nginx.
-cd w:\
+Set-Location w:\
 Invoke-WebRequest 'https://nginx.org/download/nginx-1.24.0.zip' -OutFile 'w:/nginx.zip'
 
 # Install Nginx.
