@@ -320,6 +320,7 @@ jobs:
     outputs: 
       keyVaultName: ${{steps.kv_acmebot_deploy.outputs.outKeyVaultName}}
       certName: ${{steps.create_cert_request_curl.outputs.certname}}
+      backendServerName: ${{steps.create_cert_request_curl.outputs.backendServerName}}
     if: ${{ inputs.deploy == true }}
     environment: ${{inputs.environment}}
     name: Key Vault Acmebot - Deploy
@@ -379,10 +380,13 @@ jobs:
           certcnarray=$(echo '${{inputs.certcn}}' | jq -r 'split(",")')
           echo "certcnarray: $certcnarray"
           cn=$(echo $certcnarray | jq -r '.[0]')
+          backendservername=$(echo $certcnarray | jq -r '.[1]')
           echo "cn: $cn"
+          echo "backendservername: $backendservername"
           certname=$(echo $cn | sed -e 's/\./-/g' -e 's/*/wildcard/g')
           echo "certname: $certname"
           echo "certname=$certname" >> "$GITHUB_OUTPUT"
+          echo "backendservername=$backendservername" >> "$GITHUB_OUTPUT"
           az account set -s "${{secrets.WL_OL1_SUB_ID}}"
           az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors -o none
           az extension add --name authV2 --only-show-errors -o none
@@ -459,6 +463,7 @@ jobs:
             parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
             parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
             parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/${{needs.acmebot_deploy.outputs.certName}}'
+            parBackendServerName: ${{needs.acmebot_deploy.outputs.backendServerName}}
       - name: Compute - Validate - "Deploy after preview" not enabled
         if: needs.acmebot_deploy.result == 'skipped'
         id: compute_validate_deploy_notenabled
@@ -479,6 +484,7 @@ jobs:
             parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
             parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/kv-dummy'
             parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/cert-dummy'
+            parBackendServerName: ${{needs.acmebot_deploy.outputs.backendServerName}}
       - name: Compute - Preview
         id: compute_preview
         uses: azure/bicep-deploy@v2
@@ -498,6 +504,7 @@ jobs:
             parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
             parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
             parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/${{needs.acmebot_deploy.outputs.certName}}'
+            parBackendServerName: ${{needs.acmebot_deploy.outputs.backendServerName}}
   compute_deploy:
     runs-on: ubuntu-latest
     needs: [
@@ -544,6 +551,8 @@ jobs:
             parAdminSecurityPrincipalObjectId: '2be2fcd1-6b91-48d9-91f5-d20fb906d005'
             parKeyVaultResourceId: '/subscriptions/${{secrets.WL_OL1_SUB_ID}}/resourceGroups/${{env.acmeBotRgName}}/providers/Microsoft.KeyVault/vaults/${{needs.acmebot_deploy.outputs.keyVaultName}}'
             parKeyVaultSecretId: 'https://${{needs.acmebot_deploy.outputs.keyVaultName}}.vault.azure.net/secrets/${{needs.acmebot_deploy.outputs.certName}}'
+            parBackendServerName: ${{needs.acmebot_deploy.outputs.backendServerName}}
+
 
           
 
